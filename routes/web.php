@@ -3,9 +3,9 @@
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -51,4 +51,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-

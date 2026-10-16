@@ -5,8 +5,8 @@ use App\Mail\InvitationMail;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\User;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 
