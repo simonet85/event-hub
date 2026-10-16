@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\GuestController;
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +23,15 @@ Route::get('/dashboard', function () {
 
 Route::get('/e/{event}', [EventController::class, 'showPublic'])->name('events.public');
 
+Route::get('/i/{token}', [InvitationController::class, 'show'])->name('invitations.show');
+
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/events/{event}/guests', [GuestController::class, 'index'])->name('guests.index');
+    Route::post('/events/{event}/guests', [GuestController::class, 'store'])->name('guests.store');
+    Route::post('/events/{event}/guests/import', [GuestController::class, 'import'])->name('guests.import');
+    Route::delete('/events/{event}/guests/{guest}', [GuestController::class, 'destroy'])->name('guests.destroy');
+    Route::post('/events/{event}/invitations', [InvitationController::class, 'sendAll'])->name('invitations.send-all');
+    Route::post('/events/{event}/guests/{guest}/invitation', [InvitationController::class, 'send'])->name('invitations.send');
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');

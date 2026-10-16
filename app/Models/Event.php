@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['title', 'slug', 'type', 'event_date', 'location_name', 'location_address', 'welcome_message', 'theme_config'])]
 class Event extends Model
@@ -27,6 +28,11 @@ class Event extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function guests(): HasMany
+    {
+        return $this->hasMany(Guest::class);
     }
 
     public function getRouteKeyName(): string
