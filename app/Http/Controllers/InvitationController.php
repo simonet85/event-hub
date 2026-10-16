@@ -22,10 +22,16 @@ class InvitationController extends Controller
         $event = $guest->event;
 
         return Inertia::render('Invitations/Show', [
+            'token' => $guest->token,
             'guest' => [
                 'name' => $guest->name,
                 'max_companions' => $guest->max_companions,
                 'url' => $guest->invitationUrl(),
+                'rsvp_status' => $guest->rsvp_status->value,
+                'companions_count' => $guest->companions_count,
+                'dietary_restrictions' => $guest->dietary_restrictions,
+                'favorite_song' => $guest->favorite_song,
+                'rsvp_message' => $guest->rsvp_message,
             ],
             'event' => [
                 'title' => $event->title,

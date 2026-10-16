@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RsvpStatus;
 use App\Http\Requests\StoreGuestRequest;
 use App\Models\Event;
 use App\Models\Guest;
@@ -22,6 +23,7 @@ class GuestController extends Controller
                 'title' => $event->title,
                 'slug' => $event->slug,
             ],
+            'summary' => $this->summary($event),
             'guests' => $event->guests()->orderBy('name')->get()->map(fn (Guest $guest) => [
                 'id' => $guest->id,
                 'name' => $guest->name,
@@ -29,10 +31,32 @@ class GuestController extends Controller
                 'phone' => $guest->phone,
                 'max_companions' => $guest->max_companions,
                 'invited_at' => $guest->invited_at?->toIso8601String(),
+                'rsvp_status' => $guest->rsvp_status->value,
+                'companions_count' => $guest->companions_count,
+                'dietary_restrictions' => $guest->dietary_restrictions,
+                'favorite_song' => $guest->favorite_song,
+                'rsvp_message' => $guest->rsvp_message,
                 'invitation_url' => $guest->invitationUrl(),
                 'whatsapp_url' => $guest->setRelation('event', $event)->whatsappUrl(),
             ]),
         ]);
+    }
+
+    /**
+     * @return array{total: int, pending: int, accepted: int, declined: int, headcount: int}
+     */
+    private function summary(Event $event): array
+    {
+        $guests = $event->guests()->get(['rsvp_status', 'companions_count']);
+        $accepted = $guests->where('rsvp_status', RsvpStatus::Accepted);
+
+        return [
+            'total' => $guests->count(),
+            'pending' => $guests->where('rsvp_status', RsvpStatus::Pending)->count(),
+            'accepted' => $accepted->count(),
+            'declined' => $guests->where('rsvp_status', RsvpStatus::Declined)->count(),
+            'headcount' => $accepted->count() + $accepted->sum('companions_count'),
+        ];
     }
 
     public function store(StoreGuestRequest $request, Event $event): RedirectResponse

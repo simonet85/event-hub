@@ -3,6 +3,7 @@
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,7 @@ Route::get('/dashboard', function () {
 Route::get('/e/{event}', [EventController::class, 'showPublic'])->name('events.public');
 
 Route::get('/i/{token}', [InvitationController::class, 'show'])->name('invitations.show');
+Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middleware('throttle:20,1')->name('rsvp.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/events/{event}/guests', [GuestController::class, 'index'])->name('guests.index');

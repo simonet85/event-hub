@@ -10,11 +10,20 @@ type Guest = {
     phone: string | null;
     max_companions: number;
     invited_at: string | null;
+    rsvp_status: 'pending' | 'accepted' | 'declined';
+    companions_count: number;
+    dietary_restrictions: string | null;
+    favorite_song: string | null;
+    rsvp_message: string | null;
     invitation_url: string;
     whatsapp_url: string | null;
 };
 
-const props = defineProps<{ event: { title: string; slug: string }; guests: Guest[] }>();
+const props = defineProps<{
+    event: { title: string; slug: string };
+    summary: { total: number; pending: number; accepted: number; declined: number; headcount: number };
+    guests: Guest[];
+}>();
 
 const flash = computed(() => usePage().props.flash as { sent?: number; imported?: number } | undefined);
 
@@ -55,6 +64,14 @@ const pending = computed(() => props.guests.filter((g) => g.email && !g.invited_
                 <p v-if="flash?.imported !== undefined" class="rounded bg-green-50 p-3 text-green-800">
                     {{ flash.imported }} invité(s) importé(s).
                 </p>
+
+                <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-5" data-testid="rsvp-summary">
+                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Invités</dt><dd class="text-2xl font-semibold">{{ summary.total }}</dd></div>
+                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Présents</dt><dd class="text-2xl font-semibold text-green-700">{{ summary.accepted }}</dd></div>
+                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Absents</dt><dd class="text-2xl font-semibold text-red-700">{{ summary.declined }}</dd></div>
+                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">En attente</dt><dd class="text-2xl font-semibold text-amber-600">{{ summary.pending }}</dd></div>
+                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Personnes attendues</dt><dd class="text-2xl font-semibold">{{ summary.headcount }}</dd></div>
+                </dl>
 
                 <form class="grid gap-3 rounded-lg bg-white p-6 shadow-sm sm:grid-cols-5" @submit.prevent="add">
                     <input v-model="form.name" placeholder="Nom" class="rounded-md border-gray-300" />
@@ -102,8 +119,17 @@ const pending = computed(() => props.guests.filter((g) => g.email && !g.invited_
                             <p class="font-medium text-gray-900">{{ g.name }}</p>
                             <p class="text-sm text-gray-500">
                                 {{ g.email ?? 'pas d\'email' }} · +{{ g.max_companions }} ·
-                                {{ g.invited_at ? 'invité' : 'non invité' }}
+                                {{ g.invited_at ? 'invité' : 'non invité' }} ·
+                                <span :class="{ 'text-green-700': g.rsvp_status === 'accepted', 'text-red-700': g.rsvp_status === 'declined' }">
+                                    {{ { pending: 'en attente', accepted: 'présent(e)', declined: 'absent(e)' }[g.rsvp_status] }}
+                                </span>
+                                <template v-if="g.rsvp_status === 'accepted' && g.companions_count > 0">
+                                    (+{{ g.companions_count }})
+                                </template>
                             </p>
+                            <p v-if="g.dietary_restrictions" class="text-xs text-gray-500">Régime : {{ g.dietary_restrictions }}</p>
+                            <p v-if="g.favorite_song" class="text-xs text-gray-500">Chanson : {{ g.favorite_song }}</p>
+                            <p v-if="g.rsvp_message" class="text-xs italic text-gray-500">« {{ g.rsvp_message }} »</p>
                         </div>
                         <div class="flex gap-3 text-sm">
                             <a :href="g.invitation_url" target="_blank" class="text-indigo-600">Voir</a>

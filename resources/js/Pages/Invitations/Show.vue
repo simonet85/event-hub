@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import Countdown from '@/Components/Countdown.vue';
 import QrCode from '@/Components/QrCode.vue';
+import RsvpForm from '@/Components/RsvpForm.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props = defineProps<{
-    guest: { name: string; max_companions: number; url: string };
+    guest: {
+        name: string;
+        max_companions: number;
+        url: string;
+        rsvp_status: 'pending' | 'accepted' | 'declined';
+        companions_count: number;
+        dietary_restrictions: string | null;
+        favorite_song: string | null;
+        rsvp_message: string | null;
+    };
+    token: string;
     event: {
         title: string;
         type_label: string;
@@ -48,5 +59,7 @@ const formattedDate = computed(() =>
                 <QrCode :value="guest.url" :size="160" :color="event.theme_config.primary_color" />
             </div>
         </section>
+
+        <RsvpForm :token="token" :guest="guest" class="mt-8" />
     </EventPublicLayout>
 </template>

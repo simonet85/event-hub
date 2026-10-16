@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RsvpStatus;
 use Database\Factories\GuestFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,6 +30,9 @@ class Guest extends Model
     {
         return [
             'invited_at' => 'datetime',
+            'responded_at' => 'datetime',
+            'rsvp_status' => RsvpStatus::class,
+            'companions_count' => 'integer',
             'max_companions' => 'integer',
         ];
     }
