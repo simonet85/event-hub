@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import Countdown from '@/Components/Countdown.vue';
+import EventDetails from '@/Components/EventDetails.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
+import type { PublicEvent } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const props = defineProps<{
-    event: {
-        title: string;
-        type_label: string;
-        event_date: string;
-        location_name: string | null;
-        location_address: string | null;
-        welcome_message: string | null;
-        theme_config: { primary_color: string; secondary_color: string; font_family: string };
-    };
-}>();
+const props = defineProps<{ event: PublicEvent }>();
 
 const formattedDate = computed(() =>
     new Intl.DateTimeFormat('fr-FR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(props.event.event_date)),
@@ -44,5 +36,7 @@ const formattedDate = computed(() =>
             </div>
             <p v-if="event.welcome_message" class="border-t pt-4 italic">{{ event.welcome_message }}</p>
         </section>
+
+        <EventDetails :event="event" class="mt-8" />
     </EventPublicLayout>
 </template>

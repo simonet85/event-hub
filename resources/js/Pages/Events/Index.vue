@@ -38,6 +38,7 @@ const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' 
                             <p class="text-sm text-gray-500">{{ fmt(e.event_date) }}</p>
                         </div>
                         <div class="flex gap-4 text-sm">
+                            <Link :href="route('schedule.index', e.slug)" class="text-indigo-600">Programme</Link>
                             <Link :href="route('guests.index', e.slug)" class="text-indigo-600">Invités</Link>
                             <a :href="route('events.public', e.slug)" target="_blank" class="text-indigo-600">Page publique</a>
                         </div>

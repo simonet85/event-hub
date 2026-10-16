@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Countdown from '@/Components/Countdown.vue';
+import EventDetails from '@/Components/EventDetails.vue';
 import QrCode from '@/Components/QrCode.vue';
 import RsvpForm from '@/Components/RsvpForm.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
+import type { PublicEvent } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -18,15 +20,7 @@ const props = defineProps<{
         rsvp_message: string | null;
     };
     token: string;
-    event: {
-        title: string;
-        type_label: string;
-        event_date: string;
-        location_name: string | null;
-        location_address: string | null;
-        welcome_message: string | null;
-        theme_config: { primary_color: string; secondary_color: string; font_family: string };
-    };
+    event: PublicEvent;
 }>();
 
 const formattedDate = computed(() =>
@@ -59,6 +53,8 @@ const formattedDate = computed(() =>
                 <QrCode :value="guest.url" :size="160" :color="event.theme_config.primary_color" />
             </div>
         </section>
+
+        <EventDetails :event="event" class="mt-8" />
 
         <RsvpForm :token="token" :guest="guest" class="mt-8" />
     </EventPublicLayout>

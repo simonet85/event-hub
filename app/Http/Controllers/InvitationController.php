@@ -32,15 +32,7 @@ class InvitationController extends Controller
                 'favorite_song' => $guest->favorite_song,
                 'rsvp_message' => $guest->rsvp_message,
             ],
-            'event' => [
-                'title' => $event->title,
-                'type_label' => $event->type->label(),
-                'event_date' => $event->event_date->toIso8601String(),
-                'location_name' => $event->location_name,
-                'location_address' => $event->location_address,
-                'welcome_message' => $event->welcome_message,
-                'theme_config' => $event->theme_config,
-            ],
+            'event' => $event->load('scheduleItems')->publicPayload(),
         ]);
     }
 

@@ -49,17 +49,7 @@ class EventController extends Controller
     public function showPublic(Event $event): Response
     {
         return Inertia::render('Events/ShowPublic', [
-            'event' => [
-                'title' => $event->title,
-                'slug' => $event->slug,
-                'type' => $event->type->value,
-                'type_label' => $event->type->label(),
-                'event_date' => $event->event_date->toIso8601String(),
-                'location_name' => $event->location_name,
-                'location_address' => $event->location_address,
-                'welcome_message' => $event->welcome_message,
-                'theme_config' => $event->theme_config,
-            ],
+            'event' => $event->load('scheduleItems')->publicPayload(),
         ]);
     }
 }
