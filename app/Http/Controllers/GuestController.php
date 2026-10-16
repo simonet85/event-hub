@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Guest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -24,7 +25,7 @@ class GuestController extends Controller
                 'slug' => $event->slug,
             ],
             'summary' => $this->summary($event),
-            'guests' => $event->guests()->orderBy('name')->get()->map(fn (Guest $guest) => [
+            'guests' => $event->guests()->orderBy('name')->orderBy('id')->paginate(50)->through(fn (Guest $guest) => [
                 'id' => $guest->id,
                 'name' => $guest->name,
                 'email' => $guest->email,
@@ -43,15 +44,16 @@ class GuestController extends Controller
     }
 
     /**
-     * @return array{total: int, pending: int, accepted: int, declined: int, headcount: int}
+     * @return array{total: int, to_invite: int, pending: int, accepted: int, declined: int, headcount: int}
      */
     private function summary(Event $event): array
     {
-        $guests = $event->guests()->get(['rsvp_status', 'companions_count']);
+        $guests = $event->guests()->get(['email', 'invited_at', 'rsvp_status', 'companions_count']);
         $accepted = $guests->where('rsvp_status', RsvpStatus::Accepted);
 
         return [
             'total' => $guests->count(),
+            'to_invite' => $guests->filter(fn ($g) => $g->email && ! $g->invited_at)->count(),
             'pending' => $guests->where('rsvp_status', RsvpStatus::Pending)->count(),
             'accepted' => $accepted->count(),
             'declined' => $guests->where('rsvp_status', RsvpStatus::Declined)->count(),
@@ -78,12 +80,27 @@ class GuestController extends Controller
         $request->validate(['file' => ['required', 'file', 'mimes:csv,txt', 'max:1024']]);
 
         $handle = fopen($request->file('file')->getRealPath(), 'r');
+
+        try {
+            $imported = DB::transaction(fn () => $this->importRows($event, $handle));
+        } finally {
+            fclose($handle);
+        }
+
+        return back()->with('imported', $imported);
+    }
+
+    /**
+     * @param  resource  $handle
+     */
+    private function importRows(Event $event, $handle): int
+    {
         $header = null;
         $imported = 0;
 
         while (($row = fgetcsv($handle, 0, ',', '"', '')) !== false) {
             if ($header === null) {
-                $header = array_map(fn ($h) => strtolower(trim((string) preg_replace('/^\xEF\xBB\xBF/', '', (string) $h))), $row);
+                $header = array_map(fn ($h) => strtolower(trim((string) preg_replace('/^ï»¿/', '', (string) $h))), $row);
 
                 continue;
             }
@@ -109,9 +126,7 @@ class GuestController extends Controller
             $imported++;
         }
 
-        fclose($handle);
-
-        return back()->with('imported', $imported);
+        return $imported;
     }
 
     public function destroy(Event $event, Guest $guest): RedirectResponse

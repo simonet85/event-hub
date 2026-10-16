@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 type Guest = {
@@ -21,8 +21,8 @@ type Guest = {
 
 const props = defineProps<{
     event: { title: string; slug: string };
-    summary: { total: number; pending: number; accepted: number; declined: number; headcount: number };
-    guests: Guest[];
+    summary: { total: number; to_invite: number; pending: number; accepted: number; declined: number; headcount: number };
+    guests: { data: Guest[]; links: { url: string | null; label: string; active: boolean }[] };
 }>();
 
 const flash = computed(() => usePage().props.flash as { sent?: number; imported?: number } | undefined);
@@ -36,7 +36,7 @@ const importCsv = () =>
 const sendAll = () => router.post(route('invitations.send-all', props.event.slug));
 const send = (g: Guest) => router.post(route('invitations.send', [props.event.slug, g.id]));
 const remove = (g: Guest) => router.delete(route('guests.destroy', [props.event.slug, g.id]));
-const pending = computed(() => props.guests.filter((g) => g.email && !g.invited_at).length);
+const pending = computed(() => props.summary.to_invite);
 </script>
 
 <template>
@@ -59,7 +59,7 @@ const pending = computed(() => props.guests.filter((g) => g.email && !g.invited_
         <div class="space-y-8 py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <p v-if="flash?.sent !== undefined" class="rounded bg-green-50 p-3 text-green-800">
-                    {{ flash.sent }} invitation(s) envoyée(s).
+                    {{ flash.sent }} invitation(s) mise(s) en file d'envoi.
                 </p>
                 <p v-if="flash?.imported !== undefined" class="rounded bg-green-50 p-3 text-green-800">
                     {{ flash.imported }} invité(s) importé(s).
@@ -112,9 +112,9 @@ const pending = computed(() => props.guests.filter((g) => g.email && !g.invited_
                     </button>
                 </form>
 
-                <p v-if="guests.length === 0" class="text-gray-600">Aucun invité pour le moment.</p>
+                <p v-if="guests.data.length === 0" class="text-gray-600">Aucun invité pour le moment.</p>
                 <ul v-else class="divide-y rounded-lg bg-white shadow-sm">
-                    <li v-for="g in guests" :key="g.id" class="flex flex-wrap items-center justify-between gap-2 p-4">
+                    <li v-for="g in guests.data" :key="g.id" class="flex flex-wrap items-center justify-between gap-2 p-4">
                         <div>
                             <p class="font-medium text-gray-900">{{ g.name }}</p>
                             <p class="text-sm text-gray-500">
@@ -141,6 +141,19 @@ const pending = computed(() => props.guests.filter((g) => g.email && !g.invited_
                         </div>
                     </li>
                 </ul>
+                <nav v-if="guests.links.length > 3" class="flex flex-wrap justify-center gap-1" aria-label="Pagination">
+                    <template v-for="(l, i) in guests.links" :key="i">
+                        <Link
+                            v-if="l.url"
+                            :href="l.url"
+                            preserve-scroll
+                            class="rounded border px-3 py-1 text-sm"
+                            :class="l.active ? 'bg-gray-800 text-white' : 'bg-white'"
+                            v-html="l.label"
+                        />
+                        <span v-else class="px-3 py-1 text-sm text-gray-400" v-html="l.label" />
+                    </template>
+                </nav>
             </div>
         </div>
     </AuthenticatedLayout>

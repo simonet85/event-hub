@@ -1,11 +1,14 @@
 <?php
 
+use App\Jobs\SendInvitation;
 use App\Mail\InvitationMail;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
     $this->host = User::factory()->create();
@@ -51,7 +54,7 @@ test('la liste des invités est visible par l\'hôte', function () {
 
     $this->actingAs($this->host)->get("/events/{$this->event->slug}/guests")
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->component('Events/Guests')->has('guests', 2));
+        ->assertInertia(fn ($page) => $page->component('Events/Guests')->has('guests.data', 2));
 });
 
 test('l\'import CSV crée les invités valides et ignore les doublons et lignes invalides', function () {
@@ -145,4 +148,63 @@ test('supprimer un événement supprime ses invités', function () {
     $this->event->delete();
 
     expect(Guest::count())->toBe(0);
+});
+
+test('l\'envoi groupé met les invitations en file sans envoyer de mail dans la requête', function () {
+    Queue::fake();
+    Mail::fake();
+    Guest::factory()->for($this->event)->count(3)->create();
+
+    $this->actingAs($this->host)->post("/events/{$this->event->slug}/invitations")->assertSessionHas('sent', 3);
+
+    Queue::assertPushed(SendInvitation::class, 3);
+    Mail::assertNothingSent();
+    expect($this->event->guests()->whereNotNull('invited_at')->count())->toBe(0);
+});
+
+test('le job envoie le mail puis marque l\'invité', function () {
+    Mail::fake();
+    $guest = Guest::factory()->for($this->event)->create();
+
+    (new SendInvitation($guest))->handle();
+
+    Mail::assertSent(InvitationMail::class, 1);
+    expect($guest->fresh()->invited_at)->not->toBeNull();
+});
+
+test('si le transport échoue, l\'invité n\'est pas marqué comme invité', function () {
+    $guest = Guest::factory()->for($this->event)->create();
+    Mail::shouldReceive('to')->andThrow(new RuntimeException('SMTP down'));
+
+    expect(fn () => (new SendInvitation($guest))->handle())->toThrow(RuntimeException::class);
+    expect($guest->fresh()->invited_at)->toBeNull();
+});
+
+test('le job n\'envoie pas deux fois sauf renvoi explicite', function () {
+    Mail::fake();
+    $guest = Guest::factory()->for($this->event)->create(['invited_at' => now()->subDay()]);
+
+    (new SendInvitation($guest))->handle();
+    Mail::assertNothingSent();
+
+    (new SendInvitation($guest, resend: true))->handle();
+    Mail::assertSent(InvitationMail::class, 1);
+});
+
+test('l\'import CSV est annulé en entier si une ligne provoque une erreur', function () {
+    $csv = "name,email\nAlice,alice@example.com\n".str_repeat('x', 300).",long@example.com\n";
+    $file = UploadedFile::fake()->createWithContent('invites.csv', $csv);
+
+    $this->withoutExceptionHandling();
+    expect(fn () => $this->actingAs($this->host)->post("/events/{$this->event->slug}/guests/import", ['file' => $file]))
+        ->toThrow(QueryException::class);
+
+    expect($this->event->guests()->count())->toBe(0);
+});
+
+test('la liste des invités est paginée par 50', function () {
+    Guest::factory()->for($this->event)->count(55)->create();
+
+    $this->actingAs($this->host)->get("/events/{$this->event->slug}/guests")
+        ->assertInertia(fn ($page) => $page->has('guests.data', 50)->where('summary.total', 55)->where('summary.to_invite', 55));
 });

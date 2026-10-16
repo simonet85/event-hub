@@ -3,7 +3,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
 defineProps<{
-    events: { id: number; title: string; slug: string; type: string; event_date: string }[];
+    events: {
+        data: { id: number; title: string; slug: string; type: string; event_date: string }[];
+        links: { url: string | null; label: string; active: boolean }[];
+    };
 }>();
 
 const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(d));
@@ -27,9 +30,9 @@ const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' 
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <p v-if="events.length === 0" class="text-gray-600">Aucun événement pour le moment.</p>
+                <p v-if="events.data.length === 0" class="text-gray-600">Aucun événement pour le moment.</p>
                 <ul v-else class="divide-y rounded-lg bg-white shadow-sm">
-                    <li v-for="e in events" :key="e.id" class="flex items-center justify-between p-4">
+                    <li v-for="e in events.data" :key="e.id" class="flex items-center justify-between p-4">
                         <div>
                             <p class="font-medium text-gray-900">{{ e.title }}</p>
                             <p class="text-sm text-gray-500">{{ fmt(e.event_date) }}</p>
@@ -40,6 +43,18 @@ const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' 
                         </div>
                     </li>
                 </ul>
+                <nav v-if="events.links.length > 3" class="mt-4 flex flex-wrap justify-center gap-1" aria-label="Pagination">
+                    <template v-for="(l, i) in events.links" :key="i">
+                        <Link
+                            v-if="l.url"
+                            :href="l.url"
+                            class="rounded border px-3 py-1 text-sm"
+                            :class="l.active ? 'bg-gray-800 text-white' : 'bg-white'"
+                            v-html="l.label"
+                        />
+                        <span v-else class="px-3 py-1 text-sm text-gray-400" v-html="l.label" />
+                    </template>
+                </nav>
             </div>
         </div>
     </AuthenticatedLayout>

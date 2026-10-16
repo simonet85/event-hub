@@ -86,7 +86,7 @@ test('la liste ne montre que les événements de l\'hôte', function () {
 
     $this->actingAs($user)->get('/events')
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->component('Events/Index')->has('events', 1));
+        ->assertInertia(fn ($page) => $page->component('Events/Index')->has('events.data', 1));
 });
 
 test('la policy refuse la modification à un non-propriétaire', function () {

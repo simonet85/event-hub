@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\InvitationMail;
+use App\Jobs\SendInvitation;
 use App\Models\Event;
 use App\Models\Guest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -55,7 +54,7 @@ class InvitationController extends Controller
         $guests = $event->guests()->whereNotNull('email')->whereNull('invited_at')->get();
 
         foreach ($guests as $guest) {
-            $this->deliver($guest->setRelation('event', $event));
+            SendInvitation::dispatch($guest);
         }
 
         return back()->with('sent', $guests->count());
@@ -70,14 +69,8 @@ class InvitationController extends Controller
             return back()->withErrors(['email' => 'Cet invité n\'a pas d\'adresse email.']);
         }
 
-        $this->deliver($guest->setRelation('event', $event));
+        SendInvitation::dispatch($guest, resend: true);
 
         return back()->with('sent', 1);
-    }
-
-    private function deliver(Guest $guest): void
-    {
-        Mail::to($guest->email)->send(new InvitationMail($guest));
-        $guest->forceFill(['invited_at' => now()])->save();
     }
 }
