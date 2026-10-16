@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
                 'sent' => fn () => $request->session()->get('sent'),
                 'imported' => fn () => $request->session()->get('imported'),
                 'details_saved' => fn () => $request->session()->get('details_saved'),
+                'contribution_saved' => fn () => $request->session()->get('contribution_saved'),
                 'rsvp_saved' => fn () => $request->session()->get('rsvp_saved'),
             ],
         ];

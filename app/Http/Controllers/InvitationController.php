@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ModerationStatus;
 use App\Jobs\SendInvitation;
 use App\Models\Event;
 use App\Models\Guest;
+use App\Models\GuestbookEntry;
+use App\Models\Photo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -33,6 +36,14 @@ class InvitationController extends Controller
                 'rsvp_message' => $guest->rsvp_message,
             ],
             'event' => $event->load('scheduleItems')->publicPayload(),
+            'guestbook' => $event->guestbookEntries()->where('status', ModerationStatus::Approved)->with('guest:id,name')->latest()->get()
+                ->map(fn (GuestbookEntry $e) => ['id' => $e->id, 'author' => $e->guest->name, 'message' => $e->message]),
+            'photos' => $event->photos()->where('status', ModerationStatus::Approved)->with('guest:id,name')->latest()->get()
+                ->map(fn (Photo $p) => ['id' => $p->id, 'author' => $p->guest->name, 'caption' => $p->caption, 'url' => $p->url()]),
+            'mine' => [
+                'pending_entries' => $guest->guestbookEntries()->where('status', ModerationStatus::Pending)->count(),
+                'pending_photos' => $guest->photos()->where('status', ModerationStatus::Pending)->count(),
+            ],
         ]);
     }
 

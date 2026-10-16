@@ -37,6 +37,16 @@ class Event extends Model
         return $this->hasMany(Guest::class);
     }
 
+    public function guestbookEntries(): HasMany
+    {
+        return $this->hasMany(GuestbookEntry::class);
+    }
+
+    public function photos(): HasMany
+    {
+        return $this->hasMany(Photo::class);
+    }
+
     public function scheduleItems(): HasMany
     {
         return $this->hasMany(ScheduleItem::class)->orderBy('starts_at')->orderBy('id');

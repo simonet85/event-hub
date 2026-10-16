@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Countdown from '@/Components/Countdown.vue';
+import Contributions from '@/Components/Contributions.vue';
 import EventDetails from '@/Components/EventDetails.vue';
 import QrCode from '@/Components/QrCode.vue';
 import RsvpForm from '@/Components/RsvpForm.vue';
@@ -20,6 +21,9 @@ const props = defineProps<{
         rsvp_message: string | null;
     };
     token: string;
+    guestbook: { id: number; author: string; message: string }[];
+    photos: { id: number; author: string; caption: string | null; url: string }[];
+    mine: { pending_entries: number; pending_photos: number };
     event: PublicEvent;
 }>();
 
@@ -57,5 +61,7 @@ const formattedDate = computed(() =>
         <EventDetails :event="event" class="mt-8" />
 
         <RsvpForm :token="token" :guest="guest" class="mt-8" />
+
+        <Contributions :token="token" :guestbook="guestbook" :photos="photos" :mine="mine" class="mt-8" />
     </EventPublicLayout>
 </template>

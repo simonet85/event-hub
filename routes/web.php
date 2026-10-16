@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\ModerationController;
+use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\ScheduleController;
@@ -27,12 +30,20 @@ Route::get('/e/{event}', [EventController::class, 'showPublic'])->name('events.p
 
 Route::get('/i/{token}', [InvitationController::class, 'show'])->name('invitations.show');
 Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middleware('throttle:20,1')->name('rsvp.store');
+Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:10,1')->name('guestbook.store');
+Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:20,1')->name('photos.store');
+Route::get('/photos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/events/{event}/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::post('/events/{event}/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
     Route::delete('/events/{event}/schedule/{item}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
     Route::patch('/events/{event}/details', [ScheduleController::class, 'updateDetails'])->name('events.details');
+    Route::get('/events/{event}/moderation', [ModerationController::class, 'index'])->name('moderation.index');
+    Route::patch('/events/{event}/guestbook/{entry}', [ModerationController::class, 'updateEntry'])->name('moderation.entries.update');
+    Route::delete('/events/{event}/guestbook/{entry}', [ModerationController::class, 'destroyEntry'])->name('moderation.entries.destroy');
+    Route::patch('/events/{event}/photos/{photo}', [ModerationController::class, 'updatePhoto'])->name('moderation.photos.update');
+    Route::delete('/events/{event}/photos/{photo}', [ModerationController::class, 'destroyPhoto'])->name('moderation.photos.destroy');
     Route::get('/events/{event}/guests', [GuestController::class, 'index'])->name('guests.index');
     Route::post('/events/{event}/guests', [GuestController::class, 'store'])->name('guests.store');
     Route::post('/events/{event}/guests/import', [GuestController::class, 'import'])->name('guests.import');
