@@ -12,7 +12,7 @@ beforeEach(function () {
 
 test('l\'hôte peut ajouter une étape au programme', function () {
     $this->actingAs($this->host)
-        ->post("/events/{$this->event->slug}/schedule", ['starts_at' => now()->addMonth()->toDateTimeString(), 'title' => 'Cérémonie'])
+        ->post("/events/{$this->event->slug}/schedule", ['starts_at' => $this->event->event_date->toDateTimeString(), 'title' => 'Cérémonie'])
         ->assertRedirect();
 
     expect($this->event->scheduleItems()->first()->title)->toBe('Cérémonie');
@@ -45,7 +45,7 @@ test('un autre utilisateur ne peut pas gérer le programme', function () {
     $intruder = User::factory()->create();
 
     $this->actingAs($intruder)->get("/events/{$this->event->slug}/schedule")->assertForbidden();
-    $this->actingAs($intruder)->post("/events/{$this->event->slug}/schedule", ['starts_at' => now()->toDateTimeString(), 'title' => 'X'])->assertForbidden();
+    $this->actingAs($intruder)->post("/events/{$this->event->slug}/schedule", ['starts_at' => $this->event->event_date->toDateTimeString(), 'title' => 'X'])->assertForbidden();
     $this->actingAs($intruder)->patch("/events/{$this->event->slug}/details", ['dress_code' => 'X'])->assertForbidden();
 });
 
@@ -97,4 +97,37 @@ test('supprimer un événement supprime son programme', function () {
     $this->event->delete();
 
     expect(ScheduleItem::count())->toBe(0);
+});
+
+test('une étape doit rester dans la fenêtre de l\'événement', function () {
+    $date = $this->event->event_date;
+    $post = fn (string $startsAt) => $this->actingAs($this->host)
+        ->post("/events/{$this->event->slug}/schedule", ['starts_at' => $startsAt, 'title' => 'Étape']);
+
+    $post($date->copy()->subDays(3)->toDateTimeString())->assertSessionHasErrors('starts_at');
+    $post($date->copy()->addDays(5)->toDateTimeString())->assertSessionHasErrors('starts_at');
+    $post($date->copy()->subHours(12)->toDateTimeString())->assertSessionHasNoErrors();
+    $post($date->copy()->addDay()->toDateTimeString())->assertSessionHasNoErrors();
+
+    expect($this->event->scheduleItems()->count())->toBe(2);
+});
+
+test('deux étapes à la même heure sont autorisées', function () {
+    $at = $this->event->event_date->toDateTimeString();
+
+    foreach (['Cocktail', 'Séance photo'] as $title) {
+        $this->actingAs($this->host)->post("/events/{$this->event->slug}/schedule", ['starts_at' => $at, 'title' => $title])->assertSessionHasNoErrors();
+    }
+
+    expect($this->event->scheduleItems()->count())->toBe(2);
+});
+
+test('le programme est plafonné à 100 étapes', function () {
+    ScheduleItem::factory()->for($this->event)->count(100)->create(['starts_at' => $this->event->event_date]);
+
+    $this->actingAs($this->host)
+        ->post("/events/{$this->event->slug}/schedule", ['starts_at' => $this->event->event_date->toDateTimeString(), 'title' => 'En trop'])
+        ->assertSessionHasErrors('title');
+
+    expect($this->event->scheduleItems()->count())->toBe(100);
 });

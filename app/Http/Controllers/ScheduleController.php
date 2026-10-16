@@ -13,6 +13,8 @@ use Inertia\Response;
 
 class ScheduleController extends Controller
 {
+    public const MAX_ITEMS = 100;
+
     public function index(Event $event): Response
     {
         Gate::authorize('view', $event);
@@ -38,6 +40,10 @@ class ScheduleController extends Controller
     public function store(ScheduleItemRequest $request, Event $event): RedirectResponse
     {
         Gate::authorize('update', $event);
+
+        if ($event->scheduleItems()->count() >= self::MAX_ITEMS) {
+            return back()->withErrors(['title' => 'Le programme est limité à '.self::MAX_ITEMS.' étapes.']);
+        }
 
         $event->scheduleItems()->create($request->validated());
 
