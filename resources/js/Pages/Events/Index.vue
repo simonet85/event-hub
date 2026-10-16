@@ -1,0 +1,45 @@
+<script setup lang="ts">
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, Link } from '@inertiajs/vue3';
+
+defineProps<{
+    events: { id: number; title: string; slug: string; type: string; event_date: string }[];
+}>();
+
+const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(d));
+</script>
+
+<template>
+    <Head title="Mes événements" />
+
+    <AuthenticatedLayout>
+        <template #header>
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800">Mes événements</h2>
+                <Link
+                    :href="route('events.create')"
+                    class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white"
+                >
+                    Nouvel événement
+                </Link>
+            </div>
+        </template>
+
+        <div class="py-12">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <p v-if="events.length === 0" class="text-gray-600">Aucun événement pour le moment.</p>
+                <ul v-else class="divide-y rounded-lg bg-white shadow-sm">
+                    <li v-for="e in events" :key="e.id" class="flex items-center justify-between p-4">
+                        <div>
+                            <p class="font-medium text-gray-900">{{ e.title }}</p>
+                            <p class="text-sm text-gray-500">{{ fmt(e.event_date) }}</p>
+                        </div>
+                        <a :href="route('events.public', e.slug)" target="_blank" class="text-sm text-indigo-600">
+                            Page publique
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </AuthenticatedLayout>
+</template>

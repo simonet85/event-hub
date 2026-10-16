@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: event-hub-postgres
+    environment:
+      POSTGRES_DB: event_hub
+      POSTGRES_USER: event_hub
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U event_hub -d event_hub"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres_test:
+    image: postgres:16-alpine
+    container_name: event-hub-postgres-test
+    environment:
+      POSTGRES_DB: event_hub_test
+      POSTGRES_USER: event_hub
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5435:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U event_hub -d event_hub_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: event-hub-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  pgdata:
+
