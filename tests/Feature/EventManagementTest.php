@@ -65,6 +65,63 @@ test('la modification met à jour les champs mais le slug reste figé', function
         ->and($event->slug)->toBe('mariage-fige');
 });
 
+test('tous les champs modifiables sont enregistrés, et changer le type ne remplace pas le thème choisi', function () {
+    $newDate = now()->addMonths(5)->startOfMinute();
+    $originalTheme = $this->event->theme_config;
+
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", [
+        'title' => 'Baptême de Léa',
+        'type' => 'baptism',
+        'event_date' => $newDate->format('Y-m-d\TH:i'),
+        'location_name' => 'Église Saint-Louis',
+        'location_address' => '12 rue de la Paix, Abidjan',
+        'welcome_message' => 'Soyez les bienvenus !',
+        'theme_config' => [
+            'primary_color' => '#112233',
+            'secondary_color' => '#f0f0f0',
+            'font_family' => 'serif',
+        ],
+    ])->assertSessionHasNoErrors()->assertRedirect(route('dashboard.show', $this->event));
+
+    $event = $this->event->fresh();
+    expect($event->title)->toBe('Baptême de Léa')
+        ->and($event->type->value)->toBe('baptism')
+        ->and($event->event_date->equalTo($newDate))->toBeTrue()
+        ->and($event->location_name)->toBe('Église Saint-Louis')
+        ->and($event->location_address)->toBe('12 rue de la Paix, Abidjan')
+        ->and($event->welcome_message)->toBe('Soyez les bienvenus !')
+        ->and($event->theme_config)->toBe([
+            'primary_color' => '#112233',
+            'secondary_color' => '#f0f0f0',
+            'font_family' => 'serif',
+        ])
+        ->and($event->theme_config)->not->toBe($originalTheme)
+        ->and($event->slug)->toBe('mariage-fige');
+});
+
+test('changer le type seul conserve le thème personnalisé existant', function () {
+    $theme = $this->event->theme_config;
+
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", updatePayload($this->event, ['type' => 'party']))
+        ->assertSessionHasNoErrors();
+
+    $event = $this->event->fresh();
+    expect($event->type->value)->toBe('party')->and($event->theme_config)->toBe($theme);
+});
+
+test('les champs facultatifs peuvent être vidés', function () {
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", updatePayload($this->event, [
+        'location_name' => null,
+        'location_address' => null,
+        'welcome_message' => null,
+    ]))->assertSessionHasNoErrors();
+
+    $event = $this->event->fresh();
+    expect($event->location_name)->toBeNull()
+        ->and($event->location_address)->toBeNull()
+        ->and($event->welcome_message)->toBeNull();
+});
+
 test('le thème fourni est fusionné avec le thème existant', function () {
     $this->actingAs($this->host)->patch("/events/{$this->event->slug}", updatePayload($this->event, [
         'theme_config' => ['primary_color' => '#112233'],
