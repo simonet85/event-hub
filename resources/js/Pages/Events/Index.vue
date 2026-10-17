@@ -11,7 +11,7 @@ defineProps<{
 
 const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(d));
 const daysLeft = (d: string) => Math.ceil((new Date(d).getTime() - Date.now()) / 86_400_000);
-const typeLabel: Record<string, string> = { wedding: 'Mariage', birthday: 'Anniversaire', baptism: 'Baptême', party: 'Soirée' };
+const typeLabel: Record<string, string> = { wedding: 'Mariage', baptism: 'Baptême', birthday: 'Anniversaire', party: 'Fête', other: 'Autre' };
 
 const actions = [
     { label: 'Invités', route: 'guests.index' },

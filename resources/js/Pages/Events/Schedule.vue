@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import EventHeader from '@/Components/ui/EventHeader.vue';
-import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import type { ScheduleEntry } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import EventHeader from '@/Components/ui/EventHeader.vue';
-import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 
