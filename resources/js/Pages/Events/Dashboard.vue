@@ -2,7 +2,8 @@
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps<{
     event: { title: string; slug: string; event_date: string; days_left: number };
@@ -12,6 +13,8 @@ defineProps<{
     cagnotte: { raised: number; goal: number | null; pending: number; to_review: number } | null;
     moderation: { entries: number; photos: number };
 }>();
+
+const updated = computed(() => (usePage().props.flash as { event_updated?: boolean | null } | undefined)?.event_updated);
 
 const fcfa = (n: number) => `${new Intl.NumberFormat('fr-FR').format(n)} FCFA`;
 const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a / b) * 100)) : 0);
@@ -31,6 +34,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
+                <p v-if="updated" class="rounded-2xl bg-green-50 px-5 py-3 text-sm text-green-800" data-testid="event-updated">Les modifications ont été enregistrées.</p>
                 <section>
                     <h3 class="mb-3 display text-2xl">Réponses des invités</h3>
                     <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-3 lg:grid-cols-6" data-testid="rsvp">

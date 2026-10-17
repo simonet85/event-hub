@@ -35,14 +35,18 @@ Route::get('/dashboard', fn () => redirect()->route('events.index'))
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('/e/{event}', [EventController::class, 'showPublic'])->name('events.public');
+// Un événement archivé n'est plus visible des invités (404) ; le retour de paiement reste accessible.
+Route::middleware('event.active')->group(function () {
+    Route::get('/e/{event}', [EventController::class, 'showPublic'])->name('events.public');
 
-Route::get('/i/{token}', [InvitationController::class, 'show'])->name('invitations.show');
-Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middleware('throttle:20,1')->name('rsvp.store');
-Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:10,1')->name('guestbook.store');
-Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:20,1')->name('photos.store');
+    Route::get('/i/{token}', [InvitationController::class, 'show'])->name('invitations.show');
+    Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middleware('throttle:20,1')->name('rsvp.store');
+    Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:10,1')->name('guestbook.store');
+    Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:20,1')->name('photos.store');
+    Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
+});
+
 Route::get('/photos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
-Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
 Route::get('/i/{guest:token}/donations/{contribution}/return', [DonationController::class, 'return'])->name('donations.return');
 Route::post('/webhooks/moneyfusion', MoneyFusionWebhookController::class)->middleware('throttle:120,1')->name('webhooks.moneyfusion');
 
@@ -75,6 +79,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::patch('/events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::post('/events/{event}/archive', [EventController::class, 'archive'])->name('events.archive');
+    Route::post('/events/{event}/restore', [EventController::class, 'restore'])->name('events.restore');
 });
 
 Route::middleware('auth')->group(function () {

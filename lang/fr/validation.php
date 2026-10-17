@@ -157,6 +157,8 @@ return [
     'ulid' => 'Le champ :attribute doit être un ULID valide.',
     'uuid' => 'Le champ :attribute doit être un UUID valide.',
 
+    'event_date_future' => 'La nouvelle date doit être dans le futur.',
+
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',

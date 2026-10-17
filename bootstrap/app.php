@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureEventIsActive;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias(['event.active' => EnsureEventIsActive::class]);
+
         $middleware->web(append: [
             SetLocale::class,
             HandleInertiaRequests::class,

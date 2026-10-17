@@ -29,6 +29,7 @@ const tabs = [
             </div>
             <div class="flex items-center gap-3">
                 <slot name="aside" />
+                <Link :href="url('events.edit', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">Modifier</Link>
                 <a :href="url('events.public', event.slug)" target="_blank" rel="noopener" class="btn btn-ghost !px-4 !py-2 text-xs">Page publique ↗</a>
             </div>
         </div>

@@ -16,7 +16,7 @@ class PhotoController extends Controller
      */
     public function show(Request $request, Photo $photo): StreamedResponse
     {
-        $isPublic = $photo->status === ModerationStatus::Approved;
+        $isPublic = $photo->status === ModerationStatus::Approved && ! $photo->event->isArchived();
         $isHost = $request->user()?->can('view', $photo->event) ?? false;
 
         abort_unless($isPublic || $isHost, 404);

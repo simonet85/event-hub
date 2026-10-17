@@ -180,6 +180,8 @@ return [
     |
     */
 
+    'event_date_future' => 'The new date must be in the future.',
+
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
