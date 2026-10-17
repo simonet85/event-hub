@@ -28,3 +28,6 @@ Thumbs.db
 
 # Photos de test (envois manuels), jamais versionnees
 /photos
+
+# Contient une clé d'API
+/docs/Deepl.txt

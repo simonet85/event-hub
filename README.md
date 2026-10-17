@@ -74,3 +74,16 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Traduction automatique (DeepL)
+
+Le package local `simonet85/laravel-deepl` (dossier `../laravel-deepl`) remplit les fichiers `lang/*.json` à partir des clés `__('…')` du code. Le français est la langue source.
+
+```bash
+# .env : DEEPL_API_KEY=… (clé « Free » terminée par :fx) et DEEPL_SOURCE_LANG=fr
+php artisan deepl:translate en --dry-run   # voir ce qui serait traduit
+php artisan deepl:translate es             # créer / compléter lang/es.json
+php artisan deepl:usage                    # caractères consommés
+```
+
+Pour proposer une nouvelle langue dans l'interface, ajoutez son code à `SetLocale::SUPPORTED` et au sélecteur `LocaleSwitcher.vue`. Les traductions existantes ne sont jamais écrasées sans `--force`.

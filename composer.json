@@ -3,7 +3,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.3",
@@ -13,6 +16,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "openspout/openspout": "^5.12",
+        "simonet85/laravel-deepl": "dev-main",
         "simonet85/laravel-moneyfusion": "dev-main",
         "tightenco/ziggy": "^2.6"
     },
@@ -95,6 +99,10 @@
         "moneyfusion": {
             "type": "path",
             "url": "../laravel-moneyfusion"
+        },
+        "deepl": {
+            "type": "path",
+            "url": "../laravel-deepl"
         }
     }
 }
