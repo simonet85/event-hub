@@ -71,6 +71,17 @@ test('l\'import CSV crée les invités valides et ignore les doublons et lignes 
     expect($this->event->guests()->where('name', 'Alice')->first()->max_companions)->toBe(2);
 });
 
+test('l\'import CSV ignore les colonnes en trop d\'une ligne', function () {
+    $csv = "name,email\nAlice,alice@example.com,EXTRA\n";
+    $file = UploadedFile::fake()->createWithContent('invites.csv', $csv);
+
+    $this->actingAs($this->host)
+        ->post("/events/{$this->event->slug}/guests/import", ['file' => $file])
+        ->assertSessionHas('imported', 1);
+
+    expect($this->event->guests()->where('name', 'Alice')->exists())->toBeTrue();
+});
+
 test('l\'envoi groupé n\'envoie que les invitations en attente avec un email', function () {
     Mail::fake();
     $pending = Guest::factory()->for($this->event)->create(['email' => 'a@example.com']);

@@ -88,7 +88,7 @@ class GuestController extends Controller
                 continue;
             }
 
-            $data = array_combine($header, array_pad($row, count($header), null));
+            $data = array_combine($header, array_slice(array_pad($row, count($header), null), 0, count($header)));
             $name = trim((string) ($data['name'] ?? $data['nom'] ?? ''));
             $email = trim((string) ($data['email'] ?? '')) ?: null;
 

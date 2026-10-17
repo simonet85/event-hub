@@ -24,7 +24,7 @@ class ExportController extends Controller
         Gate::authorize('view', $event);
 
         $report = new EventReport($event);
-        $path = tempnam(sys_get_temp_dir(), 'eventhub_').'.xlsx';
+        $path = tempnam(sys_get_temp_dir(), 'eventhub_');
         $bold = (new Style)->withFontBold(true);
 
         $writer = new XlsxWriter;
