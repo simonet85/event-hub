@@ -87,3 +87,15 @@ php artisan deepl:usage                    # caractères consommés
 ```
 
 Pour proposer une nouvelle langue dans l'interface, ajoutez son code à `SetLocale::SUPPORTED` et au sélecteur `LocaleSwitcher.vue`. Les traductions existantes ne sont jamais écrasées sans `--force`.
+
+### Développer les packages en local
+
+`simonet85/laravel-moneyfusion` et `simonet85/laravel-deepl` sont installés depuis GitHub (dépôts `vcs`, branche `dev-main`) : modifier les dossiers voisins `../laravel-*` n'a **aucun effet** sur l'application. Pour répercuter un changement :
+
+```bash
+# 1. dans le package : commit + push
+# 2. dans event-hub :
+composer update simonet85/laravel-deepl      # ou simonet85/laravel-moneyfusion
+```
+
+Pour tester un package sans le pousser, déclarez temporairement un dépôt `path` (`"type": "path", "url": "../laravel-deepl"`) dans `composer.json`, sans le commiter. En production, préférez des versions étiquetées (`v1.0.0`, contrainte `^1.0`) à `dev-main`. En CI, un `COMPOSER_AUTH` avec un jeton GitHub évite la limite de requêtes anonymes.
