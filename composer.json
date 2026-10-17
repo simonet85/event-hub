@@ -97,12 +97,12 @@
     "prefer-stable": true,
     "repositories": {
         "moneyfusion": {
-            "type": "path",
-            "url": "../laravel-moneyfusion"
+            "type": "vcs",
+            "url": "https://github.com/simonet85/laravel-moneyfusion.git"
         },
         "deepl": {
-            "type": "path",
-            "url": "../laravel-deepl"
+            "type": "vcs",
+            "url": "https://github.com/simonet85/laravel-deepl.git"
         }
     }
 }

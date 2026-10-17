@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ceb20646b15f91da5457cf1c7fc3f87a",
+    "content-hash": "33a994447a398d287e2ee5652a37e9d0",
     "packages": [
         {
             "name": "brick/math",
@@ -3998,10 +3998,16 @@
         {
             "name": "simonet85/laravel-deepl",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/simonet85/laravel-deepl.git",
+                "reference": "868e7f44fd68575efad226b661250a1e5641400f"
+            },
             "dist": {
-                "type": "path",
-                "url": "../laravel-deepl",
-                "reference": "dfc254989902e36963e321253a9f3192de60a1bc"
+                "type": "zip",
+                "url": "https://api.github.com/repos/simonet85/laravel-deepl/zipball/868e7f44fd68575efad226b661250a1e5641400f",
+                "reference": "868e7f44fd68575efad226b661250a1e5641400f",
+                "shasum": ""
             },
             "require": {
                 "deeplcom/deepl-php": "^1.10",
@@ -4014,6 +4020,7 @@
                 "orchestra/testbench": "^9.0|^10.0|^11.0",
                 "phpunit/phpunit": "^10.5|^11.0|^12.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -4057,17 +4064,25 @@
                 "localization",
                 "translation"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/simonet85/laravel-deepl/tree/main",
+                "issues": "https://github.com/simonet85/laravel-deepl/issues"
+            },
+            "time": "2026-10-17T21:03:25+00:00"
         },
         {
             "name": "simonet85/laravel-moneyfusion",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../laravel-moneyfusion",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/simonet85/laravel-moneyfusion.git",
                 "reference": "1492f3dc7a4f7fe8cc8ffebe7b964ba169afe015"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/simonet85/laravel-moneyfusion/zipball/1492f3dc7a4f7fe8cc8ffebe7b964ba169afe015",
+                "reference": "1492f3dc7a4f7fe8cc8ffebe7b964ba169afe015",
+                "shasum": ""
             },
             "require": {
                 "illuminate/database": "^9.0|^10.0|^11.0|^12.0|^13.0",
@@ -4079,6 +4094,7 @@
                 "orchestra/testbench": "^8.0|^9.0",
                 "phpunit/phpunit": "^10.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -4122,9 +4138,11 @@
                 "payment",
                 "payment-gateway"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/simonet85/laravel-moneyfusion/tree/main",
+                "issues": "https://github.com/simonet85/laravel-moneyfusion/issues"
+            },
+            "time": "2026-10-17T00:39:47+00:00"
         },
         {
             "name": "symfony/clock",
