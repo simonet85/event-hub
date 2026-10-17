@@ -69,4 +69,14 @@ describe('Contributions', () => {
         const w = mount(Contributions, { props: props() });
         expect(w.get('input[type="file"]').attributes('accept')).toBe('image/jpeg,image/png,image/webp');
     });
+
+    it('recrée le champ fichier après un envoi réussi pour effacer le nom affiché', async () => {
+        post.mockImplementationOnce((_url: string, options: { onSuccess?: () => void }) => options.onSuccess?.());
+        const w = mount(Contributions, { props: props() });
+        const before = w.get('input[type="file"]').element;
+
+        await w.get('[data-testid="gallery"] form').trigger('submit');
+
+        expect(w.get('input[type="file"]').element).not.toBe(before);
+    });
 });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
     token: string;
@@ -12,10 +12,20 @@ const props = defineProps<{
 const entryForm = useForm({ message: '' });
 const photoForm = useForm<{ photo: File | null; caption: string }>({ photo: null, caption: '' });
 
+// Change la clé du champ fichier natif après un envoi : le navigateur n'efface pas son nom autrement.
+const fileInputKey = ref(0);
+
 const saved = computed(() => (usePage().props.flash as { contribution_saved?: string } | undefined)?.contribution_saved);
 
 const sendEntry = () => entryForm.post(route('guestbook.store', props.token), { preserveScroll: true, onSuccess: () => entryForm.reset() });
-const sendPhoto = () => photoForm.post(route('photos.store', props.token), { preserveScroll: true, onSuccess: () => photoForm.reset() });
+const sendPhoto = () =>
+    photoForm.post(route('photos.store', props.token), {
+        preserveScroll: true,
+        onSuccess: () => {
+            photoForm.reset();
+            fileInputKey.value++;
+        },
+    });
 </script>
 
 <template>
@@ -66,6 +76,7 @@ const sendPhoto = () => photoForm.post(route('photos.store', props.token), { pre
 
             <form class="space-y-2" @submit.prevent="sendPhoto">
                 <input
+                    :key="fileInputKey"
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
                     @change="photoForm.photo = ($event.target as HTMLInputElement).files?.[0] ?? null"
