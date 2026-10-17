@@ -1,3 +1,21 @@
+# Event Hub
+
+Site événementiel (mariage, baptême, anniversaire…) : invitations personnalisées avec QR code, RSVP, programme, carte, livre d'or, galerie photo modérée, cagnotte et cadeaux payés via MoneyFusion, tableau de bord et exports.
+
+**Documentation complète : [`docs/index.html`](docs/index.html)** (ouvrir le fichier dans un navigateur).
+
+Démarrage rapide :
+
+```bash
+composer install && npm install
+cp .env.example .env && php artisan key:generate
+docker compose up -d
+php artisan migrate && php artisan db:seed --class=DemoSeeder
+npm run build
+php artisan serve        # + php artisan queue:work dans un second terminal
+```
+
+---
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

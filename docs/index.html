@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Hub – Documentation</title>
+<meta name="description" content="Documentation d'Event Hub : site événementiel (mariage, baptême, anniversaire…) avec Laravel 13 et Vue 3.">
+<style>
+:root {
+  --bg: #fbf8f4; --panel: #ffffff; --text: #26211c; --muted: #6f655b; --line: #e7dfd5;
+  --accent: #9a6b43; --accent-soft: #f3e8dc; --code-bg: #2a2521; --code-text: #f4ece3;
+  --ok: #2f7d4f; --ok-bg: #e6f3ea; --warn: #a15c07; --warn-bg: #fdf0d8; --danger: #a8322c; --danger-bg: #fbe6e4; --info-bg: #e8eef7; --info: #2f5d8c;
+  --radius: 10px; --nav-w: 270px;
+}
+:root:not([data-theme="light"]) { color-scheme: light dark; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171411; --panel: #211c18; --text: #efe7de; --muted: #a99d90; --line: #3a322b;
+    --accent: #d9a674; --accent-soft: #2f261d; --code-bg: #0f0d0b; --code-text: #efe4d6;
+    --ok: #6fcf97; --ok-bg: #18301f; --warn: #f2b765; --warn-bg: #35280f; --danger: #f08a82; --danger-bg: #3a1815; --info: #8db7e6; --info-bg: #17263a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171411; --panel: #211c18; --text: #efe7de; --muted: #a99d90; --line: #3a322b;
+  --accent: #d9a674; --accent-soft: #2f261d; --code-bg: #0f0d0b; --code-text: #efe4d6;
+  --ok: #6fcf97; --ok-bg: #18301f; --warn: #f2b765; --warn-bg: #35280f; --danger: #f08a82; --danger-bg: #3a1815; --info: #8db7e6; --info-bg: #17263a;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: var(--nav-w) minmax(0, 1fr); min-height: 100vh; }
+nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 1.4rem 1.1rem; border-right: 1px solid var(--line); background: var(--panel); }
+nav.toc .brand { font-weight: 700; font-size: 1.15rem; margin-bottom: .2rem; }
+nav.toc .ver { color: var(--muted); font-size: .8rem; margin-bottom: 1rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+nav.toc li { counter-increment: s; }
+nav.toc a { display: block; padding: .28rem .5rem; border-radius: 6px; text-decoration: none; color: var(--text); font-size: .92rem; }
+nav.toc a::before { content: counter(s) ". "; color: var(--muted); }
+nav.toc a:hover, nav.toc a.active { background: var(--accent-soft); color: var(--accent); }
+.theme { margin-top: 1rem; font-size: .82rem; background: none; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); padding: .3rem .6rem; cursor: pointer; }
+main { padding: 2.2rem clamp(1.1rem, 4vw, 3.2rem) 4rem; max-width: 62rem; }
+header.hero { border-bottom: 1px solid var(--line); padding-bottom: 1.4rem; margin-bottom: 1rem; }
+header.hero h1 { font-size: 2.1rem; margin: 0 0 .3rem; line-height: 1.2; }
+header.hero p { margin: 0; color: var(--muted); max-width: 46rem; }
+.badges { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .9rem; }
+.badge { background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: .15rem .7rem; font-size: .8rem; font-weight: 600; }
+section { padding-top: 1.6rem; }
+h2 { font-size: 1.5rem; margin: 0 0 .6rem; padding-bottom: .3rem; border-bottom: 2px solid var(--accent-soft); }
+h3 { font-size: 1.12rem; margin: 1.5rem 0 .4rem; }
+p, li { max-width: 52rem; }
+code { font: .88em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--accent-soft); padding: .1em .35em; border-radius: 4px; }
+pre { background: var(--code-bg); color: var(--code-text); padding: .9rem 1rem; border-radius: var(--radius); overflow-x: auto; line-height: 1.5; margin: .6rem 0 1rem; }
+pre code { background: none; padding: 0; color: inherit; font-size: .86rem; }
+.table-wrap { overflow-x: auto; margin: .6rem 0 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; padding: .5rem .75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--accent-soft); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.note { border-left: 4px solid var(--info); background: var(--info-bg); padding: .7rem 1rem; border-radius: 0 var(--radius) var(--radius) 0; margin: .9rem 0; max-width: 52rem; }
+.note.ok { border-color: var(--ok); background: var(--ok-bg); }
+.note.warn { border-color: var(--warn); background: var(--warn-bg); }
+.note.danger { border-color: var(--danger); background: var(--danger-bg); }
+.note > :first-child { margin-top: 0; } .note > :last-child { margin-bottom: 0; }
+.note strong.t { display: block; margin-bottom: .15rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .9rem; margin: .8rem 0 1rem; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; }
+.card h4 { margin: 0 0 .3rem; font-size: 1rem; }
+.card p, .card ul { margin: 0; color: var(--muted); font-size: .92rem; }
+.card ul { padding-left: 1.1rem; }
+.steps { counter-reset: st; list-style: none; padding: 0; }
+.steps > li { counter-increment: st; position: relative; padding-left: 2.6rem; margin-bottom: .8rem; }
+.steps > li::before { content: counter(st); position: absolute; left: 0; top: .05rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: .9rem; }
+.flow { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin: .6rem 0 1rem; font-size: .9rem; }
+.flow span { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: .3rem .6rem; }
+.flow i { color: var(--muted); font-style: normal; }
+.pill { display: inline-block; border-radius: 999px; padding: .05rem .6rem; font-size: .78rem; font-weight: 600; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); } .pill.warn { background: var(--warn-bg); color: var(--warn); } .pill.bad { background: var(--danger-bg); color: var(--danger); } .pill.mute { background: var(--accent-soft); color: var(--muted); }
+details { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: .55rem 1rem; margin: .5rem 0; max-width: 52rem; }
+details summary { cursor: pointer; font-weight: 600; }
+details[open] summary { margin-bottom: .4rem; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  nav.toc ol { columns: 2; }
+}
+@media print {
+  nav.toc, .theme { display: none; } .layout { display: block; } main { max-width: none; padding: 0; }
+  pre { white-space: pre-wrap; } section { break-inside: avoid-page; } a { color: inherit; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Sommaire">
+  <div class="brand">Event Hub</div>
+  <div class="ver">Documentation · Laravel 13 · Vue 3</div>
+  <ol>
+    <li><a href="#presentation">Présentation</a></li>
+    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#installation">Installation et lancement</a></li>
+    <li><a href="#configuration">Configuration</a></li>
+    <li><a href="#guide-hote">Guide de l'hôte</a></li>
+    <li><a href="#guide-invite">Guide de l'invité</a></li>
+    <li><a href="#paiement">Paiement MoneyFusion</a></li>
+    <li><a href="#exports">Tableau de bord et exports</a></li>
+    <li><a href="#donnees">Modèle de données</a></li>
+    <li><a href="#routes">Routes</a></li>
+    <li><a href="#securite">Sécurité</a></li>
+    <li><a href="#taches">File d'attente et tâches planifiées</a></li>
+    <li><a href="#tests">Tests et qualité</a></li>
+    <li><a href="#depannage">Dépannage</a></li>
+    <li><a href="#limites">Limites connues</a></li>
+    <li><a href="#commandes">Aide-mémoire des commandes</a></li>
+  </ol>
+  <button class="theme" type="button" id="theme-toggle" aria-label="Changer de thème">Thème clair / sombre</button>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>Event Hub</h1>
+  <p>Plateforme web pour organiser un événement privé (mariage, baptême, anniversaire, fête) : invitations personnalisées avec QR code, RSVP, programme, carte, livre d'or, galerie photo modérée, cagnotte et liste de cadeaux payées via MoneyFusion, tableau de bord et exports pour le traiteur.</p>
+  <div class="badges">
+    <span class="badge">Laravel 13</span><span class="badge">PHP 8.4</span><span class="badge">Inertia 2 + Vue 3 + TypeScript</span>
+    <span class="badge">Tailwind CSS 3</span><span class="badge">PostgreSQL 16</span><span class="badge">MoneyFusion (FCFA)</span>
+  </div>
+</header>
+
+<section id="presentation">
+  <h2>1. Présentation</h2>
+  <p>Event Hub est une application monolithique : Laravel gère la logique métier, l'authentification et la base de données, Vue 3 affiche les pages via <strong>Inertia.js</strong> (pas d'API REST séparée). Deux publics l'utilisent :</p>
+  <div class="cards">
+    <div class="card"><h4>L'hôte (organisateur)</h4><p>Se connecte, crée l'événement, personnalise le thème, gère les invités, le programme, la cagnotte, modère les contributions et exporte les listes.</p></div>
+    <div class="card"><h4>L'invité</h4><p>Reçoit un lien personnel (ou un QR code) et accède, <strong>sans créer de compte</strong>, à son invitation : RSVP, programme, carte, livre d'or, photos, cagnotte.</p></div>
+  </div>
+  <p>Le projet a été conçu avec la méthode <em>Spec-Driven Development</em> : les spécifications et la feuille de route sont dans le dossier <code>specs/</code> (7 phases, toutes terminées).</p>
+</section>
+
+<section id="fonctionnalites">
+  <h2>2. Fonctionnalités</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Phase</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Socle et thèmes</td><td>Événements (mariage, baptême, anniversaire, fête, autre) ; thème par événement (couleur principale, fond, police : manuscrite, élégante ou moderne) ; page publique <code>/e/{slug}</code> avec compte à rebours.</td></tr>
+      <tr><td>2 · Invités et invitations</td><td>Ajout manuel et import CSV ; jeton unique de 40 caractères par invité ; invitation personnalisée avec QR code ; envoi par email (file d'attente) ou lien WhatsApp.</td></tr>
+      <tr><td>3 · RSVP</td><td>Présent / absent, accompagnants (bornés), régime alimentaire, chanson, message ; réponse modifiable ; résumé pour l'hôte.</td></tr>
+      <tr><td>4 · Programme et détails</td><td>Étapes de la journée, dress code, coordonnées GPS et carte OpenStreetMap intégrée (ou lien de recherche).</td></tr>
+      <tr><td>5 · Livre d'or et galerie</td><td>Messages et photos des invités, <strong>modération obligatoire</strong> par l'hôte (publier, refuser, supprimer).</td></tr>
+      <tr><td>6 · Cagnotte et cadeaux</td><td>Cagnotte avec objectif, liste de cadeaux à financer, paiement par MoneyFusion, confirmation par vérification serveur.</td></tr>
+      <tr><td>7 · Tableau de bord et exports</td><td>Statistiques, plan de table, régimes alimentaires ; exports Excel, CSV et PDF (traiteur, plan de table).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="architecture">
+  <h2>3. Architecture</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Couche</th><th>Technologie</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td>Backend</td><td>Laravel 13, PHP 8.4</td><td>Modèles Eloquent, policies, validation (Form Requests), jobs, tâches planifiées.</td></tr>
+      <tr><td>Pont front/back</td><td>Inertia.js 2</td><td>Les contrôleurs renvoient des pages Vue avec leurs données (<code>Inertia::render</code>).</td></tr>
+      <tr><td>Frontend</td><td>Vue 3 (Composition API), TypeScript, Vite 8</td><td>Pages dans <code>resources/js/Pages</code>, composants dans <code>resources/js/Components</code>.</td></tr>
+      <tr><td>Style</td><td>Tailwind CSS 3</td><td>Mobile d'abord ; thème de l'événement injecté en variables CSS.</td></tr>
+      <tr><td>Base de données</td><td>PostgreSQL 16 (Docker)</td><td>Données métier, file d'attente et sessions (pilote <code>database</code>).</td></tr>
+      <tr><td>Paiement</td><td>Package local <code>simonet85/laravel-moneyfusion</code></td><td>Création des paiements MoneyFusion et lecture de leur statut.</td></tr>
+      <tr><td>Exports</td><td><code>openspout/openspout</code>, <code>dompdf/dompdf</code></td><td>Excel (.xlsx) et PDF.</td></tr>
+      <tr><td>QR code</td><td>paquet npm <code>qrcode</code></td><td>Généré dans le navigateur à partir du lien d'invitation.</td></tr>
+      <tr><td>Tests</td><td>Pest (PHP), Vitest + Vue Test Utils (front)</td><td>188 tests PHP, 32 tests front.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Organisation du code</h3>
+<pre><code>app/
+  Enums/            EventType, RsvpStatus, ModerationStatus, ContributionStatus
+  Http/Controllers/ Event, Guest, Invitation, Rsvp, Schedule, Contribution (livre d'or/photos),
+                    Moderation, Photo, Cagnotte, Donation, MoneyFusionWebhook, Dashboard, Export
+  Http/Requests/    validation de chaque formulaire
+  Jobs/             SendInvitation, VerifyContribution
+  Models/           Event, Guest, ScheduleItem, GuestbookEntry, Photo, Gift, Contribution
+  Policies/         EventPolicy (seul le propriétaire gère son événement)
+  Services/         ContributionPayments (paiement), EventReport (chiffres et exports)
+resources/js/       Pages/, Components/, Layouts/, types/
+resources/views/    mail/invitation, pdf/{layout,caterer,seating}
+specs/              mission, tech-stack, roadmap, spécifications par phase
+docker-compose.yml  PostgreSQL (dev et test) + Mailpit
+database/seeders/DemoSeeder.php   jeu de démonstration</code></pre>
+</section>
+
+<section id="installation">
+  <h2>4. Installation et lancement</h2>
+  <h3>Prérequis</h3>
+  <ul>
+    <li>PHP 8.4 avec les extensions <code>pdo_pgsql</code>, <code>mbstring</code>, <code>gd</code>, <code>zip</code>, <code>dom</code>, <code>xml</code>, <code>fileinfo</code> ; Composer</li>
+    <li>Node.js 20.19 ou plus (testé avec 22) et npm</li>
+    <li>Docker (PostgreSQL et Mailpit)</li>
+  </ul>
+  <div class="note warn"><strong class="t">Package MoneyFusion local</strong>
+    <code>composer.json</code> référence le package par un chemin relatif : le dépôt <code>laravel-moneyfusion</code> doit se trouver <strong>à côté</strong> du projet (<code>../laravel-moneyfusion</code>).</div>
+
+  <h3>Première installation</h3>
+  <ol class="steps">
+    <li><strong>Dépendances</strong>
+<pre><code>composer install
+npm install</code></pre></li>
+    <li><strong>Configuration</strong> — <code>.env.example</code> est déjà réglé sur les ports Docker du projet.
+<pre><code>cp .env.example .env
+php artisan key:generate</code></pre></li>
+    <li><strong>Infrastructure Docker</strong> (PostgreSQL dev sur 5434, PostgreSQL de test sur 5435, Mailpit)
+<pre><code>docker compose up -d</code></pre></li>
+    <li><strong>Base de données</strong> (et données de démonstration facultatives)
+<pre><code>php artisan migrate
+php artisan db:seed --class=DemoSeeder</code></pre></li>
+    <li><strong>Assets front</strong>
+<pre><code>npm run build</code></pre></li>
+  </ol>
+
+  <h3>Lancer l'application</h3>
+  <p>Trois processus sont nécessaires (dans trois terminaux) :</p>
+<pre><code>php artisan serve --host=127.0.0.1 --port=8000   # application : http://localhost:8000
+php artisan queue:work --tries=3                  # envoi des emails et vérification des paiements
+npm run dev                                       # facultatif : rechargement à chaud (sinon npm run build)</code></pre>
+  <p><code>composer run dev</code> démarre ces processus ensemble (liste visible avec <code>php artisan dev:list</code>).</p>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Service</th><th>Adresse</th></tr></thead>
+    <tbody>
+      <tr><td>Application</td><td><code>http://localhost:8000</code></td></tr>
+      <tr><td>Mailpit (interface des emails de test)</td><td><code>http://localhost:8025</code> (SMTP sur le port 1025)</td></tr>
+      <tr><td>PostgreSQL développement</td><td><code>127.0.0.1:5434</code> · base <code>event_hub</code> · utilisateur <code>event_hub</code></td></tr>
+      <tr><td>PostgreSQL tests</td><td><code>127.0.0.1:5435</code> · base <code>event_hub_test</code> (données en mémoire)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note"><strong class="t">Compte de démonstration</strong>
+    Après <code>DemoSeeder</code> : <code>demo@example.test</code>, avec le mot de passe de développement défini dans <code>database/seeders/DemoSeeder.php</code>. L'événement « Mariage Clara &amp; Thomas » est créé avec trois invités ; les liens d'invitation s'affichent depuis la page « Invités » (bouton « Voir »). À ne <strong>jamais</strong> utiliser en production.</div>
+</section>
+
+<section id="configuration">
+  <h2>5. Configuration</h2>
+  <p>Variables d'environnement principales (fichier <code>.env</code>) :</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Variable</th><th>Valeur par défaut</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>APP_URL</code></td><td><code>http://localhost:8000</code></td><td>Base des liens générés (invitations, retour de paiement, webhook). <strong>Doit être l'adresse publique réelle en production.</strong></td></tr>
+      <tr><td><code>APP_LOCALE</code></td><td><code>fr</code></td><td>Langue.</td></tr>
+      <tr><td><code>DB_CONNECTION</code>, <code>DB_HOST</code>, <code>DB_PORT</code>, <code>DB_DATABASE</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code></td><td><code>pgsql</code>, <code>127.0.0.1</code>, <code>5434</code>, <code>event_hub</code>, <code>event_hub</code>, <code>secret</code></td><td>Base PostgreSQL du conteneur Docker (valeurs de développement).</td></tr>
+      <tr><td><code>QUEUE_CONNECTION</code></td><td><code>database</code></td><td>File d'attente (envoi des invitations, vérification des paiements).</td></tr>
+      <tr><td><code>MAIL_MAILER</code>, <code>MAIL_HOST</code>, <code>MAIL_PORT</code></td><td><code>smtp</code>, <code>127.0.0.1</code>, <code>1025</code></td><td>Emails vers Mailpit en développement ; à remplacer par un vrai SMTP en production.</td></tr>
+      <tr><td><code>MONEYFUSION_API_URL</code></td><td><em>vide</em></td><td>URL de création de paiement fournie par le tableau de bord FusionPay (ex. <code>https://www.pay.moneyfusion.net/Appli/Cle/pay/</code>).</td></tr>
+      <tr><td><code>MONEYFUSION_APP_KEY</code></td><td><em>vide</em></td><td>Clé au format <code>NomAppli/Cle</code>. <strong>Secrète, ne jamais la committer.</strong></td></tr>
+      <tr><td><code>MONEYFUSION_CHECK_PAYMENT_URL</code></td><td><code>https://pay.moneyfusion.net/paiementNotif</code></td><td>Endpoint de lecture du statut d'un paiement.</td></tr>
+      <tr><td><code>MONEYFUSION_VERIFY_SSL</code></td><td><code>true</code></td><td>À ne mettre à <code>false</code> qu'en développement local en cas d'erreur de certificat.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Le package expose aussi <code>config/moneyfusion.php</code> (publié dans le projet). Ses routes et pages propres y sont <strong>désactivées</strong> (<code>routes.enabled = false</code>) : l'application utilise son propre webhook et ses propres pages.</p>
+</section>
+
+<section id="guide-hote">
+  <h2>6. Guide de l'hôte</h2>
+  <ol class="steps">
+    <li><strong>Se connecter</strong> sur <code>/login</code> (ou créer un compte sur <code>/register</code>).</li>
+    <li><strong>Créer l'événement</strong> : « Nouvel événement » → type, titre, adresse personnalisée (optionnelle, sinon générée), date (dans le futur), lieu, message d'accueil, thème. L'aperçu du thème est visible en direct. Le lien public est <code>/e/{adresse}</code>.</li>
+    <li><strong>Compléter les détails</strong> (page « Programme ») : dress code, latitude/longitude pour la carte, étapes de la journée.</li>
+    <li><strong>Ajouter les invités</strong> (page « Invités ») : un par un (nom, email, téléphone, accompagnants maximum) ou par import CSV.</li>
+    <li><strong>Envoyer les invitations</strong> : « Envoyer les invitations (N) » pour tous les invités avec email non encore invités, « Envoyer par email » pour un seul (ou pour renvoyer), « WhatsApp » pour ouvrir WhatsApp avec le message pré-rempli.</li>
+    <li><strong>Suivre les réponses</strong> : le résumé (présents, absents, en attente, personnes attendues) et le détail de chaque invité (accompagnants, régime, chanson, message) sont mis à jour en direct.</li>
+    <li><strong>Attribuer les tables</strong> : saisir la table de chaque invité dans le champ « Table » (enregistré en quittant le champ).</li>
+    <li><strong>Modérer</strong> (page « Modération ») : tout message ou photo d'invité est <em>en attente</em> tant que vous ne l'avez pas publié.</li>
+    <li><strong>Cagnotte et cadeaux</strong> : activer la cagnotte, fixer un objectif, ajouter des cadeaux avec un montant cible.</li>
+    <li><strong>Préparer le jour J</strong> : « Tableau de bord » pour les chiffres et les exports.</li>
+  </ol>
+
+  <h3>Format du fichier CSV d'import</h3>
+<pre><code>name,email,phone,max_companions
+Alice Martin,alice@example.com,+33612345678,2
+Bob Durand,bob@example.com,,0</code></pre>
+  <p>Les colonnes <code>nom</code>, <code>telephone</code> et <code>accompagnants</code> sont aussi acceptées. Les lignes sans nom, avec un email invalide ou déjà présent dans l'événement sont ignorées ; l'import est <strong>tout ou rien</strong> (transaction). Taille maximale : 1 Mo.</p>
+</section>
+
+<section id="guide-invite">
+  <h2>7. Guide de l'invité</h2>
+  <p>L'invité ouvre son lien personnel <code>/i/{jeton}</code> (reçu par email, WhatsApp ou via le QR code). Aucun compte n'est nécessaire : <strong>le lien est son identifiant</strong>, il ne doit pas être partagé.</p>
+  <div class="cards">
+    <div class="card"><h4>Invitation</h4><p>Titre, compte à rebours, date, lieu, accompagnants autorisés, QR code, programme, dress code, carte.</p></div>
+    <div class="card"><h4>RSVP</h4><p>Présent ou absent, accompagnants (jusqu'au maximum fixé), régime, chanson, message. Modifiable à tout moment.</p></div>
+    <div class="card"><h4>Cagnotte et cadeaux</h4><p>Choisir la cagnotte générale ou un cadeau, saisir un montant (minimum 100 FCFA) et payer avec MoneyFusion.</p></div>
+    <div class="card"><h4>Livre d'or et photos</h4><p>Laisser un message ou partager des photos ; ils apparaissent après validation par l'hôte.</p></div>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Limite</th><th>Valeur</th></tr></thead>
+    <tbody>
+      <tr><td>Message de livre d'or</td><td>2 à 1 000 caractères ; 5 messages par invité</td></tr>
+      <tr><td>Photo</td><td>JPEG, PNG ou WebP ; 5 Mo maximum ; 8 000 × 8 000 pixels maximum ; 10 photos par invité (SVG refusé)</td></tr>
+      <tr><td>Contribution</td><td>100 à 5 000 000 FCFA, entier ; 3 paiements en cours maximum par heure</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="paiement">
+  <h2>8. Paiement MoneyFusion</h2>
+  <p>Les contributions sont payées en <strong>FCFA</strong> via MoneyFusion (Mobile Money, carte…). L'application utilise le package local <code>simonet85/laravel-moneyfusion</code>. Documentation officielle de l'API : <a href="https://docs.moneyfusion.net/fr/webapi" rel="noopener">docs.moneyfusion.net</a>.</p>
+
+  <h3>Déroulement</h3>
+  <div class="flow">
+    <span>L'invité saisit un montant</span><i>→</i><span>contribution <b>pending</b> créée</span><i>→</i><span>paiement créé chez MoneyFusion</span><i>→</i><span>redirection vers la page de paiement</span><i>→</i><span>retour sur l'invitation + webhook</span><i>→</i><span><b>relecture du statut</b> auprès de MoneyFusion</span><i>→</i><span><b>confirmed</b> / failed</span>
+  </div>
+
+  <div class="note danger"><strong class="t">Règle essentielle : jamais de crédit sans vérification serveur</strong>
+    MoneyFusion <strong>ne signe pas</strong> ses notifications (aucun secret ni HMAC documenté) : un webhook ou un paramètre de retour peut être falsifié par quiconque connaît un jeton de paiement. Ils ne servent donc que de <em>signal</em>. Une contribution ne passe à « confirmée » que lorsque l'application relit elle-même le statut sur <code>paiementNotif/{token}</code> et que l'API répond « paid » <strong>avec le montant attendu</strong>. Une réponse de repli issue de la base locale n'est jamais acceptée.</div>
+
+  <h3>Statuts d'une contribution</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Statut</th><th>Signification</th><th>Compte dans la cagnotte</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill warn">pending</span></td><td>Paiement créé, pas encore confirmé.</td><td>Non</td></tr>
+      <tr><td><span class="pill ok">confirmed</span></td><td>Confirmé par l'API MoneyFusion, montant conforme.</td><td><strong>Oui</strong></td></tr>
+      <tr><td><span class="pill bad">failed</span></td><td>Échec du paiement (ou création impossible).</td><td>Non</td></tr>
+      <tr><td><span class="pill mute">expired</span></td><td>Jamais payé après 48 h.</td><td>Non</td></tr>
+      <tr><td><span class="pill bad">mismatch</span></td><td>Payé, mais le montant confirmé diffère : <strong>« À vérifier »</strong> côté hôte.</td><td>Non</td></tr>
+    </tbody>
+  </table></div>
+  <p>Statuts renvoyés par l'API MoneyFusion : <code>pending</code>, <code>paid</code>, <code>failure</code>, <code>no paid</code>. Un statut inconnu est traité comme « en attente » : il ne peut ni créditer ni faire échouer un paiement.</p>
+
+  <h3>Trois filets de sécurité</h3>
+  <ul>
+    <li><strong>Retour du navigateur</strong> (<code>/i/{jeton}/donations/{id}/return</code>) : l'invité revient et le statut est relu immédiatement.</li>
+    <li><strong>Webhook</strong> (<code>POST /webhooks/moneyfusion</code>) : déclenche un job <code>VerifyContribution</code> (6 tentatives avec délai croissant) ; si MoneyFusion est injoignable, il est rejoué.</li>
+    <li><strong>Réconciliation</strong> (<code>contributions:reconcile</code>, toutes les 10 minutes) : rattrape les webhooks perdus et fait expirer les paiements jamais effectués après 48 h (avec une dernière vérification avant expiration).</li>
+  </ul>
+
+  <h3>Budget d'un cadeau</h3>
+  <p>Le contrôle du « reste à financer » est fait sous verrou de base de données : un paiement en attente <strong>réserve</strong> sa part pendant 60 minutes, ce qui empêche deux dons simultanés de dépasser la cible. Un paiement jamais abouti libère sa part.</p>
+
+  <h3>Mise en production : prérequis MoneyFusion</h3>
+  <ul>
+    <li>Renseigner <code>MONEYFUSION_API_URL</code> et <code>MONEYFUSION_APP_KEY</code> (dashboard FusionPay).</li>
+    <li><strong>Autoriser l'adresse IP du serveur</strong> dans le dashboard : l'API n'est accessible que depuis les IP enregistrées.</li>
+    <li>Domaine <strong>HTTPS public et valide</strong> pour le retour et le webhook (<code>APP_URL</code> correct). En local, utiliser un tunnel.</li>
+    <li>Faire tourner le worker de file d'attente et le planificateur (voir <a href="#taches">section 13</a>).</li>
+    <li>Faire un premier essai avec un petit montant réel : la devise et le paramètre éventuel de l'URL de retour ne sont pas précisés par la documentation MoneyFusion (l'application n'en dépend pas, elle relit toujours le statut).</li>
+  </ul>
+
+  <h3>Tester sans argent réel</h3>
+  <p>Pour répéter le parcours sans clés, on peut pointer <code>MONEYFUSION_API_URL</code> et <code>MONEYFUSION_CHECK_PAYMENT_URL</code> vers un faux serveur local qui imite l'API (création, <code>paiementNotif</code>, webhook non signé). Cas à rejouer : succès avec webhook, succès sans webhook, échec, abandon, montant différent, webhook falsifié. Voir aussi les tests automatisés (<code>tests/Feature/CagnotteTest.php</code>, 47 tests).</p>
+
+  <h3>Le package <code>laravel-moneyfusion</code></h3>
+  <p>Corrigé et testé (33 tests) dans le cadre du projet : préfixe <code>/api</code> réellement appliqué, statuts de l'API convertis, webhook qui relit l'API avant toute modification, contrôle d'accès par propriétaire, endpoints publics désactivables (<code>routes.payment_endpoints</code>), compatibilité Laravel 13. Détails dans le <code>README.md</code> du package.</p>
+</section>
+
+<section id="exports">
+  <h2>9. Tableau de bord et exports</h2>
+  <p>La page <strong>Tableau de bord</strong> (<code>/events/{adresse}/dashboard</code>) affiche : jours restants, invités / présents / absents / en attente, <strong>couverts attendus</strong>, taux de réponse, plan de table (par table), régimes alimentaires, état de la cagnotte et file de modération.</p>
+  <div class="note"><strong class="t">Règle de calcul des couverts</strong> Couverts = invités <em>présents</em> + leurs accompagnants. Les réponses en attente ne sont pas comptées ; les absents sont exclus du plan de table.</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Export</th><th>Contenu</th><th>Route</th></tr></thead>
+    <tbody>
+      <tr><td>Excel</td><td>3 feuilles : Invités, Régimes, Plan de table</td><td><code>/events/{adresse}/exports/guests.xlsx</code></td></tr>
+      <tr><td>CSV</td><td>Liste des invités ; séparateur « ; » et BOM UTF-8 (s'ouvre directement dans Excel en français)</td><td><code>/events/{adresse}/exports/guests.csv</code></td></tr>
+      <tr><td>PDF traiteur</td><td>Couverts attendus et régimes alimentaires</td><td><code>/events/{adresse}/exports/traiteur.pdf</code></td></tr>
+      <tr><td>PDF plan de table</td><td>Invités regroupés par table</td><td><code>/events/{adresse}/exports/plan-de-table.pdf</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="note ok"><strong class="t">Protection contre l'injection de formules</strong> Les invités saisissent eux-mêmes leur régime, leur chanson et leur message. Toute cellule commençant par <code>=</code>, <code>+</code>, <code>-</code> ou <code>@</code> est préfixée d'une apostrophe dans les exports Excel et CSV (les numéros de téléphone internationaux <code>+33 6 12…</code> sont conservés). Les PDF échappent tout le contenu.</div>
+</section>
+
+<section id="donnees">
+  <h2>10. Modèle de données</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Table</th><th>Rôle et colonnes principales</th></tr></thead>
+    <tbody>
+      <tr><td><code>users</code></td><td>Hôtes (authentification Laravel).</td></tr>
+      <tr><td><code>events</code></td><td><code>user_id</code>, <code>title</code>, <code>slug</code> (unique), <code>type</code>, <code>event_date</code>, lieu, <code>welcome_message</code>, <code>theme_config</code> (JSON), <code>dress_code</code>, <code>latitude</code>/<code>longitude</code>, <code>cagnotte_enabled</code>/<code>cagnotte_goal</code>/<code>cagnotte_message</code>.</td></tr>
+      <tr><td><code>guests</code></td><td><code>event_id</code>, nom, email (unique par événement), téléphone, <code>token</code> (unique, 40 caractères), <code>max_companions</code>, <code>invited_at</code>, RSVP (<code>rsvp_status</code>, <code>companions_count</code>, <code>dietary_restrictions</code>, <code>favorite_song</code>, <code>rsvp_message</code>, <code>responded_at</code>), <code>table_name</code>.</td></tr>
+      <tr><td><code>schedule_items</code></td><td>Étapes du programme : <code>starts_at</code>, titre, description.</td></tr>
+      <tr><td><code>guestbook_entries</code></td><td>Messages : <code>guest_id</code>, <code>message</code>, <code>status</code> (pending / approved / rejected).</td></tr>
+      <tr><td><code>photos</code></td><td><code>guest_id</code>, <code>path</code> (disque privé), légende, <code>status</code> (pending / approved / rejected).</td></tr>
+      <tr><td><code>gifts</code></td><td>Cadeaux : nom, description, <code>target_amount</code> (FCFA).</td></tr>
+      <tr><td><code>contributions</code></td><td><code>guest_id</code>, <code>gift_id</code> (optionnel), <code>amount</code>, <code>status</code>, <code>payment_token</code> (unique), <code>payment_url</code>, <code>confirmed_at</code>.</td></tr>
+      <tr><td><code>moneyfusion_payments</code></td><td>Table du package : trace des paiements MoneyFusion (jamais une preuve de paiement pour l'application).</td></tr>
+      <tr><td><code>jobs</code>, <code>failed_jobs</code>, <code>sessions</code>, <code>cache</code></td><td>File d'attente, sessions et cache (pilote base de données).</td></tr>
+    </tbody>
+  </table></div>
+  <p>Supprimer un événement supprime en cascade ses invités, son programme, ses messages, ses photos (fichiers compris), ses cadeaux et ses contributions.</p>
+</section>
+
+<section id="routes">
+  <h2>11. Routes</h2>
+  <h3>Publiques (sans compte)</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Méthode</th><th>URL</th><th>Rôle</th><th>Limite de débit</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/e/{adresse}</code></td><td>Page publique de l'événement</td><td>—</td></tr>
+      <tr><td>GET</td><td><code>/i/{jeton}</code></td><td>Invitation personnelle</td><td>—</td></tr>
+      <tr><td>POST</td><td><code>/i/{jeton}/rsvp</code></td><td>Répondre à l'invitation</td><td>20 / min</td></tr>
+      <tr><td>POST</td><td><code>/i/{jeton}/guestbook</code></td><td>Message du livre d'or</td><td>10 / min</td></tr>
+      <tr><td>POST</td><td><code>/i/{jeton}/photos</code></td><td>Envoi d'une photo</td><td>20 / min</td></tr>
+      <tr><td>POST</td><td><code>/i/{jeton}/donations</code></td><td>Démarrer un paiement</td><td>10 / min</td></tr>
+      <tr><td>GET</td><td><code>/i/{jeton}/donations/{id}/return</code></td><td>Retour de paiement (le statut est relu)</td><td>—</td></tr>
+      <tr><td>GET</td><td><code>/photos/{id}</code></td><td>Photo : publique si approuvée, sinon réservée à l'hôte</td><td>—</td></tr>
+      <tr><td>POST</td><td><code>/webhooks/moneyfusion</code></td><td>Notification MoneyFusion (signal, sans CSRF)</td><td>120 / min</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Hôte (connexion et email vérifié requis, propriétaire de l'événement)</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Méthode</th><th>URL (préfixe <code>/events</code>)</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td>GET · POST</td><td><code>/events</code> · <code>/events/create</code></td><td>Liste, création d'un événement</td></tr>
+      <tr><td>GET</td><td><code>/{adresse}/dashboard</code></td><td>Tableau de bord</td></tr>
+      <tr><td>GET · POST · PATCH · DELETE</td><td><code>/{adresse}/guests[/…]</code>, <code>/guests/import</code>, <code>/guests/{id}/invitation</code>, <code>/invitations</code></td><td>Invités, import CSV, table, envoi des invitations</td></tr>
+      <tr><td>GET · POST · DELETE</td><td><code>/{adresse}/schedule[/{id}]</code>, PATCH <code>/{adresse}/details</code></td><td>Programme, dress code, coordonnées</td></tr>
+      <tr><td>GET · PATCH · DELETE</td><td><code>/{adresse}/moderation</code>, <code>/guestbook/{id}</code>, <code>/photos/{id}</code></td><td>Modération</td></tr>
+      <tr><td>GET · PATCH · POST · DELETE</td><td><code>/{adresse}/cagnotte</code>, <code>/gifts[/{id}]</code></td><td>Cagnotte et cadeaux</td></tr>
+      <tr><td>GET</td><td><code>/{adresse}/exports/{guests.xlsx | guests.csv | traiteur.pdf | plan-de-table.pdf}</code></td><td>Exports</td></tr>
+    </tbody>
+  </table></div>
+  <p>La liste complète et à jour s'obtient avec <code>php artisan route:list --except-vendor</code>.</p>
+</section>
+
+<section id="securite">
+  <h2>12. Sécurité</h2>
+  <ul>
+    <li><strong>Accès aux données</strong> : toute action de l'hôte passe par <code>EventPolicy</code> (propriétaire uniquement) ; un invité ne peut agir que sur sa propre invitation (jeton de 40 caractères aléatoires) et sur les ressources de son événement.</li>
+    <li><strong>Validation</strong> : chaque formulaire a sa Form Request (types, bornes, énumérations).</li>
+    <li><strong>Fichiers</strong> : types vérifiés sur le contenu, taille et dimensions bornées, quotas par invité, stockage sur disque <em>privé</em> sous un nom aléatoire (l'extension est déduite du contenu), service par un contrôleur avec <code>X-Content-Type-Options: nosniff</code> ; SVG refusé.</li>
+    <li><strong>Modération</strong> : rien n'est visible publiquement avant validation par l'hôte ; une photo en attente ou refusée renvoie 404 à un visiteur.</li>
+    <li><strong>Paiement</strong> : jamais de crédit sans relecture serveur du statut et contrôle du montant (voir <a href="#paiement">section 8</a>) ; limite de paiements en cours par invité ; verrou sur le budget des cadeaux.</li>
+    <li><strong>Exports</strong> : neutralisation de l'injection de formules (Excel/CSV), échappement dans les PDF ; PDF sans accès réseau ni PHP.</li>
+    <li><strong>Limitation de débit</strong> sur toutes les routes publiques qui écrivent.</li>
+    <li><strong>CSRF</strong> actif partout, sauf <code>webhooks/moneyfusion</code> (appelé par un serveur, sans navigateur).</li>
+    <li><strong>Secrets</strong> : <code>.env</code> n'est pas versionné ; ne jamais committer la clé MoneyFusion.</li>
+  </ul>
+  <div class="note warn"><strong class="t">À savoir</strong> L'inscription (<code>/register</code>) est ouverte : n'importe qui peut créer un compte hôte. Si ce n'est pas souhaité, restreindre ou désactiver cette route avant la mise en production.</div>
+</section>
+
+<section id="taches">
+  <h2>13. File d'attente et tâches planifiées</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Élément</th><th>Rôle</th><th>Comment le faire tourner</th></tr></thead>
+    <tbody>
+      <tr><td>Job <code>SendInvitation</code></td><td>Envoie le mail d'invitation puis renseigne <code>invited_at</code> <strong>uniquement après un envoi réussi</strong> (3 tentatives, délais 30 s puis 2 min).</td><td><code>php artisan queue:work</code></td></tr>
+      <tr><td>Job <code>VerifyContribution</code></td><td>Revérifie un paiement après un webhook (6 tentatives, délais jusqu'à 10 min).</td><td><code>php artisan queue:work</code></td></tr>
+      <tr><td>Commande <code>contributions:reconcile</code></td><td>Revérifie les paiements en attente, fait expirer ceux de plus de 48 h.</td><td>Planifiée toutes les 10 minutes : lancer <code>php artisan schedule:work</code> en local, ou une tâche cron <code>* * * * * php artisan schedule:run</code> en production.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note warn"><strong class="t">Sans worker, rien ne part</strong> Sans <code>queue:work</code>, les invitations et les vérifications de webhook restent en file (table <code>jobs</code>). Après toute modification de <code>.env</code>, redémarrer le worker : il garde la configuration en mémoire.</div>
+</section>
+
+<section id="tests">
+  <h2>14. Tests et qualité</h2>
+<pre><code>php artisan test          # 188 tests Pest (PostgreSQL de test, port 5435)
+npm test                  # 32 tests Vitest (composants Vue)
+npm run typecheck         # vue-tsc : vérification TypeScript
+npm run build             # compilation Vite de production
+vendor/bin/pint --test    # style PHP (Laravel Pint)</code></pre>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Domaine</th><th>Ce qui est couvert</th></tr></thead>
+    <tbody>
+      <tr><td>Événements, invités, RSVP</td><td>Création, validation, policies, import CSV (transaction), jetons, envoi (file d'attente, échec du transport), RSVP bornés et limités.</td></tr>
+      <tr><td>Programme, livre d'or, photos</td><td>Fenêtre de dates, plafonds, quotas, types de fichiers refusés (PHP, PDF, SVG, taille, dimensions), photos privées, modération.</td></tr>
+      <tr><td>Cagnotte et paiement</td><td>47 tests : création, validation, réservation de budget, retour, webhook falsifié, repli local non cru, montant divergent, réconciliation par lots.</td></tr>
+      <tr><td>Tableau de bord et exports</td><td>Calculs, plan de table, CSV, Excel relu cellule par cellule, PDF, injection de formules, échappement.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Les tests PHP n'ont pas besoin de <code>npm run build</code> (Vite est neutralisé dans <code>tests/TestCase.php</code>). Le package <code>laravel-moneyfusion</code> a sa propre suite (<code>composer test</code>, 33 tests).</p>
+</section>
+
+<section id="depannage">
+  <h2>15. Dépannage</h2>
+  <details><summary>Les invitations ne partent pas / « mise en file » mais aucun mail dans Mailpit</summary>
+    Le worker ne tourne pas. Lancer <code>php artisan queue:work</code>. Vérifier aussi <code>MAIL_PORT=1025</code> et que le conteneur Mailpit est démarré (<code>docker compose ps</code>).</details>
+  <details><summary>« Unable to locate file in Vite manifest »</summary>
+    Les assets ne sont pas compilés : <code>npm run build</code> (ou <code>npm run dev</code>).</details>
+  <details><summary>« Le paiement est momentanément indisponible »</summary>
+    MoneyFusion n'est pas configuré (<code>MONEYFUSION_API_URL</code> / <code>MONEYFUSION_APP_KEY</code> vides), l'IP du serveur n'est pas autorisée, ou l'API est injoignable. La contribution est alors marquée « Échouée ». Consulter <code>storage/logs/laravel.log</code>.</details>
+  <details><summary>Un paiement reste « En attente » alors que l'invité a payé</summary>
+    Vérifier que le worker et le planificateur tournent. <code>php artisan contributions:reconcile</code> revérifie immédiatement. Si MoneyFusion est injoignable ou ne connaît pas le jeton, la contribution reste en attente puis expire après 48 h.</details>
+  <details><summary>Le webhook n'arrive jamais</summary>
+    <code>APP_URL</code> doit être l'adresse <strong>publique HTTPS</strong>. En local, utiliser un tunnel. Le retour du navigateur et la réconciliation fonctionnent malgré tout.</details>
+  <details><summary>Erreur de port 5432 / 5433 déjà utilisé</summary>
+    Le projet utilise volontairement 5434 (développement) et 5435 (tests) pour éviter les conflits avec d'autres PostgreSQL de la machine.</details>
+  <details><summary>Les tests échouent à la connexion à la base</summary>
+    Démarrer le conteneur de test : <code>docker compose up -d postgres_test</code>. Ses données sont en mémoire : après un redémarrage du conteneur, les tables sont recréées automatiquement au prochain <code>php artisan test</code>.</details>
+  <details><summary>Après modification de <code>.env</code> rien ne change</summary>
+    <code>php artisan config:clear</code> puis redémarrer <code>queue:work</code>.</details>
+  <details><summary>Le package MoneyFusion est introuvable à l'installation</summary>
+    Le dépôt <code>laravel-moneyfusion</code> doit être dans <code>../laravel-moneyfusion</code>. Si vous modifiez son <code>composer.json</code> sans nouveau commit, faire <code>composer remove simonet85/laravel-moneyfusion</code> puis <code>composer require simonet85/laravel-moneyfusion:dev-main</code> pour que Composer relise ses métadonnées.</details>
+</section>
+
+<section id="limites">
+  <h2>16. Limites connues</h2>
+  <ul>
+    <li><strong>Fuseau horaire</strong> : la date saisie par l'hôte est enregistrée dans le fuseau de l'application (<code>UTC</code> dans <code>config/app.php</code>), puis affichée dans le fuseau du <em>navigateur</em> de chaque invité. Hôte et invités dans le même fuseau que l'application (par exemple UTC+0, Abidjan) voient la même heure ; sinon un décalage apparaît. À traiter avant un usage multi-pays.</li>
+    <li><strong>Modification d'un événement</strong> : l'interface permet de créer un événement et de compléter ses détails (programme, dress code, carte, cagnotte) ; il n'y a pas encore d'écran pour modifier le titre, la date ou le thème, ni pour supprimer un événement.</li>
+    <li><strong>RSVP après la date</strong> : un invité peut encore répondre après la date de l'événement.</li>
+    <li><strong>Devise</strong> : le FCFA est supposé (la documentation MoneyFusion ne précise pas la devise).</li>
+    <li><strong>Stockage des photos</strong> : disque local privé ; pour plusieurs serveurs, prévoir un disque partagé ou un stockage objet.</li>
+    <li><strong>Paiement réel non testé</strong> : validé avec un faux serveur et des tests automatisés, pas encore avec de vraies clés MoneyFusion.</li>
+    <li><strong>Langue</strong> : interface en français ; pas de traduction multilingue.</li>
+  </ul>
+</section>
+
+<section id="commandes">
+  <h2>17. Aide-mémoire des commandes</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>But</th><th>Commande</th></tr></thead>
+    <tbody>
+      <tr><td>Démarrer l'infrastructure</td><td><code>docker compose up -d</code></td></tr>
+      <tr><td>Arrêter l'infrastructure</td><td><code>docker compose down</code></td></tr>
+      <tr><td>Migrer la base</td><td><code>php artisan migrate</code></td></tr>
+      <tr><td>Données de démonstration</td><td><code>php artisan db:seed --class=DemoSeeder</code></td></tr>
+      <tr><td>Serveur d'application</td><td><code>php artisan serve --host=127.0.0.1 --port=8000</code></td></tr>
+      <tr><td>Worker de file d'attente</td><td><code>php artisan queue:work --tries=3</code></td></tr>
+      <tr><td>Planificateur (local)</td><td><code>php artisan schedule:work</code></td></tr>
+      <tr><td>Revérifier les paiements</td><td><code>php artisan contributions:reconcile</code></td></tr>
+      <tr><td>Jobs en échec</td><td><code>php artisan queue:failed</code> · <code>php artisan queue:retry all</code></td></tr>
+      <tr><td>Compiler le front</td><td><code>npm run build</code> · <code>npm run dev</code></td></tr>
+      <tr><td>Tout vérifier</td><td><code>php artisan test &amp;&amp; npm test &amp;&amp; npm run typecheck &amp;&amp; vendor/bin/pint --test</code></td></tr>
+      <tr><td>Vider la configuration en cache</td><td><code>php artisan config:clear</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>Event Hub · documentation générée à partir du code du projet (Laravel 13.37, PHP 8.4, 188 tests PHP, 32 tests front). Pour la liste à jour des routes : <code>php artisan route:list --except-vendor</code>.</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  try { var saved = localStorage.getItem('eh-doc-theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('eh-doc-theme', next); } catch (e) {}
+  });
+  var links = [].slice.call(document.querySelectorAll('nav.toc a'));
+  var map = {}; links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { links.forEach(function (a) { a.classList.remove('active'); }); var a = map[e.target.id]; if (a) a.classList.add('active'); }
+      });
+    }, { rootMargin: '0px 0px -70% 0px' });
+    document.querySelectorAll('main section[id]').forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
