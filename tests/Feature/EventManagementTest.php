@@ -143,6 +143,14 @@ test('une date inchangée reste valide même passée, une nouvelle date passée 
     ]))->assertSessionHasErrors('event_date');
 });
 
+test('une date invalide renvoie une erreur de validation et non une erreur serveur', function () {
+    $this->actingAs($this->host)
+        ->patch("/events/{$this->event->slug}", updatePayload($this->event, ['event_date' => 'pas-une-date']))
+        ->assertSessionHasErrors('event_date');
+
+    expect($this->event->fresh()->title)->toBe('Mariage initial');
+});
+
 test('la modification valide le titre et le type', function () {
     $this->actingAs($this->host)
         ->patch("/events/{$this->event->slug}", updatePayload($this->event, ['title' => '', 'type' => 'inconnu']))

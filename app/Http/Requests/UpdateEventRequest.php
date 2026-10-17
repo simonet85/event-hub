@@ -35,8 +35,13 @@ class UpdateEventRequest extends FormRequest
                 'required',
                 'date',
                 function (string $attribute, mixed $value, \Closure $fail) use ($event) {
-                    $date = Carbon::parse($value)->startOfMinute();
-                    // Le champ datetime-local n'a pas de secondes : on compare à la minute.
+                    try {
+                        // Le champ datetime-local n'a pas de secondes : on compare à la minute.
+                        $date = Carbon::parse($value)->startOfMinute();
+                    } catch (\Throwable) {
+                        return; // Valeur non analysable : la règle "date" signale déjà l'erreur.
+                    }
+
                     $unchanged = $event->event_date->copy()->startOfMinute()->equalTo($date);
 
                     if (! $unchanged && $date->isPast()) {
