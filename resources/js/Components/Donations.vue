@@ -56,6 +56,9 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
         <p v-else-if="returnedStatus === 'pending'" class="rounded bg-amber-100 p-2 text-center text-sm text-amber-900" data-testid="donation-pending">
             Votre paiement est en cours de confirmation. Il apparaîtra ci-dessous dès qu'il sera validé.
         </p>
+        <p v-else-if="returnedStatus === 'mismatch'" class="rounded bg-amber-100 p-2 text-center text-sm text-amber-900" data-testid="donation-review">
+            Votre paiement est en cours de vérification par les hôtes (le montant reçu diffère). Ils reviendront vers vous si besoin.
+        </p>
         <p v-else-if="returnedStatus === 'failed'" class="rounded bg-red-100 p-2 text-center text-sm text-red-900">
             Le paiement n'a pas abouti. Vous pouvez réessayer.
         </p>

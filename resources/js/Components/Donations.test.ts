@@ -85,6 +85,11 @@ describe('Donations', () => {
         const pending = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
         expect(pending.find('[data-testid="donation-pending"]').exists()).toBe(true);
 
+        flash = { donation_status: 'mismatch' };
+        const review = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
+        expect(review.find('[data-testid="donation-review"]').exists()).toBe(true);
+        expect(review.find('[data-testid="donation-confirmed"]').exists()).toBe(false);
+
         flash = { donation_status: 'confirmed' };
         const ok = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
         expect(ok.find('[data-testid="donation-confirmed"]').exists()).toBe(true);
