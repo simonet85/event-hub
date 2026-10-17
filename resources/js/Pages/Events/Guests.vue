@@ -93,7 +93,7 @@ const pending = computed(() => props.summary.to_invite);
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="rounded-md bg-indigo-600 px-4 py-2 text-white disabled:opacity-50"
+                        class="rounded-md bg-[var(--accent)] px-4 py-2 text-white disabled:opacity-50"
                     >
                         Ajouter
                     </button>

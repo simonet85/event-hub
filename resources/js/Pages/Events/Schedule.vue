@@ -64,7 +64,7 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
                     <input v-model="itemForm.title" placeholder="Titre (ex : Cérémonie)" class="block w-full rounded-md border-gray-300" />
                     <input v-model="itemForm.description" placeholder="Description (optionnel)" class="block w-full rounded-md border-gray-300" />
                     <p v-for="(msg, key) in itemForm.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
-                    <button type="submit" :disabled="itemForm.processing" class="rounded-md bg-indigo-600 px-4 py-2 text-white disabled:opacity-50">
+                    <button type="submit" :disabled="itemForm.processing" class="rounded-md bg-[var(--accent)] px-4 py-2 text-white disabled:opacity-50">
                         Ajouter
                     </button>
                 </form>

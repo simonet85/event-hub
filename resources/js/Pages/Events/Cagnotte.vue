@@ -67,7 +67,7 @@ const badge = (status: string) =>
                     <input v-model="giftForm.description" placeholder="Description (optionnel)" class="block w-full rounded-md border-gray-300" />
                     <input v-model.number="giftForm.target_amount" type="number" min="100" placeholder="Montant cible en FCFA" class="block w-full rounded-md border-gray-300" />
                     <p v-for="(msg, key) in giftForm.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
-                    <button type="submit" :disabled="giftForm.processing" class="rounded-md bg-indigo-600 px-4 py-2 text-white disabled:opacity-50">Ajouter</button>
+                    <button type="submit" :disabled="giftForm.processing" class="rounded-md bg-[var(--accent)] px-4 py-2 text-white disabled:opacity-50">Ajouter</button>
                 </form>
 
                 <ul v-if="gifts.length" class="divide-y card" data-testid="gift-list">
