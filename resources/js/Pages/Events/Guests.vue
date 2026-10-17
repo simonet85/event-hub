@@ -63,10 +63,10 @@ const pending = computed(() => props.summary.to_invite);
 
         <div class="space-y-8 py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                <p v-if="flash?.sent !== undefined" class="rounded bg-green-50 p-3 text-green-800">
+                <p v-if="flash?.sent != null" class="rounded bg-green-50 p-3 text-green-800">
                     {{ flash.sent }} invitation(s) mise(s) en file d'envoi.
                 </p>
-                <p v-if="flash?.imported !== undefined" class="rounded bg-green-50 p-3 text-green-800">
+                <p v-if="flash?.imported != null" class="rounded bg-green-50 p-3 text-green-800">
                     {{ flash.imported }} invité(s) importé(s).
                 </p>
 

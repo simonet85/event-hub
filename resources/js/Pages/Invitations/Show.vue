@@ -45,7 +45,7 @@ const formattedDate = computed(() =>
         <Countdown :target="event.event_date" class="mb-10" />
 
         <section class="w-full max-w-md space-y-4 rounded-2xl bg-white/70 p-6 shadow-sm">
-            <p class="text-lg capitalize">{{ formattedDate }}</p>
+            <p class="text-lg first-letter:uppercase">{{ formattedDate }}</p>
             <div v-if="event.location_name">
                 <p class="text-lg">{{ event.location_name }}</p>
                 <p v-if="event.location_address" class="text-sm opacity-80">{{ event.location_address }}</p>

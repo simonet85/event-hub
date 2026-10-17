@@ -56,7 +56,7 @@ describe('Donations', () => {
         expect(w.get('button[type="submit"]').attributes('disabled')).toBeUndefined();
 
         await w.get('form').trigger('submit');
-        expect(post).toHaveBeenCalledWith('/donations.store/tok');
+        expect(post).toHaveBeenCalledWith('/donations.store/tok', { preserveScroll: true });
     });
 
     it('limite le montant à ce qu\'il reste pour le cadeau choisi', async () => {

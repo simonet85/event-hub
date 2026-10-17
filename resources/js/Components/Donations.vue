@@ -31,7 +31,7 @@ const pick = (giftId: number | null) => {
     if (gift) form.amount = gift.remaining;
 };
 
-const submit = () => form.post(route('donations.store', props.token));
+const submit = () => form.post(route('donations.store', props.token), { preserveScroll: true });
 </script>
 
 <template>
