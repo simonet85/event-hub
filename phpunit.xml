@@ -19,6 +19,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="GEOCODING_ENABLED" value="false"/>
         <env name="MONEYFUSION_API_URL" value="https://www.pay.moneyfusion.net/TestApp/testkey/pay/"/>
         <env name="MONEYFUSION_APP_KEY" value="TestApp/testkey"/>
         <env name="MONEYFUSION_CHECK_PAYMENT_URL" value="https://pay.moneyfusion.net/paiementNotif"/>

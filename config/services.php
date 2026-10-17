@@ -14,6 +14,15 @@ return [
     |
     */
 
+    // Géocodage des adresses (carte des événements) via Nominatim / OpenStreetMap.
+    // Respectez leur politique : User-Agent identifiable, 1 requête par seconde.
+    'geocoding' => [
+        'enabled' => (bool) env('GEOCODING_ENABLED', true),
+        'delay_ms' => (int) env('GEOCODING_DELAY_MS', 1100),
+        'url' => env('GEOCODING_URL', 'https://nominatim.openstreetmap.org/search'),
+        'user_agent' => env('GEOCODING_USER_AGENT', 'EventHub/1.0 (+https://github.com/simonet85/event-hub)'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

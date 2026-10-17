@@ -14,7 +14,9 @@ defineProps<{
     moderation: { entries: number; photos: number };
 }>();
 
-const updated = computed(() => (usePage().props.flash as { event_updated?: boolean | null } | undefined)?.event_updated);
+const flash = computed(() => usePage().props.flash as { event_updated?: boolean | null; map_not_found?: boolean | null } | undefined);
+const updated = computed(() => flash.value?.event_updated);
+const mapNotFound = computed(() => flash.value?.map_not_found);
 
 const fcfa = (n: number) => `${new Intl.NumberFormat('fr-FR').format(n)} FCFA`;
 const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a / b) * 100)) : 0);
@@ -35,6 +37,11 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <p v-if="updated" class="rounded-2xl bg-green-50 px-5 py-3 text-sm text-green-800" data-testid="event-updated">Les modifications ont été enregistrées.</p>
+                <p v-if="mapNotFound" class="rounded-2xl bg-amber-50 px-5 py-3 text-sm text-amber-900" data-testid="map-not-found">
+                    Adresse introuvable sur la carte : la position précédente est conservée.
+                    <Link :href="route('schedule.index', event.slug)" class="font-semibold underline">Ajustez les coordonnées</Link>
+                    dans l'onglet Programme.
+                </p>
                 <section>
                     <h3 class="mb-3 display text-2xl">Réponses des invités</h3>
                     <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-3 lg:grid-cols-6" data-testid="rsvp">

@@ -6,6 +6,7 @@ use App\Enums\EventType;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
+use App\Services\Geocoder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -44,7 +45,7 @@ class EventController extends Controller
         ])->all();
     }
 
-    public function store(StoreEventRequest $request): RedirectResponse
+    public function store(StoreEventRequest $request, Geocoder $geocoder): RedirectResponse
     {
         $data = $request->validated();
         $type = EventType::from($data['type']);
@@ -55,6 +56,7 @@ class EventController extends Controller
         $data['theme_config'] = array_merge($type->defaultTheme(), array_filter($data['theme_config'] ?? []));
 
         $event = $request->user()->events()->create($data);
+        $this->locateOnMap($event, $geocoder);
 
         return to_route('events.index')->with('created', $event->slug);
     }
@@ -79,7 +81,7 @@ class EventController extends Controller
         ]);
     }
 
-    public function update(UpdateEventRequest $request, Event $event): RedirectResponse
+    public function update(UpdateEventRequest $request, Event $event, Geocoder $geocoder): RedirectResponse
     {
         $data = $request->validated();
         $type = EventType::from($data['type']);
@@ -91,7 +93,33 @@ class EventController extends Controller
 
         $event->update($data);
 
-        return to_route('dashboard.show', $event)->with('event_updated', true);
+        $addressChanged = $event->wasChanged('location_address');
+        $mapFound = $addressChanged ? $this->locateOnMap($event, $geocoder) : null;
+
+        return to_route('dashboard.show', $event)
+            ->with('event_updated', true)
+            ->with('map_not_found', $mapFound === false);
+    }
+
+    /**
+     * Place l'événement sur la carte d'après son adresse. Renvoie null s'il n'y a rien à localiser,
+     * true si les coordonnées ont été mises à jour, false si l'adresse est introuvable (la carte reste inchangée).
+     */
+    private function locateOnMap(Event $event, Geocoder $geocoder): ?bool
+    {
+        if (blank($event->location_address)) {
+            return null;
+        }
+
+        $position = $geocoder->locate($event->location_address, $event->location_name);
+
+        if ($position === null) {
+            return false;
+        }
+
+        $event->forceFill($position)->save();
+
+        return true;
     }
 
     public function archive(Event $event): RedirectResponse
