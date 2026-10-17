@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
+import QRCode from 'qrcode';
 import QrCode from './QrCode.vue';
 
 vi.mock('qrcode', () => ({
@@ -23,5 +24,12 @@ describe('QrCode', () => {
         await flushPromises();
 
         expect(w.get('img').attributes('src')).toContain(btoa('b'));
+    });
+
+    it("fixe explicitement le niveau de correction d'erreur", async () => {
+        mount(QrCode, { props: { value: 'x' } });
+        await flushPromises();
+
+        expect(QRCode.toDataURL).toHaveBeenCalledWith('x', expect.objectContaining({ errorCorrectionLevel: 'M' }));
     });
 });

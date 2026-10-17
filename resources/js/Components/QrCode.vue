@@ -10,6 +10,8 @@ const render = async () => {
     dataUrl.value = await QRCode.toDataURL(props.value, {
         width: props.size ?? 192,
         margin: 1,
+        // Niveau M (~15 % de redondance) : suffisant pour une URL, QR plus léger qu'en Q/H.
+        errorCorrectionLevel: 'M',
         color: { dark: props.color ?? '#000000', light: '#ffffff' },
     });
 };
