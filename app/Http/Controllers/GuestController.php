@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\RsvpStatus;
 use App\Http\Requests\StoreGuestRequest;
 use App\Models\Event;
 use App\Models\Guest;
+use App\Services\EventReport;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ class GuestController extends Controller
                 'title' => $event->title,
                 'slug' => $event->slug,
             ],
-            'summary' => $this->summary($event),
+            'summary' => (new EventReport($event))->rsvp(),
             'guests' => $event->guests()->orderBy('name')->orderBy('id')->paginate(50)->through(fn (Guest $guest) => [
                 'id' => $guest->id,
                 'name' => $guest->name,
@@ -32,6 +32,7 @@ class GuestController extends Controller
                 'phone' => $guest->phone,
                 'max_companions' => $guest->max_companions,
                 'invited_at' => $guest->invited_at?->toIso8601String(),
+                'table_name' => $guest->table_name,
                 'rsvp_status' => $guest->rsvp_status->value,
                 'companions_count' => $guest->companions_count,
                 'dietary_restrictions' => $guest->dietary_restrictions,
@@ -41,24 +42,6 @@ class GuestController extends Controller
                 'whatsapp_url' => $guest->setRelation('event', $event)->whatsappUrl(),
             ]),
         ]);
-    }
-
-    /**
-     * @return array{total: int, to_invite: int, pending: int, accepted: int, declined: int, headcount: int}
-     */
-    private function summary(Event $event): array
-    {
-        $guests = $event->guests()->get(['email', 'invited_at', 'rsvp_status', 'companions_count']);
-        $accepted = $guests->where('rsvp_status', RsvpStatus::Accepted);
-
-        return [
-            'total' => $guests->count(),
-            'to_invite' => $guests->filter(fn ($g) => $g->email && ! $g->invited_at)->count(),
-            'pending' => $guests->where('rsvp_status', RsvpStatus::Pending)->count(),
-            'accepted' => $accepted->count(),
-            'declined' => $guests->where('rsvp_status', RsvpStatus::Declined)->count(),
-            'headcount' => $accepted->count() + $accepted->sum('companions_count'),
-        ];
     }
 
     public function store(StoreGuestRequest $request, Event $event): RedirectResponse
@@ -127,6 +110,18 @@ class GuestController extends Controller
         }
 
         return $imported;
+    }
+
+    public function update(Request $request, Event $event, Guest $guest): RedirectResponse
+    {
+        Gate::authorize('update', $event);
+        abort_unless($guest->event_id === $event->id, 404);
+
+        $data = $request->validate(['table_name' => ['nullable', 'string', 'max:100']]);
+
+        $guest->forceFill(['table_name' => filled($data['table_name'] ?? null) ? trim($data['table_name']) : null])->save();
+
+        return back();
     }
 
     public function destroy(Event $event, Guest $guest): RedirectResponse

@@ -10,6 +10,7 @@ type Guest = {
     phone: string | null;
     max_companions: number;
     invited_at: string | null;
+    table_name: string | null;
     rsvp_status: 'pending' | 'accepted' | 'declined';
     companions_count: number;
     dietary_restrictions: string | null;
@@ -35,6 +36,10 @@ const importCsv = () =>
     importForm.post(route('guests.import', props.event.slug), { onSuccess: () => importForm.reset() });
 const sendAll = () => router.post(route('invitations.send-all', props.event.slug));
 const send = (g: Guest) => router.post(route('invitations.send', [props.event.slug, g.id]));
+const saveTable = (g: Guest, value: string) => {
+    if ((g.table_name ?? '') === value.trim()) return;
+    router.patch(route('guests.update', [props.event.slug, g.id]), { table_name: value }, { preserveScroll: true });
+};
 const remove = (g: Guest) => router.delete(route('guests.destroy', [props.event.slug, g.id]));
 const pending = computed(() => props.summary.to_invite);
 </script>
@@ -131,7 +136,8 @@ const pending = computed(() => props.summary.to_invite);
                             <p v-if="g.favorite_song" class="text-xs text-gray-500">Chanson : {{ g.favorite_song }}</p>
                             <p v-if="g.rsvp_message" class="text-xs italic text-gray-500">« {{ g.rsvp_message }} »</p>
                         </div>
-                        <div class="flex gap-3 text-sm">
+                        <div class="flex items-center gap-3 text-sm">
+                            <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="w-28 rounded-md border-gray-300 py-1 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
                             <a :href="g.invitation_url" target="_blank" class="text-indigo-600">Voir</a>
                             <button v-if="g.email" class="text-indigo-600" @click="send(g)">Envoyer par email</button>
                             <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="text-green-700">

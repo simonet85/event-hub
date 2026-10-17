@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\CagnotteController;
 use App\Http\Controllers\ContributionController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ModerationController;
@@ -45,6 +47,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/events/{event}/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
     Route::delete('/events/{event}/schedule/{item}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
     Route::patch('/events/{event}/details', [ScheduleController::class, 'updateDetails'])->name('events.details');
+    Route::get('/events/{event}/dashboard', [DashboardController::class, 'show'])->name('dashboard.show');
+    Route::get('/events/{event}/exports/guests.xlsx', [ExportController::class, 'xlsx'])->name('exports.xlsx');
+    Route::get('/events/{event}/exports/guests.csv', [ExportController::class, 'csv'])->name('exports.csv');
+    Route::get('/events/{event}/exports/traiteur.pdf', [ExportController::class, 'caterer'])->name('exports.caterer');
+    Route::get('/events/{event}/exports/plan-de-table.pdf', [ExportController::class, 'seating'])->name('exports.seating');
+    Route::patch('/events/{event}/guests/{guest}', [GuestController::class, 'update'])->name('guests.update');
     Route::get('/events/{event}/cagnotte', [CagnotteController::class, 'index'])->name('cagnotte.index');
     Route::patch('/events/{event}/cagnotte', [CagnotteController::class, 'updateSettings'])->name('cagnotte.settings');
     Route::post('/events/{event}/gifts', [CagnotteController::class, 'storeGift'])->name('gifts.store');
