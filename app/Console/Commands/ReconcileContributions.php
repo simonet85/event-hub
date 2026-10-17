@@ -16,39 +16,43 @@ class ReconcileContributions extends Command
 {
     public function handle(ContributionPayments $payments): int
     {
-        $expired = Contribution::where('status', ContributionStatus::Pending)
-            ->where('created_at', '<', now()->subHours(ContributionPayments::EXPIRES_AFTER_HOURS))
-            ->get();
-
-        // Dernière vérification avant expiration : un paiement tardif ne doit pas être perdu.
-        foreach ($expired as $contribution) {
-            try {
-                $status = $payments->verify($contribution);
-            } catch (PaymentUnavailable) {
-                continue;
-            }
-
-            if ($status === ContributionStatus::Pending) {
-                $contribution->update(['status' => ContributionStatus::Expired]);
-            }
-        }
-
+        $expired = 0;
         $checked = 0;
+
+        // chunkById (et non chunk/each) : les statuts changent pendant le parcours, un décalage (offset) sauterait des lignes.
+        Contribution::where('status', ContributionStatus::Pending)
+            ->where('created_at', '<', now()->subHours(ContributionPayments::EXPIRES_AFTER_HOURS))
+            ->chunkById(100, function ($contributions) use ($payments, &$expired): void {
+                foreach ($contributions as $contribution) {
+                    // Dernière vérification avant expiration : un paiement tardif ne doit pas être perdu.
+                    try {
+                        $status = $payments->verify($contribution);
+                    } catch (PaymentUnavailable) {
+                        continue;
+                    }
+
+                    if ($status === ContributionStatus::Pending) {
+                        $contribution->update(['status' => ContributionStatus::Expired]);
+                        $expired++;
+                    }
+                }
+            });
 
         Contribution::where('status', ContributionStatus::Pending)
             ->whereNotNull('payment_token')
             ->where('created_at', '>=', now()->subHours(ContributionPayments::EXPIRES_AFTER_HOURS))
-            ->orderBy('id')
-            ->each(function (Contribution $contribution) use ($payments, &$checked): void {
-                try {
-                    $payments->verify($contribution);
-                    $checked++;
-                } catch (PaymentUnavailable $e) {
-                    $this->warn("Contribution {$contribution->id} : {$e->getMessage()}");
+            ->chunkById(100, function ($contributions) use ($payments, &$checked): void {
+                foreach ($contributions as $contribution) {
+                    try {
+                        $payments->verify($contribution);
+                        $checked++;
+                    } catch (PaymentUnavailable $e) {
+                        $this->warn("Contribution {$contribution->id} : {$e->getMessage()}");
+                    }
                 }
             });
 
-        $this->info("{$checked} contribution(s) revérifiée(s), {$expired->count()} expirée(s) examinée(s).");
+        $this->info("{$checked} contribution(s) revérifiée(s), {$expired} expirée(s).");
 
         return self::SUCCESS;
     }

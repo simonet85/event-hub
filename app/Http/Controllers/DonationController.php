@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ContributionStatus;
+use App\Exceptions\GiftBudgetExceeded;
 use App\Exceptions\PaymentUnavailable;
 use App\Http\Requests\DonationRequest;
 use App\Models\Contribution;
@@ -38,12 +39,10 @@ class DonationController extends Controller
 
         $gift = $request->integer('gift_id') ? Gift::find($request->integer('gift_id')) : null;
 
-        if ($gift && $request->integer('amount') > max(0, $gift->target_amount - $gift->raised())) {
-            return back()->withErrors(['amount' => 'Ce montant dépasse ce qu\'il reste à financer pour ce cadeau.']);
-        }
-
         try {
             $contribution = $payments->start($guest, $request->integer('amount'), $gift, $request->validated('message'));
+        } catch (GiftBudgetExceeded $e) {
+            return back()->withErrors(['amount' => $e->getMessage()]);
         } catch (PaymentUnavailable $e) {
             return back()->withErrors(['amount' => $e->getMessage().' Merci de réessayer dans quelques instants.']);
         }

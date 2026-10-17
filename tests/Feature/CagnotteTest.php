@@ -381,3 +381,57 @@ test('supprimer un événement supprime cadeaux et contributions', function () {
 
     expect(Gift::count())->toBe(0)->and(Contribution::count())->toBe(0);
 });
+
+// ───────────── Course sur le budget d'un cadeau ─────────────
+
+test('un paiement en attente réserve sa part : un second don concurrent ne peut pas dépasser la cible', function () {
+    fakeCreate();
+    $gift = Gift::factory()->for($this->event)->create(['target_amount' => 10000]);
+    $other = Guest::factory()->for($this->event)->create();
+    Contribution::factory()->for($other)->create(['amount' => 8000, 'gift_id' => $gift->id, 'status' => 'pending']);
+
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 3000, 'gift_id' => $gift->id])->assertSessionHasErrors('amount');
+    expect($this->guest->contributions()->count())->toBe(0);
+
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 2000, 'gift_id' => $gift->id])->assertSessionHasNoErrors();
+    expect($this->guest->contributions()->count())->toBe(1);
+});
+
+test('un paiement en attente depuis plus d\'une heure ne réserve plus rien', function () {
+    fakeCreate();
+    $gift = Gift::factory()->for($this->event)->create(['target_amount' => 10000]);
+    $other = Guest::factory()->for($this->event)->create();
+    Contribution::factory()->for($other)->create(['amount' => 8000, 'gift_id' => $gift->id, 'status' => 'pending', 'created_at' => now()->subHours(2)]);
+
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 9000, 'gift_id' => $gift->id])->assertSessionHasNoErrors();
+});
+
+test('un paiement échoué ou expiré ne réserve rien', function () {
+    fakeCreate();
+    $gift = Gift::factory()->for($this->event)->create(['target_amount' => 10000]);
+    $other = Guest::factory()->for($this->event)->create();
+    Contribution::factory()->for($other)->create(['amount' => 6000, 'gift_id' => $gift->id, 'status' => 'failed']);
+    Contribution::factory()->for($other)->create(['amount' => 4000, 'gift_id' => $gift->id, 'status' => 'expired']);
+
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 10000, 'gift_id' => $gift->id])->assertSessionHasNoErrors();
+});
+
+// ───────────── Réconciliation par lots ─────────────
+
+test('la réconciliation traite aussi les volumes supérieurs à un lot sans rien sauter', function () {
+    Contribution::factory()->for($this->guest)->count(230)->sequence(fn ($s) => ['payment_token' => 'tok_'.$s->index, 'amount' => 5000])->create();
+    fakeCheck('paid', 5000);
+
+    $this->artisan('contributions:reconcile')->assertSuccessful();
+
+    expect(Contribution::where('status', 'confirmed')->count())->toBe(230)->and(Contribution::where('status', 'pending')->count())->toBe(0);
+});
+
+test('l\'expiration traite aussi plusieurs lots', function () {
+    Contribution::factory()->for($this->guest)->count(230)->sequence(fn ($s) => ['payment_token' => 'old_'.$s->index, 'created_at' => now()->subHours(60)])->create();
+    fakeCheck('pending');
+
+    $this->artisan('contributions:reconcile')->assertSuccessful();
+
+    expect(Contribution::where('status', 'expired')->count())->toBe(230);
+});

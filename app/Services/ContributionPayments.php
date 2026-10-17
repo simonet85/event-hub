@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ContributionStatus;
+use App\Exceptions\GiftBudgetExceeded;
 use App\Exceptions\PaymentUnavailable;
 use App\Models\Contribution;
 use App\Models\Gift;
@@ -24,22 +25,43 @@ class ContributionPayments
     /** Délai au-delà duquel une contribution jamais payée expire. */
     public const EXPIRES_AFTER_HOURS = 48;
 
+    /** Durée pendant laquelle un paiement en attente réserve sa part d'un cadeau. */
+    public const RESERVATION_MINUTES = 60;
+
     /**
      * Crée la contribution puis la session de paiement MoneyFusion.
      *
+     * @throws GiftBudgetExceeded si le montant dépasse ce qu'il reste à financer pour le cadeau
      * @throws PaymentUnavailable si MoneyFusion refuse ou ne répond pas
      */
     public function start(Guest $guest, int $amount, ?Gift $gift = null, ?string $message = null): Contribution
     {
         $event = $guest->event;
 
-        $contribution = $guest->contributions()->create([
-            'event_id' => $event->id,
-            'gift_id' => $gift?->id,
-            'amount' => $amount,
-            'message' => $message,
-            'status' => ContributionStatus::Pending,
-        ]);
+        $contribution = DB::transaction(function () use ($guest, $event, $amount, $gift, $message): Contribution {
+            // Verrou sur le cadeau : deux dons concurrents ne peuvent pas dépasser la cible,
+            // car chacun voit la réservation (contribution en attente) de l'autre.
+            if ($gift) {
+                $locked = Gift::whereKey($gift->id)->lockForUpdate()->firstOrFail();
+                $reserved = $locked->contributions()
+                    ->where(fn ($q) => $q
+                        ->where('status', ContributionStatus::Confirmed)
+                        ->orWhere(fn ($q) => $q->where('status', ContributionStatus::Pending)->where('created_at', '>=', now()->subMinutes(self::RESERVATION_MINUTES))))
+                    ->sum('amount');
+
+                if ($amount > max(0, $locked->target_amount - $reserved)) {
+                    throw new GiftBudgetExceeded("Ce montant dépasse ce qu'il reste à financer pour ce cadeau.");
+                }
+            }
+
+            return $guest->contributions()->create([
+                'event_id' => $event->id,
+                'gift_id' => $gift?->id,
+                'amount' => $amount,
+                'message' => $message,
+                'status' => ContributionStatus::Pending,
+            ]);
+        });
 
         try {
             $result = MoneyFusion::createPayment([
