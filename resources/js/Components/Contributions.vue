@@ -46,14 +46,13 @@ const sendPhoto = () =>
                     v-model="entryForm.message"
                     rows="3"
                     placeholder="Laissez un message aux hôtes…"
-                    class="block w-full rounded-md border-gray-300 text-gray-900"
+                    class="input"
                 />
                 <p v-if="entryForm.errors.message" class="text-sm text-red-700">{{ entryForm.errors.message }}</p>
                 <button
                     type="submit"
                     :disabled="entryForm.processing || !entryForm.message"
-                    class="w-full rounded-md px-4 py-2 font-semibold text-white disabled:opacity-50"
-                    style="background-color: var(--event-primary)"
+                    class="w-full btn"
                 >
                     Publier mon message
                 </button>
@@ -81,13 +80,12 @@ const sendPhoto = () =>
                     accept="image/jpeg,image/png,image/webp"
                     @change="photoForm.photo = ($event.target as HTMLInputElement).files?.[0] ?? null"
                 />
-                <input v-model="photoForm.caption" type="text" placeholder="Légende (optionnel)" class="block w-full rounded-md border-gray-300 text-gray-900" />
+                <input v-model="photoForm.caption" type="text" placeholder="Légende (optionnel)" class="input" />
                 <p v-if="photoForm.errors.photo" class="text-sm text-red-700">{{ photoForm.errors.photo }}</p>
                 <button
                     type="submit"
                     :disabled="photoForm.processing || !photoForm.photo"
-                    class="w-full rounded-md px-4 py-2 font-semibold text-white disabled:opacity-50"
-                    style="background-color: var(--event-primary)"
+                    class="w-full btn"
                 >
                     Partager ma photo
                 </button>

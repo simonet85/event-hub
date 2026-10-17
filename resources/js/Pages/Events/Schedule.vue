@@ -46,10 +46,10 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
             <div class="mx-auto max-w-3xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <form class="space-y-3 card p-6" @submit.prevent="saveDetails">
                     <h3 class="font-semibold text-[var(--ink)]">Dress code et carte</h3>
-                    <input v-model="details.dress_code" placeholder="Dress code (ex : tenue de soirée)" class="block w-full rounded-md border-gray-300" />
+                    <input v-model="details.dress_code" placeholder="Dress code (ex : tenue de soirée)" class="input" />
                     <div class="grid grid-cols-2 gap-3">
-                        <input v-model.number="details.latitude" type="number" step="any" placeholder="Latitude" class="rounded-md border-gray-300" />
-                        <input v-model.number="details.longitude" type="number" step="any" placeholder="Longitude" class="rounded-md border-gray-300" />
+                        <input v-model.number="details.latitude" type="number" step="any" placeholder="Latitude" class="input !w-auto" />
+                        <input v-model.number="details.longitude" type="number" step="any" placeholder="Longitude" class="input !w-auto" />
                     </div>
                     <p v-for="(msg, key) in details.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
                     <p v-if="saved" class="text-sm text-green-700">Enregistré.</p>
@@ -60,11 +60,11 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
 
                 <form class="space-y-3 card p-6" @submit.prevent="addItem">
                     <h3 class="font-semibold text-[var(--ink)]">Ajouter une étape</h3>
-                    <input v-model="itemForm.starts_at" type="datetime-local" class="block w-full rounded-md border-gray-300" />
-                    <input v-model="itemForm.title" placeholder="Titre (ex : Cérémonie)" class="block w-full rounded-md border-gray-300" />
-                    <input v-model="itemForm.description" placeholder="Description (optionnel)" class="block w-full rounded-md border-gray-300" />
+                    <input v-model="itemForm.starts_at" type="datetime-local" class="input" />
+                    <input v-model="itemForm.title" placeholder="Titre (ex : Cérémonie)" class="input" />
+                    <input v-model="itemForm.description" placeholder="Description (optionnel)" class="input" />
                     <p v-for="(msg, key) in itemForm.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
-                    <button type="submit" :disabled="itemForm.processing" class="rounded-md bg-[var(--accent)] px-4 py-2 text-white disabled:opacity-50">
+                    <button type="submit" :disabled="itemForm.processing" class="btn">
                         Ajouter
                     </button>
                 </form>

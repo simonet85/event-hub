@@ -8,6 +8,8 @@ export interface User {
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
+    locale: string;
+    translations: Record<string, string>;
     auth: {
         user: User;
     };

@@ -82,25 +82,24 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
         <form class="space-y-3" @submit.prevent="submit">
             <label class="block">
                 <span class="text-sm">Je participe à</span>
-                <select :value="form.gift_id ?? ''" class="mt-1 block w-full rounded-md border-gray-300 text-gray-900" @change="pick(($event.target as HTMLSelectElement).value ? Number(($event.target as HTMLSelectElement).value) : null)">
+                <select :value="form.gift_id ?? ''" class="input" @change="pick(($event.target as HTMLSelectElement).value ? Number(($event.target as HTMLSelectElement).value) : null)">
                     <option value="">La cagnotte générale</option>
                     <option v-for="g in openGifts" :key="g.id" :value="g.id">{{ g.name }} (reste {{ fcfa(g.remaining) }})</option>
                 </select>
             </label>
             <label class="block">
                 <span class="text-sm">Montant (FCFA, minimum {{ MIN_AMOUNT }})</span>
-                <input v-model.number="form.amount" type="number" :min="MIN_AMOUNT" :max="maxAmount" step="1" inputmode="numeric" class="mt-1 block w-full rounded-md border-gray-300 text-gray-900" />
+                <input v-model.number="form.amount" type="number" :min="MIN_AMOUNT" :max="maxAmount" step="1" inputmode="numeric" class="input" />
             </label>
             <label class="block">
                 <span class="text-sm">Un petit mot (optionnel)</span>
-                <input v-model="form.message" type="text" maxlength="500" class="mt-1 block w-full rounded-md border-gray-300 text-gray-900" />
+                <input v-model="form.message" type="text" maxlength="500" class="input" />
             </label>
             <p v-for="(msg, key) in form.errors" :key="key" class="text-sm text-red-700">{{ msg }}</p>
             <button
                 type="submit"
                 :disabled="form.processing || !valid"
-                class="w-full rounded-md px-4 py-2 font-semibold text-white disabled:opacity-50"
-                style="background-color: var(--event-primary)"
+                class="w-full btn"
             >
                 Payer avec MoneyFusion
             </button>

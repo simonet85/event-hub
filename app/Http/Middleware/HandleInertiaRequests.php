@@ -31,6 +31,9 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            'locale' => fn () => app()->getLocale(),
+            // Le français est la langue source : seules les autres langues ont un fichier JSON.
+            'translations' => fn () => $this->translations(),
             'auth' => [
                 'user' => $request->user(),
             ],
@@ -44,5 +47,17 @@ class HandleInertiaRequests extends Middleware
                 'rsvp_saved' => fn () => $request->session()->get('rsvp_saved'),
             ],
         ];
+    }
+
+    /**
+     * Chaînes de l'interface pour la langue courante (lang/{locale}.json).
+     *
+     * @return array<string, string>
+     */
+    private function translations(): array
+    {
+        $path = lang_path(app()->getLocale().'.json');
+
+        return is_file($path) ? json_decode(file_get_contents($path), true) ?? [] : [];
     }
 }

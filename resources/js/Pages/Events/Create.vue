@@ -46,7 +46,7 @@ const submit = () => form.post(route('events.store'));
                 <form class="space-y-4 card p-6" @submit.prevent="submit">
                     <label class="block">
                         <span class="text-sm font-medium text-[var(--ink)]">Type</span>
-                        <select v-model="form.type" class="mt-1 block w-full rounded-md border-gray-300">
+                        <select v-model="form.type" class="input">
                             <option v-for="t in types" :key="t.value" :value="t.value">{{ t.label }}</option>
                         </select>
                         <span v-if="form.errors.type" class="text-sm text-red-600">{{ form.errors.type }}</span>
@@ -54,7 +54,7 @@ const submit = () => form.post(route('events.store'));
 
                     <label class="block">
                         <span class="text-sm font-medium text-[var(--ink)]">Titre</span>
-                        <input v-model="form.title" type="text" class="mt-1 block w-full rounded-md border-gray-300" />
+                        <input v-model="form.title" type="text" class="input" />
                         <span v-if="form.errors.title" class="text-sm text-red-600">{{ form.errors.title }}</span>
                     </label>
 
@@ -64,7 +64,7 @@ const submit = () => form.post(route('events.store'));
                             v-model="form.slug"
                             type="text"
                             placeholder="mariage-clara-thomas-2026"
-                            class="mt-1 block w-full rounded-md border-gray-300"
+                            class="input"
                         />
                         <span v-if="form.errors.slug" class="text-sm text-red-600">{{ form.errors.slug }}</span>
                     </label>
@@ -74,7 +74,7 @@ const submit = () => form.post(route('events.store'));
                         <input
                             v-model="form.event_date"
                             type="datetime-local"
-                            class="mt-1 block w-full rounded-md border-gray-300"
+                            class="input"
                         />
                         <span v-if="form.errors.event_date" class="text-sm text-red-600">{{
                             form.errors.event_date
@@ -86,7 +86,7 @@ const submit = () => form.post(route('events.store'));
                         <input
                             v-model="form.location_name"
                             type="text"
-                            class="mt-1 block w-full rounded-md border-gray-300"
+                            class="input"
                         />
                     </label>
 
@@ -95,7 +95,7 @@ const submit = () => form.post(route('events.store'));
                         <input
                             v-model="form.location_address"
                             type="text"
-                            class="mt-1 block w-full rounded-md border-gray-300"
+                            class="input"
                         />
                     </label>
 
@@ -104,7 +104,7 @@ const submit = () => form.post(route('events.store'));
                         <textarea
                             v-model="form.welcome_message"
                             rows="3"
-                            class="mt-1 block w-full rounded-md border-gray-300"
+                            class="input"
                         />
                     </label>
 
@@ -123,7 +123,7 @@ const submit = () => form.post(route('events.store'));
                         </label>
                         <label class="block">
                             <span class="text-sm font-medium text-[var(--ink)]">Police</span>
-                            <select v-model="form.theme_config.font_family" class="mt-1 block rounded-md border-gray-300">
+                            <select v-model="form.theme_config.font_family" class="input !w-auto">
                                 <option value="script">Manuscrite</option>
                                 <option value="serif">Élégante</option>
                                 <option value="body">Moderne</option>

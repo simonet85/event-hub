@@ -51,11 +51,11 @@ const badge = (status: string) =>
                 <form class="space-y-3 card p-6" @submit.prevent="saveSettings">
                     <h3 class="font-semibold text-[var(--ink)]">Réglages de la cagnotte</h3>
                     <label class="flex items-center gap-2">
-                        <input v-model="settings.cagnotte_enabled" type="checkbox" class="rounded border-gray-300" />
+                        <input v-model="settings.cagnotte_enabled" type="checkbox" class="check" />
                         <span class="text-sm text-[var(--ink)]">Activer la cagnotte et la liste de cadeaux pour les invités</span>
                     </label>
-                    <input v-model.number="settings.cagnotte_goal" type="number" min="100" placeholder="Objectif en FCFA (optionnel)" class="block w-full rounded-md border-gray-300" />
-                    <textarea v-model="settings.cagnotte_message" rows="2" placeholder="Message aux invités (optionnel)" class="block w-full rounded-md border-gray-300" />
+                    <input v-model.number="settings.cagnotte_goal" type="number" min="100" placeholder="Objectif en FCFA (optionnel)" class="input" />
+                    <textarea v-model="settings.cagnotte_message" rows="2" placeholder="Message aux invités (optionnel)" class="input" />
                     <p v-for="(msg, key) in settings.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
                     <p v-if="saved" class="text-sm text-green-700">Enregistré.</p>
                     <button type="submit" :disabled="settings.processing" class="btn disabled:opacity-50">Enregistrer</button>
@@ -63,11 +63,11 @@ const badge = (status: string) =>
 
                 <form class="space-y-3 card p-6" @submit.prevent="addGift">
                     <h3 class="font-semibold text-[var(--ink)]">Ajouter un cadeau</h3>
-                    <input v-model="giftForm.name" placeholder="Nom (ex : Voyage de noces)" class="block w-full rounded-md border-gray-300" />
-                    <input v-model="giftForm.description" placeholder="Description (optionnel)" class="block w-full rounded-md border-gray-300" />
-                    <input v-model.number="giftForm.target_amount" type="number" min="100" placeholder="Montant cible en FCFA" class="block w-full rounded-md border-gray-300" />
+                    <input v-model="giftForm.name" placeholder="Nom (ex : Voyage de noces)" class="input" />
+                    <input v-model="giftForm.description" placeholder="Description (optionnel)" class="input" />
+                    <input v-model.number="giftForm.target_amount" type="number" min="100" placeholder="Montant cible en FCFA" class="input" />
                     <p v-for="(msg, key) in giftForm.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
-                    <button type="submit" :disabled="giftForm.processing" class="rounded-md bg-[var(--accent)] px-4 py-2 text-white disabled:opacity-50">Ajouter</button>
+                    <button type="submit" :disabled="giftForm.processing" class="btn">Ajouter</button>
                 </form>
 
                 <ul v-if="gifts.length" class="divide-y card" data-testid="gift-list">

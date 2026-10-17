@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import FormField from '@/Components/ui/FormField.vue';
+import { translate as __ } from '@/i18n';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 
 defineProps<{
@@ -21,86 +20,28 @@ const form = useForm({
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-[var(--ink)]">
-                Profile Information
-            </h2>
-
-            <p class="mt-1 text-sm text-[var(--muted)]">
-                Update your account's profile information and email address.
-            </p>
+            <h2 class="display text-2xl">{{ __('Informations personnelles') }}</h2>
+            <p class="mt-1 text-sm text-[var(--muted)]">{{ __('Mettez à jour votre nom et votre adresse email.') }}</p>
         </header>
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
-            <div>
-                <InputLabel for="name" value="Name" />
+        <form class="mt-6 space-y-5" @submit.prevent="form.patch(route('profile.update'))">
+            <FormField id="name" v-model="form.name" :label="__('Nom')" :error="form.errors.name" required autofocus autocomplete="name" />
+            <FormField id="email" v-model="form.email" :label="__('Adresse email')" type="email" :error="form.errors.email" required autocomplete="username" />
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
-
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="mt-2 text-sm text-[var(--ink)]">
-                    Your email address is unverified.
-                    <Link
-                        :href="route('verification.send')"
-                        method="post"
-                        as="button"
-                        class="rounded-md text-sm text-[var(--muted)] underline hover:text-[var(--ink)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
-                    >
-                        Click here to re-send the verification email.
-                    </Link>
+            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="rounded-xl bg-amber-50 px-4 py-3 text-sm">
+                {{ __("Votre adresse email n'est pas vérifiée.") }}
+                <Link :href="route('verification.send')" method="post" as="button" class="font-semibold text-[var(--accent)] underline">
+                    {{ __("Renvoyer l'email de vérification") }}
+                </Link>
+                <p v-show="status === 'verification-link-sent'" class="mt-2 font-medium text-green-700">
+                    {{ __("Un nouveau lien de vérification vient d'être envoyé à votre adresse email.") }}
                 </p>
-
-                <div
-                    v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
-                >
-                    A new verification link has been sent to your email address.
-                </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-[var(--muted)]"
-                    >
-                        Saved.
-                    </p>
+                <PrimaryButton :disabled="form.processing">{{ __('Enregistrer') }}</PrimaryButton>
+                <Transition enter-active-class="transition" enter-from-class="opacity-0" leave-active-class="transition" leave-to-class="opacity-0">
+                    <p v-if="form.recentlySuccessful" class="text-sm text-green-700">✓ {{ __('Enregistré.') }}</p>
                 </Transition>
             </div>
         </form>

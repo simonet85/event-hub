@@ -8,6 +8,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ModerationController;
 use App\Http\Controllers\MoneyFusionWebhookController;
 use App\Http\Controllers\PhotoController;
@@ -27,9 +28,12 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update');
+
+// Point d'entrée après connexion : l'espace hôte est la liste des événements.
+Route::get('/dashboard', fn () => redirect()->route('events.index'))
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::get('/e/{event}', [EventController::class, 'showPublic'])->name('events.public');
 

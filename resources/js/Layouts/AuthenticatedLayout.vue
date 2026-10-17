@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LocaleSwitcher from '@/Components/ui/LocaleSwitcher.vue';
 import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -16,29 +17,26 @@ const open = ref(false);
                             :href="route('events.index')"
                             class="border-b-2 py-1"
                             :class="route().current('events.*') ? 'border-[var(--accent)]' : 'border-transparent hover:border-[var(--line)]'"
-                        >
-                            Mes événements
-                        </Link>
+                        >{{ __('Mes événements') }}</Link>
                         <Link
                             :href="route('profile.edit')"
                             class="border-b-2 py-1"
                             :class="route().current('profile.*') ? 'border-[var(--accent)]' : 'border-transparent hover:border-[var(--line)]'"
-                        >
-                            Profil
-                        </Link>
+                        >{{ __('Profil') }}</Link>
                     </div>
                 </div>
 
                 <div class="hidden items-center gap-4 sm:flex">
+                    <LocaleSwitcher />
                     <span class="chip">{{ $page.props.auth.user.name }}</span>
-                    <Link :href="route('logout')" method="post" as="button" class="text-sm font-semibold hover:underline">Déconnexion</Link>
+                    <Link :href="route('logout')" method="post" as="button" class="text-sm font-semibold hover:underline">{{ __('Déconnexion') }}</Link>
                 </div>
 
                 <button
                     type="button"
                     class="rounded-md p-2 sm:hidden"
                     :aria-expanded="open"
-                    aria-label="Menu"
+                    :aria-label="__('Menu')"
                     @click="open = !open"
                 >
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -49,9 +47,10 @@ const open = ref(false);
             </div>
 
             <div v-if="open" class="space-y-1 border-t border-[var(--line)] px-4 py-3 text-sm font-semibold sm:hidden">
-                <Link :href="route('events.index')" class="block py-2">Mes événements</Link>
-                <Link :href="route('profile.edit')" class="block py-2">Profil</Link>
-                <Link :href="route('logout')" method="post" as="button" class="block py-2">Déconnexion</Link>
+                <Link :href="route('events.index')" class="block py-2">{{ __('Mes événements') }}</Link>
+                <Link :href="route('profile.edit')" class="block py-2">{{ __('Profil') }}</Link>
+                <Link :href="route('logout')" method="post" as="button" class="block py-2">{{ __('Déconnexion') }}</Link>
+                <div class="pt-2"><LocaleSwitcher /></div>
                 <p class="eyebrow pt-2">{{ $page.props.auth.user.email }}</p>
             </div>
         </nav>

@@ -79,21 +79,21 @@ const pending = computed(() => props.summary.to_invite);
                 </dl>
 
                 <form class="grid gap-3 card p-6 sm:grid-cols-5" @submit.prevent="add">
-                    <input v-model="form.name" placeholder="Nom" class="rounded-md border-gray-300" />
-                    <input v-model="form.email" type="email" placeholder="Email" class="rounded-md border-gray-300" />
-                    <input v-model="form.phone" placeholder="Téléphone (+33...)" class="rounded-md border-gray-300" />
+                    <input v-model="form.name" placeholder="Nom" class="input !w-auto" />
+                    <input v-model="form.email" type="email" placeholder="Email" class="input !w-auto" />
+                    <input v-model="form.phone" placeholder="Téléphone (+33...)" class="input !w-auto" />
                     <input
                         v-model.number="form.max_companions"
                         type="number"
                         min="0"
                         max="10"
                         title="Accompagnants max"
-                        class="rounded-md border-gray-300"
+                        class="input !w-auto"
                     />
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="rounded-md bg-[var(--accent)] px-4 py-2 text-white disabled:opacity-50"
+                        class="btn"
                     >
                         Ajouter
                     </button>
@@ -137,7 +137,7 @@ const pending = computed(() => props.summary.to_invite);
                             <p v-if="g.rsvp_message" class="text-xs italic text-[var(--muted)]">« {{ g.rsvp_message }} »</p>
                         </div>
                         <div class="flex items-center gap-3 text-sm">
-                            <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="w-28 rounded-md border-gray-300 py-1 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
+                            <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="input !min-h-0 !w-28 !py-1 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
                             <a :href="g.invitation_url" target="_blank" class="font-semibold text-[var(--accent)] hover:underline">Voir</a>
                             <button v-if="g.email" class="font-semibold text-[var(--accent)] hover:underline" @click="send(g)">Envoyer par email</button>
                             <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="text-green-700">

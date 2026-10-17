@@ -58,7 +58,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
                     type="number"
                     min="0"
                     :max="guest.max_companions"
-                    class="mt-1 block w-full rounded-md border-gray-300 text-gray-900"
+                    class="input"
                 />
             </label>
             <label class="block">
@@ -66,7 +66,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
                 <input
                     v-model="form.dietary_restrictions"
                     type="text"
-                    class="mt-1 block w-full rounded-md border-gray-300 text-gray-900"
+                    class="input"
                 />
             </label>
             <label class="block">
@@ -74,7 +74,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
                 <input
                     v-model="form.favorite_song"
                     type="text"
-                    class="mt-1 block w-full rounded-md border-gray-300 text-gray-900"
+                    class="input"
                 />
             </label>
         </template>
@@ -84,7 +84,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
             <textarea
                 v-model="form.rsvp_message"
                 rows="2"
-                class="mt-1 block w-full rounded-md border-gray-300 text-gray-900"
+                class="input"
             />
         </label>
 
@@ -96,8 +96,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
         <button
             type="submit"
             :disabled="form.processing"
-            class="w-full rounded-md px-4 py-2 font-semibold text-white disabled:opacity-50"
-            style="background-color: var(--event-primary)"
+            class="w-full btn"
         >
             {{ guest.rsvp_status === 'pending' ? 'Envoyer ma réponse' : 'Mettre à jour ma réponse' }}
         </button>

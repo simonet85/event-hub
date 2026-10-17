@@ -15,6 +15,7 @@ declare global {
 declare module 'vue' {
     interface ComponentCustomProperties {
         route: typeof ziggyRoute;
+        __: (key: string, replacements?: Record<string, string | number>) => string;
     }
 }
 
