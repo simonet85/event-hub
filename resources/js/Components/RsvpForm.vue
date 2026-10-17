@@ -28,7 +28,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
 </script>
 
 <template>
-    <form class="w-full max-w-md space-y-4 rounded-2xl bg-white/70 p-6 text-left shadow-sm" @submit.prevent="submit">
+    <form class="w-full max-w-md space-y-4 card p-6 text-left" @submit.prevent="submit">
         <h2 class="text-center text-xl font-semibold">
             {{ guest.rsvp_status === 'pending' ? 'Serez-vous des nôtres ?' : 'Votre réponse' }}
         </h2>

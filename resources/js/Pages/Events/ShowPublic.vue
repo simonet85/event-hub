@@ -17,14 +17,14 @@ const formattedDate = computed(() =>
     <Head :title="event.title" />
 
     <EventPublicLayout :theme="event.theme_config">
-        <p class="mb-2 text-sm uppercase tracking-widest opacity-70">{{ event.type_label }}</p>
-        <h1 class="mb-8 break-words text-5xl sm:text-6xl" style="font-family: var(--event-font)">
+        <p class="eyebrow mb-3">{{ event.type_label }}</p>
+        <h1 class="display mb-8 break-words text-5xl sm:text-7xl" style="font-family: var(--event-font)">
             {{ event.title }}
         </h1>
 
         <Countdown :target="event.event_date" class="mb-10" />
 
-        <section class="w-full max-w-md space-y-4 rounded-2xl bg-white/70 p-6 shadow-sm">
+        <section class="w-full max-w-md space-y-4 card p-6">
             <div>
                 <h2 class="text-xs uppercase tracking-widest opacity-70">Date</h2>
                 <p class="text-lg first-letter:uppercase">{{ formattedDate }}</p>

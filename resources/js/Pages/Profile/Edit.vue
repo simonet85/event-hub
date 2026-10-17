@@ -17,7 +17,7 @@ defineProps<{
     <AuthenticatedLayout>
         <template #header>
             <h2
-                class="text-xl font-semibold leading-tight text-gray-800"
+                class="display text-3xl sm:text-4xl"
             >
                 Profile
             </h2>

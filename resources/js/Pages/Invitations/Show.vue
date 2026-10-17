@@ -38,13 +38,13 @@ const formattedDate = computed(() =>
     <Head :title="`Invitation - ${event.title}`" />
 
     <EventPublicLayout :theme="event.theme_config">
-        <p class="mb-2 text-sm uppercase tracking-widest opacity-70">{{ event.type_label }}</p>
-        <p class="mb-2 text-lg">Cher(e) {{ guest.name }}, vous êtes invité(e) à</p>
-        <h1 class="mb-8 break-words text-5xl sm:text-6xl" style="font-family: var(--event-font)">{{ event.title }}</h1>
+        <p class="eyebrow mb-3">{{ event.type_label }}</p>
+        <p class="mb-3 text-lg opacity-80">Cher(e) {{ guest.name }}, vous êtes invité(e) à</p>
+        <h1 class="display mb-8 break-words text-5xl sm:text-7xl" style="font-family: var(--event-font)">{{ event.title }}</h1>
 
         <Countdown :target="event.event_date" class="mb-10" />
 
-        <section class="w-full max-w-md space-y-4 rounded-2xl bg-white/70 p-6 shadow-sm">
+        <section class="w-full max-w-md space-y-4 card p-6">
             <p class="text-lg first-letter:uppercase">{{ formattedDate }}</p>
             <div v-if="event.location_name">
                 <p class="text-lg">{{ event.location_name }}</p>

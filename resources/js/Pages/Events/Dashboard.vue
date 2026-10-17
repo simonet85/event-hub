@@ -21,8 +21,8 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
     <AuthenticatedLayout>
         <template #header>
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">{{ event.title }}</h2>
-                <p class="text-sm text-gray-500" data-testid="days-left">
+                <h2 class="display text-3xl sm:text-4xl">{{ event.title }}</h2>
+                <p class="text-sm text-[var(--muted)]" data-testid="days-left">
                     {{ event.days_left === 0 ? 'C\'est aujourd\'hui !' : `J-${event.days_left}` }}
                 </p>
             </div>
@@ -31,14 +31,14 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
         <div class="py-12">
             <div class="mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <section>
-                    <h3 class="mb-3 text-lg font-semibold text-gray-900">Réponses des invités</h3>
+                    <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Réponses des invités</h3>
                     <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-3 lg:grid-cols-6" data-testid="rsvp">
-                        <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Invités</dt><dd class="text-2xl font-semibold">{{ rsvp.total }}</dd></div>
-                        <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Présents</dt><dd class="text-2xl font-semibold text-green-700">{{ rsvp.accepted }}</dd></div>
-                        <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Absents</dt><dd class="text-2xl font-semibold text-red-700">{{ rsvp.declined }}</dd></div>
-                        <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">En attente</dt><dd class="text-2xl font-semibold text-amber-600">{{ rsvp.pending }}</dd></div>
-                        <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Couverts attendus</dt><dd class="text-2xl font-semibold">{{ rsvp.headcount }}</dd></div>
-                        <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Taux de réponse</dt><dd class="text-2xl font-semibold">{{ rsvp.response_rate }} %</dd></div>
+                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Invités</dt><dd class="text-2xl font-semibold">{{ rsvp.total }}</dd></div>
+                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Présents</dt><dd class="text-2xl font-semibold text-green-700">{{ rsvp.accepted }}</dd></div>
+                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Absents</dt><dd class="text-2xl font-semibold text-red-700">{{ rsvp.declined }}</dd></div>
+                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">En attente</dt><dd class="text-2xl font-semibold text-amber-600">{{ rsvp.pending }}</dd></div>
+                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Couverts attendus</dt><dd class="text-2xl font-semibold">{{ rsvp.headcount }}</dd></div>
+                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Taux de réponse</dt><dd class="text-2xl font-semibold">{{ rsvp.response_rate }} %</dd></div>
                     </dl>
                     <p v-if="rsvp.to_invite > 0" class="mt-2 text-sm text-amber-700">
                         {{ rsvp.to_invite }} invité(s) n'ont pas encore reçu leur invitation.
@@ -46,8 +46,8 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                     </p>
                 </section>
 
-                <section class="rounded-lg bg-white p-6 shadow-sm">
-                    <h3 class="mb-3 text-lg font-semibold text-gray-900">Exports</h3>
+                <section class="card p-6">
+                    <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Exports</h3>
                     <div class="flex flex-wrap gap-3 text-sm" data-testid="exports">
                         <a :href="route('exports.xlsx', event.slug)" class="rounded-md border px-3 py-2">Excel (invités, régimes, plan de table)</a>
                         <a :href="route('exports.csv', event.slug)" class="rounded-md border px-3 py-2">CSV des invités</a>
@@ -59,42 +59,42 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                 <div class="grid gap-8 lg:grid-cols-2">
                     <section>
                         <div class="mb-3 flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-900">Plan de table</h3>
-                            <Link :href="route('guests.index', event.slug)" class="text-sm text-indigo-600">Attribuer les tables</Link>
+                            <h3 class="text-lg font-semibold text-[var(--ink)]">Plan de table</h3>
+                            <Link :href="route('guests.index', event.slug)" class="text-sm font-semibold text-[var(--accent)] hover:underline">Attribuer les tables</Link>
                         </div>
-                        <p v-if="tables.length === 0" class="text-gray-600">Aucun invité à placer.</p>
-                        <ul v-else class="divide-y rounded-lg bg-white shadow-sm" data-testid="tables">
+                        <p v-if="tables.length === 0" class="text-[var(--muted)]">Aucun invité à placer.</p>
+                        <ul v-else class="divide-y card" data-testid="tables">
                             <li v-for="t in tables" :key="t.table" class="flex justify-between p-3 text-sm">
-                                <span class="font-medium text-gray-900">{{ t.table }}</span>
-                                <span class="text-gray-500">{{ t.guests }} invité(s) · {{ t.headcount }} couvert(s)</span>
+                                <span class="font-medium text-[var(--ink)]">{{ t.table }}</span>
+                                <span class="text-[var(--muted)]">{{ t.guests }} invité(s) · {{ t.headcount }} couvert(s)</span>
                             </li>
                         </ul>
                     </section>
 
                     <section>
-                        <h3 class="mb-3 text-lg font-semibold text-gray-900">Régimes alimentaires</h3>
-                        <p v-if="dietary.length === 0" class="text-gray-600">Aucun régime particulier signalé.</p>
-                        <ul v-else class="divide-y rounded-lg bg-white shadow-sm" data-testid="dietary">
+                        <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Régimes alimentaires</h3>
+                        <p v-if="dietary.length === 0" class="text-[var(--muted)]">Aucun régime particulier signalé.</p>
+                        <ul v-else class="divide-y card" data-testid="dietary">
                             <li v-for="d in dietary" :key="d.guest + d.restriction" class="p-3 text-sm">
-                                <span class="font-medium text-gray-900">{{ d.guest }}</span>
-                                <span v-if="d.table" class="text-gray-400"> · {{ d.table }}</span>
-                                <p class="text-gray-600">{{ d.restriction }}</p>
+                                <span class="font-medium text-[var(--ink)]">{{ d.guest }}</span>
+                                <span v-if="d.table" class="text-[var(--muted)]"> · {{ d.table }}</span>
+                                <p class="text-[var(--muted)]">{{ d.restriction }}</p>
                             </li>
                         </ul>
                     </section>
                 </div>
 
-                <section v-if="cagnotte" class="rounded-lg bg-white p-6 shadow-sm" data-testid="cagnotte">
+                <section v-if="cagnotte" class="card p-6" data-testid="cagnotte">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-900">Cagnotte</h3>
-                        <Link :href="route('cagnotte.index', event.slug)" class="text-sm text-indigo-600">Détail</Link>
+                        <h3 class="text-lg font-semibold text-[var(--ink)]">Cagnotte</h3>
+                        <Link :href="route('cagnotte.index', event.slug)" class="text-sm font-semibold text-[var(--accent)] hover:underline">Détail</Link>
                     </div>
                     <p class="mt-1 text-2xl font-semibold text-green-700">{{ fcfa(cagnotte.raised) }}</p>
                     <div v-if="cagnotte.goal" class="mt-2">
                         <div class="h-2 overflow-hidden rounded-full bg-gray-200"><div class="h-full bg-green-600" :style="{ width: percent(cagnotte.raised, cagnotte.goal) + '%' }" /></div>
-                        <p class="mt-1 text-xs text-gray-500">objectif {{ fcfa(cagnotte.goal) }} ({{ percent(cagnotte.raised, cagnotte.goal) }} %)</p>
+                        <p class="mt-1 text-xs text-[var(--muted)]">objectif {{ fcfa(cagnotte.goal) }} ({{ percent(cagnotte.raised, cagnotte.goal) }} %)</p>
                     </div>
-                    <p class="mt-2 text-sm text-gray-500">
+                    <p class="mt-2 text-sm text-[var(--muted)]">
                         {{ cagnotte.pending }} en attente<span v-if="cagnotte.to_review > 0" class="text-red-700"> · {{ cagnotte.to_review }} à vérifier</span>
                     </p>
                 </section>

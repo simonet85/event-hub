@@ -50,10 +50,10 @@ const pending = computed(() => props.summary.to_invite);
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">Invités — {{ event.title }}</h2>
+                <h2 class="display text-3xl sm:text-4xl">Invités — {{ event.title }}</h2>
                 <button
                     :disabled="pending === 0"
-                    class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white disabled:opacity-40"
+                    class="btn disabled:opacity-40"
                     @click="sendAll"
                 >
                     Envoyer les invitations ({{ pending }})
@@ -71,14 +71,14 @@ const pending = computed(() => props.summary.to_invite);
                 </p>
 
                 <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-5" data-testid="rsvp-summary">
-                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Invités</dt><dd class="text-2xl font-semibold">{{ summary.total }}</dd></div>
-                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Présents</dt><dd class="text-2xl font-semibold text-green-700">{{ summary.accepted }}</dd></div>
-                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Absents</dt><dd class="text-2xl font-semibold text-red-700">{{ summary.declined }}</dd></div>
-                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">En attente</dt><dd class="text-2xl font-semibold text-amber-600">{{ summary.pending }}</dd></div>
-                    <div class="rounded-lg bg-white p-3 shadow-sm"><dt class="text-xs text-gray-500">Personnes attendues</dt><dd class="text-2xl font-semibold">{{ summary.headcount }}</dd></div>
+                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Invités</dt><dd class="text-2xl font-semibold">{{ summary.total }}</dd></div>
+                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Présents</dt><dd class="text-2xl font-semibold text-green-700">{{ summary.accepted }}</dd></div>
+                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Absents</dt><dd class="text-2xl font-semibold text-red-700">{{ summary.declined }}</dd></div>
+                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">En attente</dt><dd class="text-2xl font-semibold text-amber-600">{{ summary.pending }}</dd></div>
+                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Personnes attendues</dt><dd class="text-2xl font-semibold">{{ summary.headcount }}</dd></div>
                 </dl>
 
-                <form class="grid gap-3 rounded-lg bg-white p-6 shadow-sm sm:grid-cols-5" @submit.prevent="add">
+                <form class="grid gap-3 card p-6 sm:grid-cols-5" @submit.prevent="add">
                     <input v-model="form.name" placeholder="Nom" class="rounded-md border-gray-300" />
                     <input v-model="form.email" type="email" placeholder="Email" class="rounded-md border-gray-300" />
                     <input v-model="form.phone" placeholder="Téléphone (+33...)" class="rounded-md border-gray-300" />
@@ -102,7 +102,7 @@ const pending = computed(() => props.summary.to_invite);
                     </div>
                 </form>
 
-                <form class="flex items-center gap-3 rounded-lg bg-white p-4 shadow-sm" @submit.prevent="importCsv">
+                <form class="flex items-center gap-3 card p-4" @submit.prevent="importCsv">
                     <input
                         type="file"
                         accept=".csv,text/csv"
@@ -117,12 +117,12 @@ const pending = computed(() => props.summary.to_invite);
                     </button>
                 </form>
 
-                <p v-if="guests.data.length === 0" class="text-gray-600">Aucun invité pour le moment.</p>
-                <ul v-else class="divide-y rounded-lg bg-white shadow-sm">
+                <p v-if="guests.data.length === 0" class="text-[var(--muted)]">Aucun invité pour le moment.</p>
+                <ul v-else class="divide-y card">
                     <li v-for="g in guests.data" :key="g.id" class="flex flex-wrap items-center justify-between gap-2 p-4">
                         <div>
-                            <p class="font-medium text-gray-900">{{ g.name }}</p>
-                            <p class="text-sm text-gray-500">
+                            <p class="font-medium text-[var(--ink)]">{{ g.name }}</p>
+                            <p class="text-sm text-[var(--muted)]">
                                 {{ g.email ?? 'pas d\'email' }} · +{{ g.max_companions }} ·
                                 {{ g.invited_at ? 'invité' : 'non invité' }} ·
                                 <span :class="{ 'text-green-700': g.rsvp_status === 'accepted', 'text-red-700': g.rsvp_status === 'declined' }">
@@ -132,14 +132,14 @@ const pending = computed(() => props.summary.to_invite);
                                     (+{{ g.companions_count }})
                                 </template>
                             </p>
-                            <p v-if="g.dietary_restrictions" class="text-xs text-gray-500">Régime : {{ g.dietary_restrictions }}</p>
-                            <p v-if="g.favorite_song" class="text-xs text-gray-500">Chanson : {{ g.favorite_song }}</p>
-                            <p v-if="g.rsvp_message" class="text-xs italic text-gray-500">« {{ g.rsvp_message }} »</p>
+                            <p v-if="g.dietary_restrictions" class="text-xs text-[var(--muted)]">Régime : {{ g.dietary_restrictions }}</p>
+                            <p v-if="g.favorite_song" class="text-xs text-[var(--muted)]">Chanson : {{ g.favorite_song }}</p>
+                            <p v-if="g.rsvp_message" class="text-xs italic text-[var(--muted)]">« {{ g.rsvp_message }} »</p>
                         </div>
                         <div class="flex items-center gap-3 text-sm">
                             <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="w-28 rounded-md border-gray-300 py-1 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
-                            <a :href="g.invitation_url" target="_blank" class="text-indigo-600">Voir</a>
-                            <button v-if="g.email" class="text-indigo-600" @click="send(g)">Envoyer par email</button>
+                            <a :href="g.invitation_url" target="_blank" class="font-semibold text-[var(--accent)] hover:underline">Voir</a>
+                            <button v-if="g.email" class="font-semibold text-[var(--accent)] hover:underline" @click="send(g)">Envoyer par email</button>
                             <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="text-green-700">
                                 WhatsApp
                             </a>
@@ -154,10 +154,10 @@ const pending = computed(() => props.summary.to_invite);
                             :href="l.url"
                             preserve-scroll
                             class="rounded border px-3 py-1 text-sm"
-                            :class="l.active ? 'bg-gray-800 text-white' : 'bg-white'"
+                            :class="l.active ? 'bg-[var(--ink)] text-[var(--paper)]' : 'bg-white/70'"
                             v-html="l.label"
                         />
-                        <span v-else class="px-3 py-1 text-sm text-gray-400" v-html="l.label" />
+                        <span v-else class="px-3 py-1 text-sm text-[var(--muted)]" v-html="l.label" />
                     </template>
                 </nav>
             </div>

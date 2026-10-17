@@ -18,10 +18,10 @@ const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">Mes événements</h2>
+                <h2 class="display text-3xl sm:text-4xl">Mes événements</h2>
                 <Link
                     :href="route('events.create')"
-                    class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white"
+                    class="btn"
                 >
                     Nouvel événement
                 </Link>
@@ -30,20 +30,20 @@ const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' 
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <p v-if="events.data.length === 0" class="text-gray-600">Aucun événement pour le moment.</p>
-                <ul v-else class="divide-y rounded-lg bg-white shadow-sm">
+                <p v-if="events.data.length === 0" class="text-[var(--muted)]">Aucun événement pour le moment.</p>
+                <ul v-else class="divide-y card">
                     <li v-for="e in events.data" :key="e.id" class="flex items-center justify-between p-4">
                         <div>
-                            <p class="font-medium text-gray-900">{{ e.title }}</p>
-                            <p class="text-sm text-gray-500">{{ fmt(e.event_date) }}</p>
+                            <p class="font-medium text-[var(--ink)]">{{ e.title }}</p>
+                            <p class="text-sm text-[var(--muted)]">{{ fmt(e.event_date) }}</p>
                         </div>
                         <div class="flex gap-4 text-sm">
-                            <Link :href="route('dashboard.show', e.slug)" class="text-indigo-600">Tableau de bord</Link>
-                            <Link :href="route('schedule.index', e.slug)" class="text-indigo-600">Programme</Link>
-                            <Link :href="route('cagnotte.index', e.slug)" class="text-indigo-600">Cagnotte</Link>
-                            <Link :href="route('moderation.index', e.slug)" class="text-indigo-600">Modération</Link>
-                            <Link :href="route('guests.index', e.slug)" class="text-indigo-600">Invités</Link>
-                            <a :href="route('events.public', e.slug)" target="_blank" class="text-indigo-600">Page publique</a>
+                            <Link :href="route('dashboard.show', e.slug)" class="font-semibold text-[var(--accent)] hover:underline">Tableau de bord</Link>
+                            <Link :href="route('schedule.index', e.slug)" class="font-semibold text-[var(--accent)] hover:underline">Programme</Link>
+                            <Link :href="route('cagnotte.index', e.slug)" class="font-semibold text-[var(--accent)] hover:underline">Cagnotte</Link>
+                            <Link :href="route('moderation.index', e.slug)" class="font-semibold text-[var(--accent)] hover:underline">Modération</Link>
+                            <Link :href="route('guests.index', e.slug)" class="font-semibold text-[var(--accent)] hover:underline">Invités</Link>
+                            <a :href="route('events.public', e.slug)" target="_blank" class="font-semibold text-[var(--accent)] hover:underline">Page publique</a>
                         </div>
                     </li>
                 </ul>
@@ -53,10 +53,10 @@ const fmt = (d: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' 
                             v-if="l.url"
                             :href="l.url"
                             class="rounded border px-3 py-1 text-sm"
-                            :class="l.active ? 'bg-gray-800 text-white' : 'bg-white'"
+                            :class="l.active ? 'bg-[var(--ink)] text-[var(--paper)]' : 'bg-white/70'"
                             v-html="l.label"
                         />
-                        <span v-else class="px-3 py-1 text-sm text-gray-400" v-html="l.label" />
+                        <span v-else class="px-3 py-1 text-sm text-[var(--muted)]" v-html="l.label" />
                     </template>
                 </nav>
             </div>

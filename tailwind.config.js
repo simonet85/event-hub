@@ -12,8 +12,12 @@ export default {
     ],
     theme: {
         extend: {
+            keyframes: {
+                'fade-up': { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'none' } },
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                display: ['Fraunces', '"Playfair Display"', ...defaultTheme.fontFamily.serif],
                 script: ['"Great Vibes"', 'cursive'],
                 serif: ['"Playfair Display"', ...defaultTheme.fontFamily.serif],
                 body: ['Montserrat', ...defaultTheme.fontFamily.sans],

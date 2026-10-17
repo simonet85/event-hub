@@ -26,13 +26,18 @@ const parts = computed(() => {
 </script>
 
 <template>
-    <p v-if="finished" data-testid="countdown-finished" class="text-xl">C'est le grand jour !</p>
-    <div v-else class="flex justify-center gap-3 sm:gap-6" data-testid="countdown">
-        <div v-for="part in parts" :key="part.label" class="min-w-[4.5rem] text-center">
-            <div class="text-3xl font-semibold tabular-nums sm:text-4xl" :data-testid="`countdown-${part.label}`">
+    <p v-if="finished" data-testid="countdown-finished" class="display text-3xl">C'est le <em>grand jour !</em></p>
+    <div v-else class="flex justify-center gap-2 sm:gap-4" data-testid="countdown">
+        <div v-for="part in parts" :key="part.label" class="card min-w-[4.25rem] px-2 py-3 text-center sm:min-w-[5.5rem] sm:py-4">
+            <!-- La clé relance l'animation d'apparition du chiffre à chaque changement. -->
+            <div
+                :key="part.value"
+                class="display animate-[fade-up_0.35s_ease] text-3xl tabular-nums sm:text-5xl"
+                :data-testid="`countdown-${part.label}`"
+            >
                 {{ String(part.value).padStart(2, '0') }}
             </div>
-            <div class="text-xs uppercase tracking-wide opacity-70">{{ part.label }}</div>
+            <div class="eyebrow mt-1 !text-[0.6rem] sm:!text-[0.68rem]">{{ part.label }}</div>
         </div>
     </div>
 </template>

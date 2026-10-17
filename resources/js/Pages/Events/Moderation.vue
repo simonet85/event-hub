@@ -23,19 +23,19 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">Modération — {{ event.title }}</h2>
+            <h2 class="display text-3xl sm:text-4xl">Modération — {{ event.title }}</h2>
         </template>
 
         <div class="py-12">
             <div class="mx-auto max-w-5xl space-y-10 px-4 sm:px-6 lg:px-8">
                 <section>
-                    <h3 class="mb-3 text-lg font-semibold text-gray-900">Livre d'or</h3>
-                    <p v-if="entries.length === 0" class="text-gray-600">Aucun message.</p>
-                    <ul v-else class="divide-y rounded-lg bg-white shadow-sm">
+                    <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Livre d'or</h3>
+                    <p v-if="entries.length === 0" class="text-[var(--muted)]">Aucun message.</p>
+                    <ul v-else class="divide-y card">
                         <li v-for="e in entries" :key="e.id" class="flex flex-wrap items-start justify-between gap-3 p-4">
                             <div class="min-w-0 flex-1">
-                                <p class="whitespace-pre-line text-gray-900">{{ e.message }}</p>
-                                <p class="text-xs text-gray-500">{{ e.author }} · {{ labels[e.status] }}</p>
+                                <p class="whitespace-pre-line text-[var(--ink)]">{{ e.message }}</p>
+                                <p class="text-xs text-[var(--muted)]">{{ e.author }} · {{ labels[e.status] }}</p>
                             </div>
                             <div class="flex gap-3 text-sm">
                                 <button v-if="e.status !== 'approved'" class="text-green-700" @click="setEntry(e.id, 'approved')">Publier</button>
@@ -47,13 +47,13 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
                 </section>
 
                 <section>
-                    <h3 class="mb-3 text-lg font-semibold text-gray-900">Photos</h3>
-                    <p v-if="photos.length === 0" class="text-gray-600">Aucune photo.</p>
+                    <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Photos</h3>
+                    <p v-if="photos.length === 0" class="text-[var(--muted)]">Aucune photo.</p>
                     <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <figure v-for="p in photos" :key="p.id" class="overflow-hidden rounded-lg bg-white shadow-sm">
+                        <figure v-for="p in photos" :key="p.id" class="overflow-hidden card">
                             <img :src="p.url" :alt="p.caption ?? `Photo de ${p.author}`" loading="lazy" class="aspect-square w-full object-cover" />
                             <figcaption class="space-y-2 p-3 text-sm">
-                                <p class="text-gray-500">{{ p.author }} · {{ labels[p.status] }}<span v-if="p.caption"> · {{ p.caption }}</span></p>
+                                <p class="text-[var(--muted)]">{{ p.author }} · {{ labels[p.status] }}<span v-if="p.caption"> · {{ p.caption }}</span></p>
                                 <div class="flex gap-3">
                                     <button v-if="p.status !== 'approved'" class="text-green-700" @click="setPhoto(p.id, 'approved')">Publier</button>
                                     <button v-if="p.status !== 'rejected'" class="text-amber-700" @click="setPhoto(p.id, 'rejected')">Refuser</button>

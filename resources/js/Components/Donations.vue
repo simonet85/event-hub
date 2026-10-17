@@ -35,7 +35,7 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
 </script>
 
 <template>
-    <section class="w-full max-w-md space-y-4 rounded-2xl bg-white/70 p-6 text-left shadow-sm" data-testid="donations">
+    <section class="w-full max-w-md space-y-4 card p-6 text-left" data-testid="donations">
         <h2 class="text-center text-xl font-semibold">Cagnotte &amp; cadeaux</h2>
         <p v-if="cagnotte.message" class="text-center text-sm italic">{{ cagnotte.message }}</p>
 
