@@ -34,7 +34,6 @@ defineExpose({ focus: () => input.value?.focus() });
             class="absolute inset-y-0 end-0 flex w-12 items-center justify-center text-[var(--muted)] hover:text-[var(--ink)]"
             :aria-label="revealed ? __('Masquer le mot de passe') : __('Afficher le mot de passe')"
             :aria-pressed="revealed"
-            tabindex="-1"
             @click="revealed = !revealed"
         >
             <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
