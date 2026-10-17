@@ -43,6 +43,11 @@ class Guest extends Model
         return $this->belongsTo(Event::class);
     }
 
+    public function contributions(): HasMany
+    {
+        return $this->hasMany(Contribution::class);
+    }
+
     public function guestbookEntries(): HasMany
     {
         return $this->hasMany(GuestbookEntry::class);

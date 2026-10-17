@@ -11,6 +11,7 @@
         "laravel/framework": "^13.17",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
+        "simonet85/laravel-moneyfusion": "dev-main",
         "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
@@ -87,5 +88,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "moneyfusion": {
+            "type": "path",
+            "url": "../laravel-moneyfusion"
+        }
+    }
 }

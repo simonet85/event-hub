@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\CagnotteController;
 use App\Http\Controllers\ContributionController;
+use App\Http\Controllers\DonationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ModerationController;
+use App\Http\Controllers\MoneyFusionWebhookController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RsvpController;
@@ -33,12 +36,19 @@ Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middlewa
 Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:10,1')->name('guestbook.store');
 Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:20,1')->name('photos.store');
 Route::get('/photos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
+Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
+Route::get('/i/{guest:token}/donations/{contribution}/return', [DonationController::class, 'return'])->name('donations.return');
+Route::post('/webhooks/moneyfusion', MoneyFusionWebhookController::class)->middleware('throttle:120,1')->name('webhooks.moneyfusion');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/events/{event}/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::post('/events/{event}/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
     Route::delete('/events/{event}/schedule/{item}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
     Route::patch('/events/{event}/details', [ScheduleController::class, 'updateDetails'])->name('events.details');
+    Route::get('/events/{event}/cagnotte', [CagnotteController::class, 'index'])->name('cagnotte.index');
+    Route::patch('/events/{event}/cagnotte', [CagnotteController::class, 'updateSettings'])->name('cagnotte.settings');
+    Route::post('/events/{event}/gifts', [CagnotteController::class, 'storeGift'])->name('gifts.store');
+    Route::delete('/events/{event}/gifts/{gift}', [CagnotteController::class, 'destroyGift'])->name('gifts.destroy');
     Route::get('/events/{event}/moderation', [ModerationController::class, 'index'])->name('moderation.index');
     Route::patch('/events/{event}/guestbook/{entry}', [ModerationController::class, 'updateEntry'])->name('moderation.entries.update');
     Route::delete('/events/{event}/guestbook/{entry}', [ModerationController::class, 'destroyEntry'])->name('moderation.entries.destroy');

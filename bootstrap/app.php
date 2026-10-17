@@ -19,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        // Notifications MoneyFusion (non signées, non navigateur) : pas de jeton CSRF.
+        $middleware->validateCsrfTokens(except: ['webhooks/moneyfusion']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

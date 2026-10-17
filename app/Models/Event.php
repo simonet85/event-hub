@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContributionStatus;
 use App\Enums\EventType;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['title', 'slug', 'type', 'event_date', 'location_name', 'location_address', 'welcome_message', 'theme_config', 'dress_code', 'latitude', 'longitude'])]
+#[Fillable(['title', 'slug', 'type', 'event_date', 'location_name', 'location_address', 'welcome_message', 'theme_config', 'dress_code', 'latitude', 'longitude', 'cagnotte_enabled', 'cagnotte_goal', 'cagnotte_message'])]
 class Event extends Model
 {
     /** @use HasFactory<EventFactory> */
@@ -22,6 +23,8 @@ class Event extends Model
             'type' => EventType::class,
             'event_date' => 'datetime',
             'theme_config' => 'array',
+            'cagnotte_enabled' => 'boolean',
+            'cagnotte_goal' => 'integer',
             'latitude' => 'float',
             'longitude' => 'float',
         ];
@@ -35,6 +38,58 @@ class Event extends Model
     public function guests(): HasMany
     {
         return $this->hasMany(Guest::class);
+    }
+
+    public function gifts(): HasMany
+    {
+        return $this->hasMany(Gift::class);
+    }
+
+    public function contributions(): HasMany
+    {
+        return $this->hasMany(Contribution::class);
+    }
+
+    /**
+     * Cagnotte et liste de cadeaux vues par un invité. Seules les contributions
+     * confirmées par MoneyFusion comptent ; les montants individuels des autres invités restent privés.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function cagnottePayload(Guest $guest): ?array
+    {
+        if (! $this->cagnotte_enabled) {
+            return null;
+        }
+
+        $confirmed = $this->contributions()->where('status', ContributionStatus::Confirmed);
+        $raisedByGift = (clone $confirmed)->whereNotNull('gift_id')->selectRaw('gift_id, sum(amount) as raised')->groupBy('gift_id')->pluck('raised', 'gift_id');
+
+        return [
+            'goal' => $this->cagnotte_goal,
+            'message' => $this->cagnotte_message,
+            'raised' => (int) (clone $confirmed)->sum('amount'),
+            'gifts' => $this->gifts()->orderBy('id')->get()->map(function (Gift $gift) use ($raisedByGift): array {
+                $raised = (int) ($raisedByGift[$gift->id] ?? 0);
+
+                return [
+                    'id' => $gift->id,
+                    'name' => $gift->name,
+                    'description' => $gift->description,
+                    'target_amount' => $gift->target_amount,
+                    'raised' => $raised,
+                    'remaining' => max(0, $gift->target_amount - $raised),
+                ];
+            })->all(),
+            'mine' => $guest->contributions()->with('gift:id,name')->latest()->limit(20)->get()->map(fn (Contribution $c): array => [
+                'id' => $c->id,
+                'amount' => $c->amount,
+                'gift' => $c->gift?->name,
+                'status' => $c->status->value,
+                'status_label' => $c->status->label(),
+                'payment_url' => $c->status === ContributionStatus::Pending ? $c->payment_url : null,
+            ])->all(),
+        ];
     }
 
     public function guestbookEntries(): HasMany

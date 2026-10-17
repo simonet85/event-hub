@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Countdown from '@/Components/Countdown.vue';
 import Contributions from '@/Components/Contributions.vue';
+import Donations, { type CagnottePayload } from '@/Components/Donations.vue';
 import EventDetails from '@/Components/EventDetails.vue';
 import QrCode from '@/Components/QrCode.vue';
 import RsvpForm from '@/Components/RsvpForm.vue';
@@ -21,6 +22,7 @@ const props = defineProps<{
         rsvp_message: string | null;
     };
     token: string;
+    cagnotte: CagnottePayload | null;
     guestbook: { id: number; author: string; message: string }[];
     photos: { id: number; author: string; caption: string | null; url: string }[];
     mine: { pending_entries: number; pending_photos: number };
@@ -61,6 +63,8 @@ const formattedDate = computed(() =>
         <EventDetails :event="event" class="mt-8" />
 
         <RsvpForm :token="token" :guest="guest" class="mt-8" />
+
+        <Donations v-if="cagnotte" :token="token" :cagnotte="cagnotte" class="mt-8" />
 
         <Contributions :token="token" :guestbook="guestbook" :photos="photos" :mine="mine" class="mt-8" />
     </EventPublicLayout>

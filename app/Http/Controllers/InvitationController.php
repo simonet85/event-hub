@@ -40,6 +40,7 @@ class InvitationController extends Controller
                 ->map(fn (GuestbookEntry $e) => ['id' => $e->id, 'author' => $e->guest->name, 'message' => $e->message]),
             'photos' => $event->photos()->where('status', ModerationStatus::Approved)->with('guest:id,name')->latest()->get()
                 ->map(fn (Photo $p) => ['id' => $p->id, 'author' => $p->guest->name, 'caption' => $p->caption, 'url' => $p->url()]),
+            'cagnotte' => $event->cagnottePayload($guest),
             'mine' => [
                 'pending_entries' => $guest->guestbookEntries()->where('status', ModerationStatus::Pending)->count(),
                 'pending_photos' => $guest->photos()->where('status', ModerationStatus::Pending)->count(),
