@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import EventHeader from '@/Components/ui/EventHeader.vue';
+import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -36,20 +38,20 @@ const badge = (status: string) =>
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="display text-3xl sm:text-4xl">Cagnotte &amp; cadeaux — {{ event.title }}</h2>
+            <EventHeader :event="event" title="Cagnotte &amp; cadeaux" current="cagnotte"></EventHeader>
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-5xl space-y-8 px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-4" data-testid="stats">
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Collecté (confirmé)</dt><dd class="text-xl font-semibold text-green-700">{{ fcfa(stats.raised) }}</dd></div>
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Contributions</dt><dd class="text-xl font-semibold">{{ stats.confirmed }}</dd></div>
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">En attente</dt><dd class="text-xl font-semibold text-amber-600">{{ stats.pending }}</dd></div>
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">À vérifier</dt><dd class="text-xl font-semibold text-red-700">{{ stats.to_review }}</dd></div>
+                    <StatCard label="Collecté (confirmé)" :value="fcfa(stats.raised)" tone="good" />
+                    <StatCard label="Contributions" :value="stats.confirmed" />
+                    <StatCard label="En attente" :value="stats.pending" tone="warn" />
+                    <StatCard label="À vérifier" :value="stats.to_review" tone="bad" />
                 </dl>
 
                 <form class="space-y-3 card p-6" @submit.prevent="saveSettings">
-                    <h3 class="font-semibold text-[var(--ink)]">Réglages de la cagnotte</h3>
+                    <h3 class="display text-2xl">Réglages de la cagnotte</h3>
                     <label class="flex items-center gap-2">
                         <input v-model="settings.cagnotte_enabled" type="checkbox" class="check" />
                         <span class="text-sm text-[var(--ink)]">Activer la cagnotte et la liste de cadeaux pour les invités</span>
@@ -62,7 +64,7 @@ const badge = (status: string) =>
                 </form>
 
                 <form class="space-y-3 card p-6" @submit.prevent="addGift">
-                    <h3 class="font-semibold text-[var(--ink)]">Ajouter un cadeau</h3>
+                    <h3 class="display text-2xl">Ajouter un cadeau</h3>
                     <input v-model="giftForm.name" placeholder="Nom (ex : Voyage de noces)" class="input" />
                     <input v-model="giftForm.description" placeholder="Description (optionnel)" class="input" />
                     <input v-model.number="giftForm.target_amount" type="number" min="100" placeholder="Montant cible en FCFA" class="input" />
@@ -81,7 +83,7 @@ const badge = (status: string) =>
                 </ul>
 
                 <section>
-                    <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Contributions</h3>
+                    <h3 class="mb-3 display text-2xl">Contributions</h3>
                     <p v-if="contributions.data.length === 0" class="text-[var(--muted)]">Aucune contribution pour le moment.</p>
                     <ul v-else class="divide-y card">
                         <li v-for="c in contributions.data" :key="c.id" class="flex flex-wrap items-start justify-between gap-2 p-4">

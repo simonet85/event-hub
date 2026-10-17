@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InputError from '@/Components/InputError.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -45,32 +46,32 @@ const submit = () => form.post(route('events.store'));
             <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
                 <form class="space-y-4 card p-6" @submit.prevent="submit">
                     <label class="block">
-                        <span class="text-sm font-medium text-[var(--ink)]">Type</span>
+                        <span class="field-label">Type</span>
                         <select v-model="form.type" class="input">
                             <option v-for="t in types" :key="t.value" :value="t.value">{{ t.label }}</option>
                         </select>
-                        <span v-if="form.errors.type" class="text-sm text-red-600">{{ form.errors.type }}</span>
+                        <InputError :message="form.errors.type" class="mt-1" />
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium text-[var(--ink)]">Titre</span>
+                        <span class="field-label">Titre</span>
                         <input v-model="form.title" type="text" class="input" />
-                        <span v-if="form.errors.title" class="text-sm text-red-600">{{ form.errors.title }}</span>
+                        <InputError :message="form.errors.title" class="mt-1" />
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium text-[var(--ink)]">Adresse personnalisée (optionnel)</span>
+                        <span class="field-label">Adresse personnalisée (optionnel)</span>
                         <input
                             v-model="form.slug"
                             type="text"
                             placeholder="mariage-clara-thomas-2026"
                             class="input"
                         />
-                        <span v-if="form.errors.slug" class="text-sm text-red-600">{{ form.errors.slug }}</span>
+                        <InputError :message="form.errors.slug" class="mt-1" />
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium text-[var(--ink)]">Date et heure</span>
+                        <span class="field-label">Date et heure</span>
                         <input
                             v-model="form.event_date"
                             type="datetime-local"
@@ -82,7 +83,7 @@ const submit = () => form.post(route('events.store'));
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium text-[var(--ink)]">Lieu</span>
+                        <span class="field-label">Lieu</span>
                         <input
                             v-model="form.location_name"
                             type="text"
@@ -91,7 +92,7 @@ const submit = () => form.post(route('events.store'));
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium text-[var(--ink)]">Adresse du lieu</span>
+                        <span class="field-label">Adresse du lieu</span>
                         <input
                             v-model="form.location_address"
                             type="text"
@@ -100,7 +101,7 @@ const submit = () => form.post(route('events.store'));
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium text-[var(--ink)]">Message d'accueil</span>
+                        <span class="field-label">Message d'accueil</span>
                         <textarea
                             v-model="form.welcome_message"
                             rows="3"
@@ -110,19 +111,19 @@ const submit = () => form.post(route('events.store'));
 
                     <div class="flex gap-6">
                         <label class="block">
-                            <span class="text-sm font-medium text-[var(--ink)]">Couleur principale</span>
-                            <input v-model="form.theme_config.primary_color" type="color" class="mt-1 block h-10 w-20" />
+                            <span class="field-label">Couleur principale</span>
+                            <input v-model="form.theme_config.primary_color" type="color" class="color-input" />
                         </label>
                         <label class="block">
-                            <span class="text-sm font-medium text-[var(--ink)]">Fond</span>
+                            <span class="field-label">Fond</span>
                             <input
                                 v-model="form.theme_config.secondary_color"
                                 type="color"
-                                class="mt-1 block h-10 w-20"
+                                class="color-input"
                             />
                         </label>
                         <label class="block">
-                            <span class="text-sm font-medium text-[var(--ink)]">Police</span>
+                            <span class="field-label">Police</span>
                             <select v-model="form.theme_config.font_family" class="input !w-auto">
                                 <option value="script">Manuscrite</option>
                                 <option value="serif">Élégante</option>

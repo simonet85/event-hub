@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import EventHeader from '@/Components/ui/EventHeader.vue';
+import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import type { ScheduleEntry } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
@@ -39,13 +41,13 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="display text-3xl sm:text-4xl">Programme — {{ event.title }}</h2>
+            <EventHeader :event="event" title="Programme" current="schedule"></EventHeader>
         </template>
 
         <div class="py-12">
             <div class="mx-auto max-w-3xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <form class="space-y-3 card p-6" @submit.prevent="saveDetails">
-                    <h3 class="font-semibold text-[var(--ink)]">Dress code et carte</h3>
+                    <h3 class="display text-2xl">Dress code et carte</h3>
                     <input v-model="details.dress_code" placeholder="Dress code (ex : tenue de soirée)" class="input" />
                     <div class="grid grid-cols-2 gap-3">
                         <input v-model.number="details.latitude" type="number" step="any" placeholder="Latitude" class="input !w-auto" />
@@ -59,7 +61,7 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
                 </form>
 
                 <form class="space-y-3 card p-6" @submit.prevent="addItem">
-                    <h3 class="font-semibold text-[var(--ink)]">Ajouter une étape</h3>
+                    <h3 class="display text-2xl">Ajouter une étape</h3>
                     <input v-model="itemForm.starts_at" type="datetime-local" class="input" />
                     <input v-model="itemForm.title" placeholder="Titre (ex : Cérémonie)" class="input" />
                     <input v-model="itemForm.description" placeholder="Description (optionnel)" class="input" />

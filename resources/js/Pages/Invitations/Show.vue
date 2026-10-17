@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import Countdown from '@/Components/Countdown.vue';
 import Contributions from '@/Components/Contributions.vue';
 import Donations, { type CagnottePayload } from '@/Components/Donations.vue';
 import EventDetails from '@/Components/EventDetails.vue';
 import QrCode from '@/Components/QrCode.vue';
 import RsvpForm from '@/Components/RsvpForm.vue';
+import EventHero from '@/Components/ui/EventHero.vue';
+import Reveal from '@/Components/ui/Reveal.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import type { PublicEvent } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { computed } from 'vue';
 
-const props = defineProps<{
+defineProps<{
     guest: {
         name: string;
         max_companions: number;
@@ -28,44 +28,38 @@ const props = defineProps<{
     mine: { pending_entries: number; pending_photos: number };
     event: PublicEvent;
 }>();
-
-const formattedDate = computed(() =>
-    new Intl.DateTimeFormat('fr-FR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date(props.event.event_date)),
-);
 </script>
 
 <template>
     <Head :title="`Invitation - ${event.title}`" />
 
     <EventPublicLayout :theme="event.theme_config">
-        <p class="eyebrow mb-3">{{ event.type_label }}</p>
-        <p class="mb-3 text-lg opacity-80">Cher(e) {{ guest.name }}, vous êtes invité(e) à</p>
-        <h1 class="display mb-8 break-words text-5xl sm:text-7xl" style="font-family: var(--event-font)">{{ event.title }}</h1>
+        <EventHero :event="event" :greeting="`Cher(e) ${guest.name}, vous êtes invité(e) à`" />
 
-        <Countdown :target="event.event_date" class="mb-10" />
+        <Reveal class="w-full">
+            <section class="card mx-auto w-full max-w-md space-y-5 p-8">
+                <div v-if="event.location_name">
+                    <h2 class="eyebrow">Lieu</h2>
+                    <p class="display mt-1 text-2xl">{{ event.location_name }}</p>
+                    <p v-if="event.location_address" class="text-sm opacity-80">{{ event.location_address }}</p>
+                </div>
+                <p v-if="guest.max_companions > 0" class="text-sm">
+                    Vous pouvez venir avec {{ guest.max_companions }}
+                    accompagnant{{ guest.max_companions > 1 ? 's' : '' }}.
+                </p>
+                <p v-if="event.welcome_message" class="border-t border-[var(--line)] pt-5 italic">{{ event.welcome_message }}</p>
+                <div class="border-t border-dashed border-[var(--line)] pt-5">
+                    <p class="eyebrow mb-3">Votre billet</p>
+                    <div class="flex justify-center">
+                        <QrCode :value="guest.url" :size="160" :color="event.theme_config.primary_color" />
+                    </div>
+                </div>
+            </section>
+        </Reveal>
 
-        <section class="w-full max-w-md space-y-4 card p-6">
-            <p class="text-lg first-letter:uppercase">{{ formattedDate }}</p>
-            <div v-if="event.location_name">
-                <p class="text-lg">{{ event.location_name }}</p>
-                <p v-if="event.location_address" class="text-sm opacity-80">{{ event.location_address }}</p>
-            </div>
-            <p v-if="guest.max_companions > 0" class="text-sm">
-                Vous pouvez venir avec {{ guest.max_companions }}
-                accompagnant{{ guest.max_companions > 1 ? 's' : '' }}.
-            </p>
-            <p v-if="event.welcome_message" class="border-t pt-4 italic">{{ event.welcome_message }}</p>
-            <div class="flex justify-center border-t pt-4">
-                <QrCode :value="guest.url" :size="160" :color="event.theme_config.primary_color" />
-            </div>
-        </section>
-
-        <EventDetails :event="event" class="mt-8" />
-
-        <RsvpForm :token="token" :guest="guest" class="mt-8" />
-
-        <Donations v-if="cagnotte" :token="token" :cagnotte="cagnotte" class="mt-8" />
-
-        <Contributions :token="token" :guestbook="guestbook" :photos="photos" :mine="mine" class="mt-8" />
+        <Reveal class="mt-8 w-full"><EventDetails :event="event" /></Reveal>
+        <Reveal class="mt-8 flex w-full justify-center"><RsvpForm :token="token" :guest="guest" /></Reveal>
+        <Reveal v-if="cagnotte" class="mt-8 flex w-full justify-center"><Donations :token="token" :cagnotte="cagnotte" /></Reveal>
+        <Reveal class="mt-8 flex w-full justify-center"><Contributions :token="token" :guestbook="guestbook" :photos="photos" :mine="mine" /></Reveal>
     </EventPublicLayout>
 </template>

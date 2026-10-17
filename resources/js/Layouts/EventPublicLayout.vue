@@ -33,7 +33,7 @@ const style = computed(() => ({
             style="background: radial-gradient(60% 80% at 50% 0%, color-mix(in srgb, var(--event-primary) 16%, transparent), transparent)"
             aria-hidden="true"
         />
-        <main class="relative mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-14 text-center">
+        <main class="relative mx-auto flex min-h-screen max-w-3xl flex-col items-center px-4 pb-20 text-center">
             <slot />
         </main>
     </div>

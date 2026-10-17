@@ -7,9 +7,9 @@ const time = (iso: string) => new Intl.DateTimeFormat('fr-FR', { hour: '2-digit'
 </script>
 
 <template>
-    <div class="w-full max-w-md space-y-6 text-left">
+    <div class="mx-auto w-full max-w-md space-y-6 text-left">
         <section v-if="event.schedule.length" class="card p-6" data-testid="schedule">
-            <h2 class="mb-4 text-center text-xl font-semibold">Programme</h2>
+            <h2 class="display mb-4 text-center text-3xl">Programme</h2>
             <ol class="space-y-3 border-l-2 pl-4" style="border-color: var(--event-primary)">
                 <li v-for="item in event.schedule" :key="item.id">
                     <p class="font-semibold">
@@ -21,7 +21,7 @@ const time = (iso: string) => new Intl.DateTimeFormat('fr-FR', { hour: '2-digit'
         </section>
 
         <section v-if="event.dress_code" class="card p-6 text-center" data-testid="dress-code">
-            <h2 class="mb-1 text-xs uppercase tracking-widest opacity-70">Dress code</h2>
+            <h2 class="eyebrow mb-1">Dress code</h2>
             <p class="text-lg">{{ event.dress_code }}</p>
         </section>
 

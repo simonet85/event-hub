@@ -31,7 +31,7 @@ const sendPhoto = () =>
 <template>
     <div class="w-full max-w-md space-y-6 text-left">
         <section class="space-y-4 card p-6" data-testid="guestbook">
-            <h2 class="text-center text-xl font-semibold">Livre d'or</h2>
+            <h2 class="display text-center text-3xl">Livre d'or</h2>
 
             <ul v-if="guestbook.length" class="space-y-3">
                 <li v-for="e in guestbook" :key="e.id" class="border-b pb-3 last:border-0">
@@ -63,7 +63,7 @@ const sendPhoto = () =>
         </section>
 
         <section class="space-y-4 card p-6" data-testid="gallery">
-            <h2 class="text-center text-xl font-semibold">Galerie photo</h2>
+            <h2 class="display text-center text-3xl">Galerie photo</h2>
 
             <div v-if="photos.length" class="grid grid-cols-2 gap-2">
                 <figure v-for="p in photos" :key="p.id">

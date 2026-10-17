@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import EventHeader from '@/Components/ui/EventHeader.vue';
+import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -20,25 +22,24 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex flex-wrap items-center justify-between gap-2">
-                <h2 class="display text-3xl sm:text-4xl">{{ event.title }}</h2>
-                <p class="text-sm text-[var(--muted)]" data-testid="days-left">
-                    {{ event.days_left === 0 ? 'C\'est aujourd\'hui !' : `J-${event.days_left}` }}
-                </p>
-            </div>
+            <EventHeader :event="event" title="Tableau de bord" current="dashboard">
+                <template #aside>
+                    <p class="chip" data-testid="days-left">{{ event.days_left === 0 ? 'C\'est aujourd\'hui !' : `J-${event.days_left}` }}</p>
+                </template>
+            </EventHeader>
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <section>
-                    <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Réponses des invités</h3>
+                    <h3 class="mb-3 display text-2xl">Réponses des invités</h3>
                     <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-3 lg:grid-cols-6" data-testid="rsvp">
-                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Invités</dt><dd class="text-2xl font-semibold">{{ rsvp.total }}</dd></div>
-                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Présents</dt><dd class="text-2xl font-semibold text-green-700">{{ rsvp.accepted }}</dd></div>
-                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Absents</dt><dd class="text-2xl font-semibold text-red-700">{{ rsvp.declined }}</dd></div>
-                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">En attente</dt><dd class="text-2xl font-semibold text-amber-600">{{ rsvp.pending }}</dd></div>
-                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Couverts attendus</dt><dd class="text-2xl font-semibold">{{ rsvp.headcount }}</dd></div>
-                        <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Taux de réponse</dt><dd class="text-2xl font-semibold">{{ rsvp.response_rate }} %</dd></div>
+                        <StatCard label="Invités" :value="rsvp.total" />
+                        <StatCard label="Présents" :value="rsvp.accepted" tone="good" />
+                        <StatCard label="Absents" :value="rsvp.declined" tone="bad" />
+                        <StatCard label="En attente" :value="rsvp.pending" tone="warn" />
+                        <StatCard label="Couverts attendus" :value="rsvp.headcount" />
+                        <StatCard label="Taux de réponse" :value="`${rsvp.response_rate} %`" />
                     </dl>
                     <p v-if="rsvp.to_invite > 0" class="mt-2 text-sm text-amber-700">
                         {{ rsvp.to_invite }} invité(s) n'ont pas encore reçu leur invitation.
@@ -47,19 +48,19 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                 </section>
 
                 <section class="card p-6">
-                    <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Exports</h3>
+                    <h3 class="mb-3 display text-2xl">Exports</h3>
                     <div class="flex flex-wrap gap-3 text-sm" data-testid="exports">
-                        <a :href="route('exports.xlsx', event.slug)" class="rounded-md border px-3 py-2">Excel (invités, régimes, plan de table)</a>
-                        <a :href="route('exports.csv', event.slug)" class="rounded-md border px-3 py-2">CSV des invités</a>
-                        <a :href="route('exports.caterer', event.slug)" class="rounded-md border px-3 py-2">PDF traiteur</a>
-                        <a :href="route('exports.seating', event.slug)" class="rounded-md border px-3 py-2">PDF plan de table</a>
+                        <a :href="route('exports.xlsx', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">Excel (invités, régimes, plan de table)</a>
+                        <a :href="route('exports.csv', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">CSV des invités</a>
+                        <a :href="route('exports.caterer', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">PDF traiteur</a>
+                        <a :href="route('exports.seating', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">PDF plan de table</a>
                     </div>
                 </section>
 
                 <div class="grid gap-8 lg:grid-cols-2">
                     <section>
                         <div class="mb-3 flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-[var(--ink)]">Plan de table</h3>
+                            <h3 class="display text-2xl">Plan de table</h3>
                             <Link :href="route('guests.index', event.slug)" class="text-sm font-semibold text-[var(--accent)] hover:underline">Attribuer les tables</Link>
                         </div>
                         <p v-if="tables.length === 0" class="text-[var(--muted)]">Aucun invité à placer.</p>
@@ -72,7 +73,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                     </section>
 
                     <section>
-                        <h3 class="mb-3 text-lg font-semibold text-[var(--ink)]">Régimes alimentaires</h3>
+                        <h3 class="mb-3 display text-2xl">Régimes alimentaires</h3>
                         <p v-if="dietary.length === 0" class="text-[var(--muted)]">Aucun régime particulier signalé.</p>
                         <ul v-else class="divide-y card" data-testid="dietary">
                             <li v-for="d in dietary" :key="d.guest + d.restriction" class="p-3 text-sm">
@@ -86,12 +87,12 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
 
                 <section v-if="cagnotte" class="card p-6" data-testid="cagnotte">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-[var(--ink)]">Cagnotte</h3>
+                        <h3 class="display text-2xl">Cagnotte</h3>
                         <Link :href="route('cagnotte.index', event.slug)" class="text-sm font-semibold text-[var(--accent)] hover:underline">Détail</Link>
                     </div>
                     <p class="mt-1 text-2xl font-semibold text-green-700">{{ fcfa(cagnotte.raised) }}</p>
                     <div v-if="cagnotte.goal" class="mt-2">
-                        <div class="h-2 overflow-hidden rounded-full bg-gray-200"><div class="h-full bg-green-600" :style="{ width: percent(cagnotte.raised, cagnotte.goal) + '%' }" /></div>
+                        <div class="h-2 overflow-hidden rounded-full bg-[var(--line)]"><div class="h-full bg-[var(--accent)]" :style="{ width: percent(cagnotte.raised, cagnotte.goal) + '%' }" /></div>
                         <p class="mt-1 text-xs text-[var(--muted)]">objectif {{ fcfa(cagnotte.goal) }} ({{ percent(cagnotte.raised, cagnotte.goal) }} %)</p>
                     </div>
                     <p class="mt-2 text-sm text-[var(--muted)]">

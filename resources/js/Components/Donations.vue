@@ -16,6 +16,7 @@ const MIN_AMOUNT = 100;
 
 const form = useForm<{ amount: number | null; gift_id: number | null; message: string }>({ amount: null, gift_id: null, message: '' });
 
+const QUICK_AMOUNTS = [5000, 10000, 25000, 50000];
 const fcfa = (n: number) => `${new Intl.NumberFormat('fr-FR').format(n)} FCFA`;
 const percent = (raised: number, target: number) => (target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0);
 
@@ -36,7 +37,7 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
 
 <template>
     <section class="w-full max-w-md space-y-4 card p-6 text-left" data-testid="donations">
-        <h2 class="text-center text-xl font-semibold">Cagnotte &amp; cadeaux</h2>
+        <h2 class="display text-center text-3xl">Cagnotte &amp; <em>cadeaux</em></h2>
         <p v-if="cagnotte.message" class="text-center text-sm italic">{{ cagnotte.message }}</p>
 
         <div v-if="cagnotte.goal" data-testid="goal">
@@ -64,7 +65,7 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
         </p>
 
         <ul v-if="cagnotte.gifts.length" class="space-y-3" data-testid="gifts">
-            <li v-for="g in cagnotte.gifts" :key="g.id" class="rounded-lg border p-3">
+            <li v-for="g in cagnotte.gifts" :key="g.id" class="rounded-2xl border border-[var(--line)] bg-white/50 p-4">
                 <div class="flex items-start justify-between gap-2">
                     <div>
                         <p class="font-medium">{{ g.name }}</p>
@@ -81,18 +82,30 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
 
         <form class="space-y-3" @submit.prevent="submit">
             <label class="block">
-                <span class="text-sm">Je participe à</span>
+                <span class="field-label">Je participe à</span>
                 <select :value="form.gift_id ?? ''" class="input" @change="pick(($event.target as HTMLSelectElement).value ? Number(($event.target as HTMLSelectElement).value) : null)">
                     <option value="">La cagnotte générale</option>
                     <option v-for="g in openGifts" :key="g.id" :value="g.id">{{ g.name }} (reste {{ fcfa(g.remaining) }})</option>
                 </select>
             </label>
             <label class="block">
-                <span class="text-sm">Montant (FCFA, minimum {{ MIN_AMOUNT }})</span>
+                <span class="field-label">Montant (FCFA, minimum {{ MIN_AMOUNT }})</span>
                 <input v-model.number="form.amount" type="number" :min="MIN_AMOUNT" :max="maxAmount" step="1" inputmode="numeric" class="input" />
+                <span class="mt-2 flex flex-wrap gap-2" data-testid="quick-amounts">
+                    <button
+                        v-for="a in QUICK_AMOUNTS"
+                        :key="a"
+                        type="button"
+                        class="chip cursor-pointer"
+                        :class="form.amount === a ? '!border-current !bg-[color-mix(in_srgb,currentColor_10%,transparent)]' : ''"
+                        @click="form.amount = a"
+                    >
+                        {{ new Intl.NumberFormat('fr-FR').format(a) }}
+                    </button>
+                </span>
             </label>
             <label class="block">
-                <span class="text-sm">Un petit mot (optionnel)</span>
+                <span class="field-label">Un petit mot (optionnel)</span>
                 <input v-model="form.message" type="text" maxlength="500" class="input" />
             </label>
             <p v-for="(msg, key) in form.errors" :key="key" class="text-sm text-red-700">{{ msg }}</p>

@@ -29,21 +29,21 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
 
 <template>
     <form class="w-full max-w-md space-y-4 card p-6 text-left" @submit.prevent="submit">
-        <h2 class="text-center text-xl font-semibold">
+        <h2 class="display text-center text-3xl">
             {{ guest.rsvp_status === 'pending' ? 'Serez-vous des nôtres ?' : 'Votre réponse' }}
         </h2>
 
         <div class="grid grid-cols-2 gap-3">
             <label
-                class="cursor-pointer rounded-lg border p-3 text-center"
-                :class="accepted ? 'border-current font-semibold' : 'opacity-60'"
+                class="cursor-pointer rounded-2xl border-2 p-3 text-center text-sm transition"
+                :class="accepted ? 'border-current bg-[color-mix(in_srgb,currentColor_8%,transparent)] font-semibold' : 'border-[var(--line)] opacity-70 hover:opacity-100'"
             >
                 <input v-model="form.rsvp_status" type="radio" value="accepted" class="sr-only" />
                 Je serai présent(e)
             </label>
             <label
-                class="cursor-pointer rounded-lg border p-3 text-center"
-                :class="!accepted ? 'border-current font-semibold' : 'opacity-60'"
+                class="cursor-pointer rounded-2xl border-2 p-3 text-center text-sm transition"
+                :class="!accepted ? 'border-current bg-[color-mix(in_srgb,currentColor_8%,transparent)] font-semibold' : 'border-[var(--line)] opacity-70 hover:opacity-100'"
             >
                 <input v-model="form.rsvp_status" type="radio" value="declined" class="sr-only" />
                 Je ne pourrai pas venir
@@ -52,7 +52,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
 
         <template v-if="accepted">
             <label v-if="guest.max_companions > 0" class="block">
-                <span class="text-sm">Accompagnants (max {{ guest.max_companions }})</span>
+                <span class="field-label">Accompagnants (max {{ guest.max_companions }})</span>
                 <input
                     v-model.number="form.companions_count"
                     type="number"
@@ -62,7 +62,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
                 />
             </label>
             <label class="block">
-                <span class="text-sm">Allergies / régime alimentaire</span>
+                <span class="field-label">Allergies / régime alimentaire</span>
                 <input
                     v-model="form.dietary_restrictions"
                     type="text"
@@ -70,7 +70,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
                 />
             </label>
             <label class="block">
-                <span class="text-sm">Une chanson pour faire danser ?</span>
+                <span class="field-label">Une chanson pour faire danser ?</span>
                 <input
                     v-model="form.favorite_song"
                     type="text"
@@ -80,7 +80,7 @@ const submit = () => form.post(route('rsvp.store', props.token), { preserveScrol
         </template>
 
         <label class="block">
-            <span class="text-sm">Un petit mot (optionnel)</span>
+            <span class="field-label">Un petit mot (optionnel)</span>
             <textarea
                 v-model="form.rsvp_message"
                 rows="2"

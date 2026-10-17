@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import EventHeader from '@/Components/ui/EventHeader.vue';
+import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -49,16 +51,11 @@ const pending = computed(() => props.summary.to_invite);
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="display text-3xl sm:text-4xl">Invités — {{ event.title }}</h2>
-                <button
-                    :disabled="pending === 0"
-                    class="btn disabled:opacity-40"
-                    @click="sendAll"
-                >
-                    Envoyer les invitations ({{ pending }})
-                </button>
-            </div>
+            <EventHeader :event="event" title="Invités" current="guests">
+                <template #aside>
+                    <button :disabled="pending === 0" class="btn !px-4 !py-2 text-xs" @click="sendAll">Envoyer les invitations ({{ pending }})</button>
+                </template>
+            </EventHeader>
         </template>
 
         <div class="space-y-8 py-12">
@@ -71,11 +68,11 @@ const pending = computed(() => props.summary.to_invite);
                 </p>
 
                 <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-5" data-testid="rsvp-summary">
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Invités</dt><dd class="text-2xl font-semibold">{{ summary.total }}</dd></div>
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Présents</dt><dd class="text-2xl font-semibold text-green-700">{{ summary.accepted }}</dd></div>
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Absents</dt><dd class="text-2xl font-semibold text-red-700">{{ summary.declined }}</dd></div>
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">En attente</dt><dd class="text-2xl font-semibold text-amber-600">{{ summary.pending }}</dd></div>
-                    <div class="card p-3"><dt class="text-xs text-[var(--muted)]">Personnes attendues</dt><dd class="text-2xl font-semibold">{{ summary.headcount }}</dd></div>
+                    <StatCard label="Invités" :value="summary.total" />
+                    <StatCard label="Présents" :value="summary.accepted" tone="good" />
+                    <StatCard label="Absents" :value="summary.declined" tone="bad" />
+                    <StatCard label="En attente" :value="summary.pending" tone="warn" />
+                    <StatCard label="Personnes attendues" :value="summary.headcount" />
                 </dl>
 
                 <form class="grid gap-3 card p-6 sm:grid-cols-5" @submit.prevent="add">

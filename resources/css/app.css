@@ -242,3 +242,16 @@
         transition: none;
     }
 }
+
+@layer components {
+    input[type='color'].color-input {
+        display: block;
+        width: 4rem;
+        height: 3rem;
+        padding: 0.25rem;
+        border: 1px solid var(--line);
+        border-radius: 0.9rem;
+        background: #fff;
+        cursor: pointer;
+    }
+}
