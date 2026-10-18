@@ -20,7 +20,6 @@ vi.mock('@inertiajs/vue3', async () => {
 
     return { Head: defineComponent({ render: () => null }), usePage: () => ({ props: {} }) };
 });
-vi.mock('qrcode', () => ({ default: { toDataURL: vi.fn(async () => 'data:image/png;base64,AAAA') } }));
 
 const props = {
     guest: { name: 'Aminata Zéhoré', url: 'https://exemple.test/i/jeton' },
@@ -44,7 +43,8 @@ const props = {
 };
 
 const mountTicket = async () => {
-    const w = mount(Ticket, { props });
+    // Le QR code est un composant à part (testé dans QrCode.test.ts) : on le remplace pour ne pas dépendre de `qrcode`.
+    const w = mount(Ticket, { props, global: { stubs: { QrCode: { template: '<img alt="QR code" />' } } } });
     await flushPromises();
 
     return w;

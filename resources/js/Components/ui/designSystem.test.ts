@@ -1,12 +1,11 @@
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import { mount } from '@vue/test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import GiftProgress from './GiftProgress.vue';
 import GuestNav from './GuestNav.vue';
 import InvitationCard from './InvitationCard.vue';
 import StatusPill from './StatusPill.vue';
 
-vi.mock('qrcode', () => ({ default: { toDataURL: vi.fn(async () => 'data:image/png;base64,AAAA') } }));
 
 const preset = { primary_color: '#4e6b48', secondary_color: '#fbf6ee', font_family: 'serif' };
 
@@ -53,7 +52,10 @@ describe('InvitationCard', () => {
     };
 
     it('met le nom de l\'invité en manuscrit et affiche date, lieu et QR', () => {
-        const w = mount(InvitationCard, { props: { event, guestName: 'Famille Kouassi', qrUrl: 'https://exemple.test/i/abc', maxCompanions: 2 } });
+        const w = mount(InvitationCard, {
+            props: { event, guestName: 'Famille Kouassi', qrUrl: 'https://exemple.test/i/abc', maxCompanions: 2 },
+            global: { stubs: { QrCode: { template: '<img alt="QR code" />' } } },
+        });
         expect(w.get('[data-testid="invitation-guest"]').classes()).toContain('script');
         expect(w.text()).toContain('Famille Kouassi');
         expect(w.text()).toContain('Hôtel Ivoire');
