@@ -70,6 +70,24 @@ describe('Contributions', () => {
         expect(w.get('input[type="file"]').attributes('accept')).toBe('image/jpeg,image/png,image/webp');
     });
 
+    it("ouvre la visionneuse plein écran au clic sur une miniature", async () => {
+        HTMLDialogElement.prototype.showModal = function (this: HTMLDialogElement) {
+            this.setAttribute('open', '');
+        };
+        const w = mount(Contributions, {
+            props: props({ photos: [{ id: 1, author: 'Bob', caption: 'Danse', url: '/photos/1' }, { id: 2, author: 'Alice', caption: null, url: '/photos/2' }] }),
+            attachTo: document.body,
+        });
+
+        expect(w.find('[data-testid="viewer-image"]').exists()).toBe(false);
+        await w.findAll('[data-testid="photo-open"]')[1].trigger('click');
+        await w.vm.$nextTick();
+
+        expect(w.get('[data-testid="viewer-image"]').attributes('src')).toBe('/photos/2');
+        expect(w.get('[data-testid="photo-open"]').attributes('aria-label')).toBe('Agrandir la photo de Bob');
+        w.unmount();
+    });
+
     it('recrée le champ fichier après un envoi réussi pour effacer le nom affiché', async () => {
         post.mockImplementationOnce((_url: string, options: { onSuccess?: () => void }) => options.onSuccess?.());
         const w = mount(Contributions, { props: props() });

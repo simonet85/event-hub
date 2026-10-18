@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PhotoViewer from '@/Components/ui/PhotoViewer.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -9,6 +10,7 @@ const props = defineProps<{
     mine: { pending_entries: number; pending_photos: number };
 }>();
 
+const viewerIndex = ref<number | null>(null);
 const entryForm = useForm({ message: '' });
 const photoForm = useForm<{ photo: File | null; caption: string }>({ photo: null, caption: '' });
 
@@ -66,12 +68,15 @@ const sendPhoto = () =>
             <div class="text-center"><p class="eyebrow">Galerie photo</p><h2 class="display-lg mt-1">Vos <em>photos</em></h2></div>
 
             <div v-if="photos.length" class="grid grid-cols-2 gap-2">
-                <figure v-for="p in photos" :key="p.id">
-                    <img :src="p.url" :alt="p.caption ?? `Photo de ${p.author}`" loading="lazy" class="aspect-square w-full rounded-lg object-cover" />
+                <figure v-for="(p, i) in photos" :key="p.id">
+                    <button type="button" class="block w-full" :aria-label="`Agrandir la photo de ${p.author}`" data-testid="photo-open" @click="viewerIndex = i">
+                        <img :src="p.url" :alt="p.caption ?? `Photo de ${p.author}`" loading="lazy" class="aspect-square w-full rounded-lg object-cover" />
+                    </button>
                     <figcaption class="caption mt-1 text-ink-muted">{{ p.caption ? `${p.caption} — ` : '' }}{{ p.author }}</figcaption>
                 </figure>
             </div>
             <p v-else class="caption text-center text-ink-muted">Aucune photo pour le moment.</p>
+            <PhotoViewer v-model:index="viewerIndex" :photos="photos" />
 
             <form class="space-y-2" @submit.prevent="sendPhoto">
                 <input
