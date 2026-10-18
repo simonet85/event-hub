@@ -8,6 +8,8 @@ use App\Models\Event;
 use App\Models\Guest;
 use App\Models\GuestbookEntry;
 use App\Models\Photo;
+use App\Services\ShareImage;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -47,6 +49,49 @@ class InvitationController extends Controller
             ],
             // Aperçu de lien (WhatsApp…) : informations de l'événement seulement, jamais le nom de l'invité.
         ])->withViewData(['meta' => $event->shareMeta()]);
+    }
+
+    /**
+     * Billet de l'invité, utilisable hors ligne. Il ne porte que les informations de l'invité lui-même et de
+     * l'événement (pas de livre d'or, de photos, de paiements ni d'autres invités) : c'est tout ce que le
+     * service worker peut garder sur l'appareil.
+     */
+    public function ticket(Guest $guest): Response
+    {
+        $event = $guest->event;
+
+        return Inertia::render('Invitations/Ticket', [
+            'guest' => ['name' => $guest->name, 'url' => $guest->invitationUrl()],
+            'event' => array_merge($event->load('scheduleItems')->publicPayload(), [
+                'schedule' => [], 'map' => null, 'map_url' => null, 'dress_code' => null, 'welcome_message' => null,
+            ]),
+            'ticketPath' => route('invitations.ticket', $guest, absolute: false),
+            'manifestUrl' => route('invitations.ticket.manifest', $guest),
+        ]);
+    }
+
+    /**
+     * Manifeste d'application web du billet : permet de l'ajouter à l'écran d'accueil.
+     */
+    public function manifest(Guest $guest): JsonResponse
+    {
+        $event = $guest->event;
+        $palette = app(ShareImage::class)->palette($event);
+
+        return response()->json([
+            'name' => "Billet · {$event->title}",
+            'short_name' => 'Billet',
+            'lang' => 'fr',
+            'start_url' => route('invitations.ticket', $guest, absolute: false),
+            'scope' => route('invitations.ticket', $guest, absolute: false),
+            'display' => 'standalone',
+            'background_color' => $palette['surface'],
+            'theme_color' => $palette['accent'],
+            'icons' => [
+                ['src' => asset('icons/ticket-192.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any maskable'],
+                ['src' => asset('icons/ticket-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any maskable'],
+            ],
+        ], 200, ['Content-Type' => 'application/manifest+json']);
     }
 
     /**

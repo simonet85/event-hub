@@ -41,6 +41,10 @@ defineProps<{
             <InvitationCard :event="event" :guest-name="guest.name" :qr-url="guest.url" :max-companions="guest.max_companions" />
         </Reveal>
 
+        <p class="mt-6 w-full text-center">
+            <a :href="route('invitations.ticket', token)" class="btn-quiet btn" data-testid="ticket-link">Ouvrir mon billet (utilisable hors ligne)</a>
+        </p>
+
         <Reveal class="mt-12 w-full"><EventDetails :event="event" /></Reveal>
         <Reveal class="mt-12 flex w-full justify-center"><RsvpForm :token="token" :guest="guest" /></Reveal>
         <Reveal v-if="cagnotte" class="mt-12 flex w-full justify-center"><Donations :token="token" :cagnotte="cagnotte" /></Reveal>
