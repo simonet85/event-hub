@@ -132,7 +132,7 @@ const submit = () => {
             <EventPublicLayout :theme="form.theme_config" :preset="selectedType.theme" :css-class="selectedType.css_class" :dark="selectedType.dark">
                 <p class="eyebrow mt-20">{{ selectedType.label }}</p>
                 <h3 class="display-lg mt-2" style="font-family: var(--event-font)">{{ previewTitle }}</h3>
-                <button type="button" tabindex="-1" class="btn mt-6 mb-20">Confirmer ma présence</button>
+                <span class="btn mt-6 mb-20" aria-hidden="true">Confirmer ma présence</span>
                 <p class="caption -mt-14 mb-16 text-ink-muted">Aperçu du thème</p>
             </EventPublicLayout>
         </div>

@@ -184,6 +184,25 @@
 }
 
 @layer components {
+    /* Lien d'évitement : invisible jusqu'au focus clavier, premier élément tabulable de la page. */
+    .skip-link {
+        position: absolute;
+        left: var(--space-2);
+        top: var(--space-2);
+        z-index: 100;
+        padding: var(--space-3) var(--space-4);
+        background: var(--surface-100);
+        color: var(--ink);
+        border: 2px solid var(--line-strong);
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        transform: translateY(-200%);
+    }
+
+    .skip-link:focus {
+        transform: none;
+    }
+
     /* Styles typographiques (DESIGN-SYSTEM.md, section 3). */
     .display {
         font-family: 'Cormorant Garamond', 'Cormorant', Georgia, serif;

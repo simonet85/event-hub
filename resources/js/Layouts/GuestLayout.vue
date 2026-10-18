@@ -7,6 +7,7 @@ defineProps<{ title?: string; subtitle?: string }>();
 
 <template>
     <div class="grid min-h-screen bg-[var(--paper)] text-[var(--ink)] lg:grid-cols-2">
+        <a href="#contenu" class="skip-link">Aller au contenu</a>
         <aside data-theme="dark" class="relative hidden flex-col justify-between overflow-hidden bg-surface-100 p-12 text-ink lg:flex">
             <Link href="/" class="display text-3xl">Event <em class="!text-[var(--gold)]">Hub</em></Link>
             <div>
@@ -16,7 +17,7 @@ defineProps<{ title?: string; subtitle?: string }>();
             <p class="caption text-ink-muted">{{ __("Invitations · RSVP · Livre d'or · Cagnotte") }}</p>
         </aside>
 
-        <div class="relative flex flex-col items-center justify-center px-6 py-12">
+        <main id="contenu" tabindex="-1" class="relative flex flex-col items-center justify-center px-6 py-12 outline-none">
             <div class="absolute end-6 top-6"><LocaleSwitcher /></div>
             <Link href="/" class="display mb-8 text-3xl lg:hidden">Event <em>Hub</em></Link>
             <div class="card w-full max-w-md p-6 sm:p-9">
@@ -26,6 +27,6 @@ defineProps<{ title?: string; subtitle?: string }>();
                 </div>
                 <slot />
             </div>
-        </div>
+        </main>
     </div>
 </template>

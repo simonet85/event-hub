@@ -56,7 +56,8 @@ const style = computed(() => {
         :data-theme="darkMode ? 'dark' : 'light'"
         :style="style"
     >
-        <main class="relative mx-auto flex min-h-screen max-w-3xl flex-col items-center px-4 pb-28 text-center">
+        <a href="#contenu" class="skip-link">Aller au contenu</a>
+        <main id="contenu" tabindex="-1" class="relative mx-auto flex min-h-screen outline-none max-w-3xl flex-col items-center px-4 pb-28 text-center">
             <slot />
         </main>
     </div>

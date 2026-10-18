@@ -8,6 +8,7 @@ const open = ref(false);
 
 <template>
     <div class="min-h-screen bg-[var(--paper)] text-[var(--ink)]">
+        <a href="#contenu" class="skip-link">Aller au contenu</a>
         <nav class="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--paper)]/90 backdrop-blur">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-8">
@@ -61,7 +62,7 @@ const open = ref(false);
             </div>
         </header>
 
-        <main>
+        <main id="contenu" tabindex="-1" class="outline-none">
             <slot />
         </main>
     </div>

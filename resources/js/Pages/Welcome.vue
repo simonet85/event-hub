@@ -51,6 +51,7 @@ const steps = [
     <Head title="Event Hub — vos événements, sublimés" />
 
     <div class="min-h-screen overflow-x-clip bg-[var(--paper)] text-[var(--ink)]">
+        <a href="#contenu" class="skip-link">Aller au contenu</a>
         <div data-theme="dark" class="bg-surface-100 py-2 text-xs tracking-widest text-ink">
             <Marquee :items="marquee" />
         </div>
@@ -67,6 +68,7 @@ const steps = [
             </nav>
         </header>
 
+        <main id="contenu" tabindex="-1" class="outline-none">
         <ScrollExpandHero>
             <template #cover>
                 <div data-theme="dark" class="flex h-full w-full items-center justify-center bg-surface-100 text-ink">
@@ -116,13 +118,12 @@ const steps = [
                     <p class="eyebrow">{{ __('Choisissez votre ambiance') }}</p>
                     <h2 class="display mt-3 text-4xl sm:text-5xl">{{ __('Des couleurs qui') }} <em>{{ __('vous ressemblent.') }}</em></h2>
                     <p class="mt-4 max-w-md text-[var(--muted)]">{{ __('Chaque événement a son thème : couleurs, police et ambiance. Essayez-en un.') }}</p>
-                    <div class="mt-6 flex flex-wrap gap-2" role="radiogroup" :aria-label="__('Thème')">
+                    <div class="mt-6 flex flex-wrap gap-2" role="group" :aria-label="__('Thème')">
                         <button
                             v-for="(t, i) in themes"
                             :key="t.name"
                             type="button"
-                            role="radio"
-                            :aria-checked="i === current"
+                            :aria-pressed="i === current"
                             class="chip cursor-pointer"
                             :class="i === current ? '!border-[var(--ink)] !bg-[var(--ink)] !text-[var(--paper)]' : ''"
                             @click="current = i"
@@ -165,6 +166,8 @@ const steps = [
                 </div>
             </Reveal>
         </section>
+
+        </main>
 
         <footer class="py-8 text-center text-xs text-[var(--muted)]">Event Hub · {{ __('fait avec soin') }}</footer>
     </div>
