@@ -150,6 +150,6 @@ class EventController extends Controller
     {
         return Inertia::render('Events/ShowPublic', [
             'event' => $event->load('scheduleItems')->publicPayload(),
-        ]);
+        ])->withViewData(['meta' => $event->shareMeta()]);
     }
 }

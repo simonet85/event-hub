@@ -1,2 +1,10 @@
 User-agent: *
-Disallow:
+Disallow: /events
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+
+# Les pages d'événement et d'invitation (/e/ et /i/) restent accessibles aux robots d'aperçu de lien
+# (WhatsApp, Messenger…) mais portent « noindex » (balise meta et en-tête X-Robots-Tag) : un robot qui
+# n'a pas le droit de les lire ne pourrait pas voir cette consigne.

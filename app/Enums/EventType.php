@@ -54,6 +54,17 @@ enum EventType: string
         };
     }
 
+    /** Accent du mode sombre (jetons `--accent-*` du thème sombre), utilisé par le thème Fête. */
+    public function darkAccent(): string
+    {
+        return match ($this) {
+            self::Wedding, self::Other => '#a4c19c',
+            self::Baptism => '#9bbfe2',
+            self::Birthday => '#e59a80',
+            self::Party => '#d3a3c8',
+        };
+    }
+
     /** Classe posée sur la racine de la page : elle fixe `--accent` (voir resources/css/app.css). */
     public function cssClass(): string
     {

@@ -45,7 +45,8 @@ class InvitationController extends Controller
                 'pending_entries' => $guest->guestbookEntries()->where('status', ModerationStatus::Pending)->count(),
                 'pending_photos' => $guest->photos()->where('status', ModerationStatus::Pending)->count(),
             ],
-        ]);
+            // Aperçu de lien (WhatsApp…) : informations de l'événement seulement, jamais le nom de l'invité.
+        ])->withViewData(['meta' => $event->shareMeta()]);
     }
 
     /**

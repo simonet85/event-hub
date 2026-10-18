@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ContributionStatus;
 use App\Enums\EventType;
+use App\Services\ShareImage;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,6 +30,26 @@ class Event extends Model
             'cagnotte_goal' => 'integer',
             'latitude' => 'float',
             'longitude' => 'float',
+        ];
+    }
+
+    /**
+     * Balises d'aperçu de lien (Open Graph) : uniquement des informations de l'événement,
+     * identiques pour tous les invités, et jamais de donnée personnelle.
+     *
+     * @return array{title: string, description: string, url: string, image: string, noindex: true}
+     */
+    public function shareMeta(): array
+    {
+        $when = app(ShareImage::class)->dateLine($this);
+
+        return [
+            'title' => $this->title,
+            'description' => trim("{$this->type->label()} · {$when}".($this->location_name ? " · {$this->location_name}" : '')),
+            // Adresse canonique de l'événement (jamais le lien personnel d'un invité, qui contient son jeton).
+            'url' => route('events.public', $this),
+            'image' => route('events.share-image', $this).'?v='.app(ShareImage::class)->fingerprint($this),
+            'noindex' => true,
         ];
     }
 

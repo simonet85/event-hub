@@ -15,6 +15,7 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ShareImageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,7 +37,7 @@ Route::get('/dashboard', fn () => redirect()->route('events.index'))
     ->name('dashboard');
 
 // Un événement archivé n'est plus visible des invités (404) ; le retour de paiement reste accessible.
-Route::middleware('event.active')->group(function () {
+Route::middleware(['event.active', 'noindex'])->group(function () {
     Route::get('/e/{event}', [EventController::class, 'showPublic'])->name('events.public');
 
     Route::get('/i/{token}', [InvitationController::class, 'show'])->name('invitations.show');
@@ -46,6 +47,8 @@ Route::middleware('event.active')->group(function () {
     Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
 });
 
+// Image de partage : sans donnée d'invité, indexable pour les aperçus de liens ; masquée dès que l'événement est archivé.
+Route::get('/e/{event}/share.png', [ShareImageController::class, 'show'])->middleware('event.active')->name('events.share-image');
 Route::get('/photos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
 Route::get('/i/{guest:token}/donations/{contribution}/return', [DonationController::class, 'return'])->name('donations.return');
 Route::post('/webhooks/moneyfusion', MoneyFusionWebhookController::class)->middleware('throttle:120,1')->name('webhooks.moneyfusion');

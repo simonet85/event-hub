@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureEventIsActive;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\NoIndex;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['event.active' => EnsureEventIsActive::class]);
+        $middleware->alias(['event.active' => EnsureEventIsActive::class, 'noindex' => NoIndex::class]);
 
         $middleware->web(append: [
             SetLocale::class,
