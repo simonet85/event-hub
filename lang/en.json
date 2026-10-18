@@ -81,10 +81,6 @@
     "Informations personnelles": "Personal information",
     "Mettez à jour votre nom et votre adresse email.": "Update your name and email address.",
     "Votre adresse email n'est pas vérifiée.": "Your email address is not verified.",
-    "Bordeaux": "Burgundy",
-    "Sauge": "Sage",
-    "Nuit": "Night",
-    "Océan": "Ocean",
     "Invitations personnelles": "Personal invitations",
     "Un lien et un QR code uniques par invité, envoyés par email ou WhatsApp.": "A unique link and QR code per guest, sent by email or WhatsApp.",
     "RSVP en un geste": "RSVP in one tap",
@@ -108,5 +104,8 @@
     "Baptêmes": "Baptisms",
     "Soirées": "Parties",
     "Cagnotte sécurisée": "Secure gift fund",
-    "RSVP en ligne": "Online RSVP"
+    "RSVP en ligne": "Online RSVP",
+    "Baptême": "Baptism",
+    "Anniversaire": "Birthday",
+    "Fête": "Party"
 }

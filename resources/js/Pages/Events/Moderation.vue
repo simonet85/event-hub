@@ -39,9 +39,9 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
                                 <p class="text-xs text-[var(--muted)]">{{ e.author }} · {{ labels[e.status] }}</p>
                             </div>
                             <div class="flex gap-3 text-sm">
-                                <button v-if="e.status !== 'approved'" class="chip cursor-pointer !text-green-700 hover:!bg-green-50" @click="setEntry(e.id, 'approved')">Publier</button>
-                                <button v-if="e.status !== 'rejected'" class="chip cursor-pointer !text-amber-700 hover:!bg-amber-50" @click="setEntry(e.id, 'rejected')">Refuser</button>
-                                <button class="chip cursor-pointer !text-red-700 hover:!bg-red-50" @click="removeEntry(e.id)">Supprimer</button>
+                                <button v-if="e.status !== 'approved'" class="chip cursor-pointer !text-success hover:!bg-surface-300" @click="setEntry(e.id, 'approved')">Publier</button>
+                                <button v-if="e.status !== 'rejected'" class="chip cursor-pointer !text-warning hover:!bg-surface-300" @click="setEntry(e.id, 'rejected')">Refuser</button>
+                                <button class="chip cursor-pointer !text-danger hover:!bg-surface-300" @click="removeEntry(e.id)">Supprimer</button>
                             </div>
                         </li>
                     </ul>
@@ -56,9 +56,9 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
                             <figcaption class="space-y-2 p-3 text-sm">
                                 <p class="text-[var(--muted)]">{{ p.author }} · {{ labels[p.status] }}<span v-if="p.caption"> · {{ p.caption }}</span></p>
                                 <div class="flex gap-3">
-                                    <button v-if="p.status !== 'approved'" class="chip cursor-pointer !text-green-700 hover:!bg-green-50" @click="setPhoto(p.id, 'approved')">Publier</button>
-                                    <button v-if="p.status !== 'rejected'" class="chip cursor-pointer !text-amber-700 hover:!bg-amber-50" @click="setPhoto(p.id, 'rejected')">Refuser</button>
-                                    <button class="chip cursor-pointer !text-red-700 hover:!bg-red-50" @click="removePhoto(p.id)">Supprimer</button>
+                                    <button v-if="p.status !== 'approved'" class="chip cursor-pointer !text-success hover:!bg-surface-300" @click="setPhoto(p.id, 'approved')">Publier</button>
+                                    <button v-if="p.status !== 'rejected'" class="chip cursor-pointer !text-warning hover:!bg-surface-300" @click="setPhoto(p.id, 'rejected')">Refuser</button>
+                                    <button class="chip cursor-pointer !text-danger hover:!bg-surface-300" @click="removePhoto(p.id)">Supprimer</button>
                                 </div>
                             </figcaption>
                         </figure>

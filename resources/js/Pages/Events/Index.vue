@@ -64,10 +64,10 @@ const restore = (slug: string) => router.post(route('events.restore', slug), {},
         </template>
 
         <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-            <p v-if="flash?.event_archived" class="mb-6 rounded-2xl bg-amber-50 px-5 py-3 text-sm text-amber-900" data-testid="archived-notice">
+            <p v-if="flash?.event_archived" class="notice notice-warning mb-6" data-testid="archived-notice">
                 « {{ flash.event_archived }} » est archivé. Retrouvez-le dans l'onglet « Archivés ».
             </p>
-            <p v-if="flash?.event_restored" class="mb-6 rounded-2xl bg-green-50 px-5 py-3 text-sm text-green-800" data-testid="restored-notice">
+            <p v-if="flash?.event_restored" class="notice notice-success mb-6" data-testid="restored-notice">
                 « {{ flash.event_restored }} » est de nouveau actif.
             </p>
 
@@ -87,7 +87,7 @@ const restore = (slug: string) => router.post(route('events.restore', slug), {},
                     <div class="flex items-start justify-between gap-3">
                         <span class="chip">{{ typeLabel[e.type] ?? e.type }}</span>
                         <span v-if="!showingArchived" class="eyebrow">{{ daysLeft(e.event_date) > 0 ? `J-${daysLeft(e.event_date)}` : daysLeft(e.event_date) === 0 ? "Aujourd'hui" : 'Terminé' }}</span>
-                        <span v-else class="chip !bg-amber-50 !text-amber-900">Archivé</span>
+                        <span v-else class="chip !text-warning">Archivé</span>
                     </div>
                     <h3 class="display mt-4 text-3xl">{{ e.title }}</h3>
                     <p class="mt-1 text-sm text-[var(--muted)]">{{ fmt(e.event_date) }}</p>

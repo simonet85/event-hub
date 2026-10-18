@@ -36,8 +36,8 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                <p v-if="updated" class="rounded-2xl bg-green-50 px-5 py-3 text-sm text-green-800" data-testid="event-updated">Les modifications ont été enregistrées.</p>
-                <p v-if="mapNotFound" class="rounded-2xl bg-amber-50 px-5 py-3 text-sm text-amber-900" data-testid="map-not-found">
+                <p v-if="updated" class="notice notice-success" data-testid="event-updated">Les modifications ont été enregistrées.</p>
+                <p v-if="mapNotFound" class="notice notice-warning" data-testid="map-not-found">
                     Adresse introuvable sur la carte : la position précédente est conservée.
                     <Link :href="route('schedule.index', event.slug)" class="font-semibold underline">Ajustez les coordonnées</Link>
                     dans l'onglet Programme.
@@ -52,7 +52,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                         <StatCard label="Couverts attendus" :value="rsvp.headcount" />
                         <StatCard label="Taux de réponse" :value="`${rsvp.response_rate} %`" />
                     </dl>
-                    <p v-if="rsvp.to_invite > 0" class="mt-2 text-sm text-amber-700">
+                    <p v-if="rsvp.to_invite > 0" class="mt-2 text-sm text-warning">
                         {{ rsvp.to_invite }} invité(s) n'ont pas encore reçu leur invitation.
                         <Link :href="route('guests.index', event.slug)" class="underline">Envoyer</Link>
                     </p>
@@ -101,17 +101,17 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                         <h3 class="display text-2xl">Cagnotte</h3>
                         <Link :href="route('cagnotte.index', event.slug)" class="text-sm font-semibold text-[var(--accent)] hover:underline">Détail</Link>
                     </div>
-                    <p class="mt-1 text-2xl font-semibold text-green-700">{{ fcfa(cagnotte.raised) }}</p>
+                    <p class="mt-1 text-2xl font-semibold text-success">{{ fcfa(cagnotte.raised) }}</p>
                     <div v-if="cagnotte.goal" class="mt-2">
                         <div class="h-2 overflow-hidden rounded-full bg-[var(--line)]"><div class="h-full bg-[var(--accent)]" :style="{ width: percent(cagnotte.raised, cagnotte.goal) + '%' }" /></div>
                         <p class="mt-1 text-xs text-[var(--muted)]">objectif {{ fcfa(cagnotte.goal) }} ({{ percent(cagnotte.raised, cagnotte.goal) }} %)</p>
                     </div>
                     <p class="mt-2 text-sm text-[var(--muted)]">
-                        {{ cagnotte.pending }} en attente<span v-if="cagnotte.to_review > 0" class="text-red-700"> · {{ cagnotte.to_review }} à vérifier</span>
+                        {{ cagnotte.pending }} en attente<span v-if="cagnotte.to_review > 0" class="text-danger"> · {{ cagnotte.to_review }} à vérifier</span>
                     </p>
                 </section>
 
-                <section v-if="moderation.entries + moderation.photos > 0" class="rounded-lg bg-amber-50 p-4 text-sm text-amber-900" data-testid="moderation">
+                <section v-if="moderation.entries + moderation.photos > 0" class="notice notice-warning" data-testid="moderation">
                     {{ moderation.entries }} message(s) et {{ moderation.photos }} photo(s) attendent votre validation.
                     <Link :href="route('moderation.index', event.slug)" class="underline">Modérer</Link>
                 </section>

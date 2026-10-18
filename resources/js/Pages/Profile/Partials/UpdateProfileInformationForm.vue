@@ -28,12 +28,12 @@ const form = useForm({
             <FormField id="name" v-model="form.name" :label="__('Nom')" :error="form.errors.name" required autofocus autocomplete="name" />
             <FormField id="email" v-model="form.email" :label="__('Adresse email')" type="email" :error="form.errors.email" required autocomplete="username" />
 
-            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="rounded-xl bg-amber-50 px-4 py-3 text-sm">
+            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="notice notice-warning">
                 {{ __("Votre adresse email n'est pas vérifiée.") }}
                 <Link :href="route('verification.send')" method="post" as="button" class="font-semibold text-[var(--accent)] underline">
                     {{ __("Renvoyer l'email de vérification") }}
                 </Link>
-                <p v-show="status === 'verification-link-sent'" class="mt-2 font-medium text-green-700">
+                <p v-show="status === 'verification-link-sent'" class="mt-2 font-medium text-success">
                     {{ __("Un nouveau lien de vérification vient d'être envoyé à votre adresse email.") }}
                 </p>
             </div>
@@ -41,7 +41,7 @@ const form = useForm({
             <div class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">{{ __('Enregistrer') }}</PrimaryButton>
                 <Transition enter-active-class="transition" enter-from-class="opacity-0" leave-active-class="transition" leave-to-class="opacity-0">
-                    <p v-if="form.recentlySuccessful" class="text-sm text-green-700">✓ {{ __('Enregistré.') }}</p>
+                    <p v-if="form.recentlySuccessful" class="text-sm text-success">✓ {{ __('Enregistré.') }}</p>
                 </Transition>
             </div>
         </form>

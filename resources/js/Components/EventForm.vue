@@ -3,6 +3,7 @@ import InputError from '@/Components/InputError.vue';
 import FormField from '@/Components/ui/FormField.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import type { Theme } from '@/types';
+import { checkContrast, MIN_BORDER_CONTRAST, MIN_TEXT_CONTRAST } from '@/lib/contrast';
 import { useForm } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 
@@ -18,7 +19,7 @@ export interface EventFormValues {
 }
 
 const props = defineProps<{
-    types: { value: string; label: string; theme: Theme }[];
+    types: { value: string; label: string; theme: Theme; css_class?: string; dark?: boolean }[];
     /** Présent en modification : le slug est alors figé. */
     event?: EventFormValues;
 }>();
@@ -47,6 +48,11 @@ watch(
 );
 
 const previewTitle = computed(() => form.title || 'Titre de votre événement');
+const selectedType = computed(() => props.types.find((t) => t.value === form.type) ?? props.types[0]);
+
+// Avertissement d'accessibilité : la couleur principale doit rester lisible sur le fond choisi.
+const contrast = computed(() => checkContrast(form.theme_config.primary_color, form.theme_config.secondary_color));
+const contrastLabel = computed(() => (contrast.value ? contrast.value.ratio.toFixed(1).replace('.', ',') : ''));
 
 const submit = () => {
     if (props.event) {
@@ -113,15 +119,23 @@ const submit = () => {
                 </div>
             </div>
 
+            <p v-if="contrast && !contrast.textOk" class="notice notice-warning" role="alert" data-testid="contrast-warning">
+                <strong>Contraste insuffisant :</strong> {{ contrastLabel }}:1 entre la couleur principale et le fond
+                ({{ MIN_TEXT_CONTRAST.toString().replace('.', ',') }}:1 requis pour le texte{{ contrast.borderOk ? '' : `, ${MIN_BORDER_CONTRAST}:1 pour une bordure` }}).
+                Choisissez une couleur plus foncée ou un fond plus clair.
+            </p>
+
             <button type="submit" :disabled="form.processing" class="btn">
                 {{ editing ? 'Enregistrer les modifications' : 'Créer l\'événement' }}
             </button>
         </form>
 
         <div class="overflow-hidden rounded-2xl shadow-sm" data-testid="theme-preview">
-            <EventPublicLayout :theme="form.theme_config">
-                <h3 class="py-24 text-4xl" style="font-family: var(--event-font)">{{ previewTitle }}</h3>
-                <p class="-mt-16 mb-24 text-sm opacity-70">Aperçu du thème</p>
+            <EventPublicLayout :theme="form.theme_config" :preset="selectedType.theme" :css-class="selectedType.css_class" :dark="selectedType.dark">
+                <p class="eyebrow mt-20">{{ selectedType.label }}</p>
+                <h3 class="display-lg mt-2" style="font-family: var(--event-font)">{{ previewTitle }}</h3>
+                <button type="button" tabindex="-1" class="btn mt-6 mb-20">Confirmer ma présence</button>
+                <p class="caption -mt-14 mb-16 text-ink-muted">Aperçu du thème</p>
             </EventPublicLayout>
         </div>
     </div>

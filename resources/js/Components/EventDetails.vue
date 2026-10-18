@@ -8,8 +8,9 @@ const time = (iso: string) => new Intl.DateTimeFormat('fr-FR', { hour: '2-digit'
 
 <template>
     <div class="mx-auto w-full max-w-md space-y-6 text-left">
-        <section v-if="event.schedule.length" class="card p-6" data-testid="schedule">
-            <h2 class="display mb-4 text-center text-3xl">Programme</h2>
+        <section v-if="event.schedule.length" id="programme" class="card scroll-mt-4 p-6" data-testid="schedule">
+            <p class="eyebrow text-center">Programme</p>
+            <h2 class="display-lg mb-4 text-center">La <em>journée</em></h2>
             <ol class="space-y-3 border-l-2 pl-4" style="border-color: var(--event-primary)">
                 <li v-for="item in event.schedule" :key="item.id">
                     <p class="font-semibold">

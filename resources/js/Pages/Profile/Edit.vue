@@ -27,7 +27,7 @@ defineProps<{
             <div class="card p-6 sm:p-8">
                 <UpdatePasswordForm />
             </div>
-            <div class="card border-[#b42318]/30 p-6 sm:p-8">
+            <div class="card border-danger p-6 sm:p-8">
                 <DeleteUserForm />
             </div>
         </div>

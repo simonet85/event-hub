@@ -2,143 +2,435 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design system « Éditorial chic » : papier crème, encre, accent dérivé du thème, détails dorés. */
+/*
+ * Design System « Papier & lumière » (voir DESIGN-SYSTEM.md et CORRESPONDANCE-JETONS.md).
+ * Polices auto-hébergées (public/fonts), woff2 variables : un fichier couvre toutes les graisses utilisées.
+ */
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 500 600;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-normal-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 500 600;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-normal-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-italic-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-italic-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 400 600;
+    font-display: swap;
+    src: url('/fonts/dm-sans-normal-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 400 600;
+    font-display: swap;
+    src: url('/fonts/dm-sans-normal-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Pinyon Script';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/pinyon-script-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Pinyon Script';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/pinyon-script-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Thème clair (défaut). */
 :root {
-    --paper: #faf6ef;
-    --paper-2: #f2ebdf;
-    --ink: #1d1a16;
-    --muted: #6b6359;
-    --accent: #9b2c3d;
-    --gold: #b8924a;
-    --line: rgb(29 26 22 / 0.12);
-    --radius: 1.25rem;
-    --shadow: 0 1px 2px rgb(29 26 22 / 0.05), 0 12px 32px -12px rgb(29 26 22 / 0.18);
+    --surface-100: #fbf6ee;
+    --surface-200: #f3ebdd;
+    --surface-300: #e8dcc8;
+    --ink: #2a1f17;
+    --ink-muted: #66554a;
+    --line-strong: #8a7560;
+    --line: #d9c9b0;
+    --gold: #7a5c1c;
+    --accent-mariage: #4e6b48;
+    --accent-bapteme: #42698f;
+    --accent-anniversaire: #a0432a;
+    --accent-fete: #7a3d6f;
+    --on-accent: #fffaf2;
+    --success: #2c6a4a;
+    --warning: #8a5a00;
+    --danger: #a3362a;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+    --space-20: 80px;
+    --tap: 44px;
+
+    --radius-sm: 2px;
+    --radius-md: 6px;
+    --radius-pill: 999px;
+    --shadow-card: 0 1px 2px rgba(42, 31, 23, 0.1), 0 8px 24px rgba(42, 31, 23, 0.08);
+}
+
+/* Thème sombre : espace organisateur et soirées (thème Fête). */
+[data-theme='dark'] {
+    --surface-100: #1d1711;
+    --surface-200: #272019;
+    --surface-300: #332a21;
+    --ink: #f4ece0;
+    --ink-muted: #c4b5a3;
+    --line-strong: #8c7a68;
+    --line: #3f352a;
+    --gold: #d9b36a;
+    --accent-mariage: #a4c19c;
+    --accent-bapteme: #9bbfe2;
+    --accent-anniversaire: #e59a80;
+    --accent-fete: #d3a3c8;
+    --on-accent: #1d1711;
+    --success: #8fcfad;
+    --warning: #e6b655;
+    --danger: #f0a094;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/*
+ * Jetons dérivés. Redéclarés sur tout élément [data-theme] : une variable qui référence
+ * une autre variable se résout à l'endroit où elle est déclarée, pas là où elle est utilisée.
+ */
+:root,
+[data-theme] {
+    --accent: var(--accent-mariage);
+    /* Alias de l'ancien système « Éditorial chic », conservés pour les composants existants. */
+    --paper: var(--surface-100);
+    --paper-2: var(--surface-200);
+    --muted: var(--ink-muted);
+}
+
+/* Un accent par événement, fixé sur la racine de la page. */
+.ev-mariage {
+    --accent: var(--accent-mariage);
+}
+
+.ev-bapteme {
+    --accent: var(--accent-bapteme);
+}
+
+.ev-anniversaire {
+    --accent: var(--accent-anniversaire);
+}
+
+.ev-fete {
+    --accent: var(--accent-fete);
 }
 
 @layer base {
-    body {
-        background-color: var(--paper);
-        color: var(--ink);
+    html {
+        font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
     }
 
+    body {
+        background-color: var(--surface-100);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    /* Anneau de focus : 2 px solide, décalé de 2 px. */
     :focus-visible {
-        outline: 2px solid var(--accent);
+        outline: 2px solid var(--line-strong);
         outline-offset: 2px;
     }
 }
 
 @layer components {
+    /* Styles typographiques (DESIGN-SYSTEM.md, section 3). */
     .display {
-        font-family: Fraunces, 'Playfair Display', Georgia, serif;
+        font-family: 'Cormorant Garamond', 'Cormorant', Georgia, serif;
         font-weight: 500;
-        letter-spacing: -0.02em;
-        line-height: 1.02;
+        letter-spacing: -0.005em;
+        line-height: 1.05;
     }
 
     .display em {
         font-style: italic;
-        font-weight: 400;
+        font-weight: 500;
         color: var(--accent);
     }
 
+    .display-xl {
+        font-family: 'Cormorant Garamond', 'Cormorant', Georgia, serif;
+        font-weight: 500;
+        font-size: clamp(2.75rem, 11vw, 4rem);
+        line-height: 0.94;
+    }
+
+    .display-lg {
+        font-family: 'Cormorant Garamond', 'Cormorant', Georgia, serif;
+        font-weight: 500;
+        font-size: clamp(2rem, 7vw, 2.75rem);
+        line-height: 1.05;
+    }
+
+    .heading {
+        font-family: 'Cormorant Garamond', 'Cormorant', Georgia, serif;
+        font-weight: 600;
+        font-size: 1.875rem;
+        line-height: 34px;
+    }
+
+    .body-lg {
+        font-size: 18px;
+        line-height: 28px;
+    }
+
+    .label {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 600;
+    }
+
+    .caption {
+        font-size: 13px;
+        line-height: 18px;
+    }
+
     .eyebrow {
-        font-size: 0.72rem;
+        font-size: 12px;
+        line-height: 16px;
         font-weight: 600;
-        letter-spacing: 0.22em;
+        letter-spacing: 2px;
         text-transform: uppercase;
-        color: var(--muted);
+        color: var(--ink-muted);
     }
 
-    .chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 0.25rem 0.75rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        background: rgb(255 255 255 / 0.6);
+    /* Un seul moment manuscrit par écran (nom de l'invité, « Merci »). */
+    .script {
+        font-family: 'Pinyon Script', 'Snell Roundhand', cursive;
+        font-weight: 400;
+        font-size: 3rem;
+        line-height: 52px;
     }
 
+    /* Surfaces : page = surface-100, carte = surface-200, champ = surface-300. */
     .card {
         border: 1px solid var(--line);
-        border-radius: var(--radius);
-        background: rgb(255 255 255 / 0.72);
-        box-shadow: var(--shadow);
+        border-radius: var(--radius-sm);
+        background: var(--surface-200);
     }
 
+    /* Ombre réservée à la carte d'invitation. */
+    .card-invitation {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-200);
+        box-shadow: var(--shadow-card);
+    }
+
+    /* Boutons : un seul principal par écran. */
     .btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        border-radius: 999px;
-        padding: 0.7rem 1.4rem;
+        gap: var(--space-2);
+        min-height: var(--tap);
+        border: 1px solid transparent;
+        border-radius: var(--radius-sm);
+        padding: 0 var(--space-6);
+        font-size: 14px;
+        line-height: 20px;
         font-weight: 600;
-        font-size: 0.9rem;
-        background: var(--ink);
-        color: var(--paper);
-        transition: transform 0.2s ease, background-color 0.2s ease;
+        background: var(--accent);
+        color: var(--on-accent);
+        transition: filter 0.2s ease, background-color 0.2s ease;
     }
 
     .btn:hover {
-        transform: translateY(-1px);
-        background: var(--accent);
+        filter: brightness(0.92);
     }
 
-    .btn-ghost {
+    .btn-ghost,
+    .btn-secondary {
         background: transparent;
         color: var(--ink);
-        border: 1px solid var(--ink);
+        border-color: var(--line-strong);
     }
 
-    .btn-ghost:hover {
-        background: var(--ink);
-        color: var(--paper);
+    .btn-ghost:hover,
+    .btn-secondary:hover {
+        background: var(--surface-300);
+        filter: none;
     }
 
-    /* Champs de formulaire : grands, arrondis, avec halo d'accent au focus. */
+    /* Discret : lien en or souligné. */
+    .btn-quiet {
+        background: transparent;
+        color: var(--gold);
+        min-height: var(--tap);
+        padding: 0 var(--space-2);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .btn-quiet:hover {
+        background: transparent;
+        filter: none;
+        text-decoration-thickness: 2px;
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: var(--on-accent);
+    }
+
+    .btn:disabled,
+    .btn[aria-busy='true'] {
+        opacity: 0.55;
+        cursor: not-allowed;
+        filter: none;
+    }
+
+    /* Pastilles de filtre (jamais pour un statut : voir .pill). */
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        min-height: var(--tap);
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius-sm);
+        padding: 0 var(--space-3);
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 600;
+        background: transparent;
+    }
+
+    /* Pastille de statut : toujours un mot et une icône (voir StatusPill.vue). */
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        border-radius: var(--radius-pill);
+        padding: 2px var(--space-3);
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 600;
+        background: var(--surface-200);
+        border: 1px solid var(--line);
+    }
+
+    .pill-success {
+        color: var(--success);
+    }
+
+    .pill-warning {
+        color: var(--warning);
+    }
+
+    .pill-danger {
+        color: var(--danger);
+    }
+
+    /* Bandeaux d'information : statut + mot + icône dans le contenu. */
+    .notice {
+        border: 1px solid var(--line);
+        border-left-width: 4px;
+        border-radius: var(--radius-md);
+        background: var(--surface-200);
+        padding: var(--space-3) var(--space-4);
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .notice-success {
+        border-left-color: var(--success);
+        color: var(--success);
+    }
+
+    .notice-warning {
+        border-left-color: var(--warning);
+        color: var(--warning);
+    }
+
+    .notice-danger {
+        border-left-color: var(--danger);
+        color: var(--danger);
+    }
+
+    /* Champs : surface-300, bordure line-strong (3:1), cible tactile de 44 px. */
     .field-label {
         display: block;
-        margin-bottom: 0.4rem;
-        font-size: 0.78rem;
+        margin-bottom: var(--space-1);
+        font-size: 14px;
+        line-height: 20px;
         font-weight: 600;
-        letter-spacing: 0.04em;
         color: var(--ink);
     }
 
     .input {
         width: 100%;
-        min-height: 3rem;
-        border: 1px solid var(--line);
-        border-radius: 0.9rem;
-        background: rgb(255 255 255 / 0.85);
-        padding: 0.7rem 1rem;
+        min-height: var(--tap);
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius-sm);
+        background: var(--surface-300);
+        padding: 10px var(--space-3);
         color: var(--ink);
-        font-size: 0.95rem;
-        box-shadow: inset 0 1px 2px rgb(29 26 22 / 0.04);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        font-size: 16px;
+        line-height: 24px;
+        transition: border-color 0.2s ease;
     }
 
     .input::placeholder {
-        color: color-mix(in srgb, var(--muted) 65%, transparent);
-    }
-
-    .input:hover {
-        border-color: color-mix(in srgb, var(--ink) 35%, transparent);
+        color: var(--ink-muted);
     }
 
     .input:focus {
-        outline: none;
-        border-color: var(--accent);
-        background: #fff;
-        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
+        outline: 2px solid var(--line-strong);
+        outline-offset: 2px;
     }
 
     .input[aria-invalid='true'] {
-        border-color: #b42318;
-        box-shadow: 0 0 0 4px rgb(180 35 24 / 0.1);
+        border-color: var(--danger);
     }
 
     textarea.input {
@@ -148,23 +440,22 @@
 
     .check {
         appearance: none;
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 22px;
+        height: 22px;
         flex-shrink: 0;
-        border: 1.5px solid color-mix(in srgb, var(--ink) 40%, transparent);
-        border-radius: 0.4rem;
-        background: #fff;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius-sm);
+        background: var(--surface-300);
         display: inline-grid;
         place-content: center;
-        transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
     .check::after {
         content: '';
-        width: 0.6rem;
-        height: 0.35rem;
-        border-left: 2px solid #fff;
-        border-bottom: 2px solid #fff;
+        width: 10px;
+        height: 6px;
+        border-left: 2px solid var(--on-accent);
+        border-bottom: 2px solid var(--on-accent);
         transform: rotate(-45deg) translate(1px, -1px) scale(0);
         transition: transform 0.15s ease;
     }
@@ -178,25 +469,22 @@
         transform: rotate(-45deg) translate(1px, -1px) scale(1);
     }
 
-    .btn-danger {
-        background: #b42318;
-        color: #fff;
+    input[type='color'].color-input {
+        display: block;
+        width: 4rem;
+        height: var(--tap);
+        padding: 4px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius-sm);
+        background: var(--surface-300);
+        cursor: pointer;
     }
 
-    .btn-danger:hover {
-        background: #8f1b12;
-    }
-
-    .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-    }
-
+    /* Apparitions douces (300 à 600 ms). */
     .reveal {
         opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+        transform: translateY(16px);
+        transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
     }
 
     .reveal.is-visible {
@@ -238,20 +526,9 @@
         animation: none;
     }
 
-    .btn {
+    .btn,
+    .input,
+    .check::after {
         transition: none;
-    }
-}
-
-@layer components {
-    input[type='color'].color-input {
-        display: block;
-        width: 4rem;
-        height: 3rem;
-        padding: 0.25rem;
-        border: 1px solid var(--line);
-        border-radius: 0.9rem;
-        background: #fff;
-        cursor: pointer;
     }
 }

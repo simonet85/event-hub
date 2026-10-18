@@ -35,13 +35,15 @@ class EventController extends Controller
         ]);
     }
 
-    /** @return list<array{value: string, label: string, theme: array<string, string>}> */
+    /** @return list<array{value: string, label: string, theme: array<string, string>, css_class: string, dark: bool}> */
     private function types(): array
     {
         return collect(EventType::cases())->map(fn (EventType $t) => [
             'value' => $t->value,
             'label' => $t->label(),
             'theme' => $t->defaultTheme(),
+            'css_class' => $t->cssClass(),
+            'dark' => $t->prefersDarkTheme(),
         ])->all();
     }
 

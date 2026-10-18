@@ -52,8 +52,8 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
                         <input v-model.number="details.latitude" type="number" step="any" placeholder="Latitude" class="input !w-auto" />
                         <input v-model.number="details.longitude" type="number" step="any" placeholder="Longitude" class="input !w-auto" />
                     </div>
-                    <p v-for="(msg, key) in details.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
-                    <p v-if="saved" class="text-sm text-green-700">Enregistré.</p>
+                    <p v-for="(msg, key) in details.errors" :key="key" class="text-sm text-danger">{{ msg }}</p>
+                    <p v-if="saved" class="text-sm text-success">Enregistré.</p>
                     <button type="submit" :disabled="details.processing" class="btn disabled:opacity-50">
                         Enregistrer
                     </button>
@@ -64,7 +64,7 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
                     <input v-model="itemForm.starts_at" type="datetime-local" class="input" />
                     <input v-model="itemForm.title" placeholder="Titre (ex : Cérémonie)" class="input" />
                     <input v-model="itemForm.description" placeholder="Description (optionnel)" class="input" />
-                    <p v-for="(msg, key) in itemForm.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
+                    <p v-for="(msg, key) in itemForm.errors" :key="key" class="text-sm text-danger">{{ msg }}</p>
                     <button type="submit" :disabled="itemForm.processing" class="btn">
                         Ajouter
                     </button>
@@ -77,7 +77,7 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
                             <p class="font-medium text-[var(--ink)]">{{ item.title }}</p>
                             <p class="text-sm text-[var(--muted)]">{{ fmt(item.starts_at) }}<span v-if="item.description"> · {{ item.description }}</span></p>
                         </div>
-                        <button class="text-sm text-red-600" @click="removeItem(item)">Supprimer</button>
+                        <button class="text-sm text-danger" @click="removeItem(item)">Supprimer</button>
                     </li>
                 </ul>
             </div>

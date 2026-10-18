@@ -60,10 +60,10 @@ const pending = computed(() => props.summary.to_invite);
 
         <div class="space-y-8 py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                <p v-if="flash?.sent != null" class="rounded bg-green-50 p-3 text-green-800">
+                <p v-if="flash?.sent != null" class="notice notice-success">
                     {{ flash.sent }} invitation(s) mise(s) en file d'envoi.
                 </p>
-                <p v-if="flash?.imported != null" class="rounded bg-green-50 p-3 text-green-800">
+                <p v-if="flash?.imported != null" class="notice notice-success">
                     {{ flash.imported }} invité(s) importé(s).
                 </p>
 
@@ -94,7 +94,7 @@ const pending = computed(() => props.summary.to_invite);
                     >
                         Ajouter
                     </button>
-                    <div class="text-sm text-red-600 sm:col-span-5">
+                    <div class="text-sm text-danger sm:col-span-5">
                         <p v-for="(msg, key) in form.errors" :key="key">{{ msg }}</p>
                     </div>
                 </form>
@@ -122,7 +122,7 @@ const pending = computed(() => props.summary.to_invite);
                             <p class="text-sm text-[var(--muted)]">
                                 {{ g.email ?? 'pas d\'email' }} · +{{ g.max_companions }} ·
                                 {{ g.invited_at ? 'invité' : 'non invité' }} ·
-                                <span :class="{ 'text-green-700': g.rsvp_status === 'accepted', 'text-red-700': g.rsvp_status === 'declined' }">
+                                <span :class="{ 'text-success': g.rsvp_status === 'accepted', 'text-danger': g.rsvp_status === 'declined' }">
                                     {{ { pending: 'en attente', accepted: 'présent(e)', declined: 'absent(e)' }[g.rsvp_status] }}
                                 </span>
                                 <template v-if="g.rsvp_status === 'accepted' && g.companions_count > 0">
@@ -137,10 +137,10 @@ const pending = computed(() => props.summary.to_invite);
                             <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="input !min-h-0 !w-28 !py-1 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
                             <a :href="g.invitation_url" target="_blank" class="font-semibold text-[var(--accent)] hover:underline">Voir</a>
                             <button v-if="g.email" class="font-semibold text-[var(--accent)] hover:underline" @click="send(g)">Envoyer par email</button>
-                            <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="text-green-700">
+                            <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="text-success">
                                 WhatsApp
                             </a>
-                            <button class="text-red-600" @click="remove(g)">Supprimer</button>
+                            <button class="text-danger" @click="remove(g)">Supprimer</button>
                         </div>
                     </li>
                 </ul>

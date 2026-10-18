@@ -70,7 +70,7 @@ const updatePassword = () => {
             <div class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">{{ __('Enregistrer') }}</PrimaryButton>
                 <Transition enter-active-class="transition" enter-from-class="opacity-0" leave-active-class="transition" leave-to-class="opacity-0">
-                    <p v-if="form.recentlySuccessful" class="text-sm text-green-700">✓ {{ __('Enregistré.') }}</p>
+                    <p v-if="form.recentlySuccessful" class="text-sm text-success">✓ {{ __('Enregistré.') }}</p>
                 </Transition>
             </div>
         </form>

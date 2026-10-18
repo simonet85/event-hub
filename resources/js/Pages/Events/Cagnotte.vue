@@ -30,7 +30,7 @@ const saveSettings = () => settings.patch(route('cagnotte.settings', props.event
 const addGift = () => giftForm.post(route('gifts.store', props.event.slug), { preserveScroll: true, onSuccess: () => giftForm.reset() });
 const removeGift = (id: number) => router.delete(route('gifts.destroy', [props.event.slug, id]), { preserveScroll: true });
 const badge = (status: string) =>
-    ({ confirmed: 'text-green-700', pending: 'text-amber-600', mismatch: 'text-red-700', failed: 'text-[var(--muted)]', expired: 'text-[var(--muted)]' })[status] ?? '';
+    ({ confirmed: 'text-success', pending: 'text-warning', mismatch: 'text-danger', failed: 'text-[var(--muted)]', expired: 'text-[var(--muted)]' })[status] ?? '';
 </script>
 
 <template>
@@ -58,8 +58,8 @@ const badge = (status: string) =>
                     </label>
                     <input v-model.number="settings.cagnotte_goal" type="number" min="100" placeholder="Objectif en FCFA (optionnel)" class="input" />
                     <textarea v-model="settings.cagnotte_message" rows="2" placeholder="Message aux invités (optionnel)" class="input" />
-                    <p v-for="(msg, key) in settings.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
-                    <p v-if="saved" class="text-sm text-green-700">Enregistré.</p>
+                    <p v-for="(msg, key) in settings.errors" :key="key" class="text-sm text-danger">{{ msg }}</p>
+                    <p v-if="saved" class="text-sm text-success">Enregistré.</p>
                     <button type="submit" :disabled="settings.processing" class="btn disabled:opacity-50">Enregistrer</button>
                 </form>
 
@@ -68,7 +68,7 @@ const badge = (status: string) =>
                     <input v-model="giftForm.name" placeholder="Nom (ex : Voyage de noces)" class="input" />
                     <input v-model="giftForm.description" placeholder="Description (optionnel)" class="input" />
                     <input v-model.number="giftForm.target_amount" type="number" min="100" placeholder="Montant cible en FCFA" class="input" />
-                    <p v-for="(msg, key) in giftForm.errors" :key="key" class="text-sm text-red-600">{{ msg }}</p>
+                    <p v-for="(msg, key) in giftForm.errors" :key="key" class="text-sm text-danger">{{ msg }}</p>
                     <button type="submit" :disabled="giftForm.processing" class="btn">Ajouter</button>
                 </form>
 
@@ -78,7 +78,7 @@ const badge = (status: string) =>
                             <p class="font-medium text-[var(--ink)]">{{ g.name }}</p>
                             <p class="text-sm text-[var(--muted)]">{{ fcfa(g.raised) }} / {{ fcfa(g.target_amount) }}</p>
                         </div>
-                        <button class="text-sm text-red-600" @click="removeGift(g.id)">Supprimer</button>
+                        <button class="text-sm text-danger" @click="removeGift(g.id)">Supprimer</button>
                     </li>
                 </ul>
 

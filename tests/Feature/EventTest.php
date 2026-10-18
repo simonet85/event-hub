@@ -23,7 +23,7 @@ test('un hôte authentifié peut créer un événement avec un slug unique', fun
     $event = Event::firstWhere('slug', 'mariage-clara-thomas-2026');
     expect($event)->not->toBeNull()
         ->and($event->user_id)->toBe($user->id)
-        ->and($event->theme_config['primary_color'])->toBe('#b08968');
+        ->and($event->theme_config['primary_color'])->toBe('#4e6b48');
 });
 
 test('un slug est généré automatiquement quand il est absent', function () {

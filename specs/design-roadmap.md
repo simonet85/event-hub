@@ -1,6 +1,6 @@
 # Roadmap design
 
-Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Éditorial chic »** (papier crème, encre, doré, serif Fraunces avec mot d'accent en italique), inspirée de `ClaudeDesign/resume-video.md`.
+Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Papier & lumière »** (jetons de `ClaudeDesign/DESIGN-SYSTEM.md`, correspondance dans `ClaudeDesign/CORRESPONDANCE-JETONS.md`) : surfaces crème, Cormorant Garamond / DM Sans / Pinyon Script, angles de 2 px, un accent par événement. L'ancienne direction « Éditorial chic » reste dans l'historique git (commit `221c7d8`).
 
 ## Réalisé
 
@@ -11,6 +11,8 @@ Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Éditori
 - [x] Espace hôte : cartes d'événements, onglets, cartes de statistiques, formulaires refaits
 - [x] Thème dynamique par événement (couleurs et police injectées en variables CSS)
 - [x] `prefers-reduced-motion` respecté (reveal, marquee, expansion)
+
+- [x] Papier & lumière, premier passage : jetons clair/sombre, thèmes `ev-*`, composants InvitationCard, StatusPill, GiftProgress, barre de navigation invité, RSVP segmenté
 
 ## Améliorations à venir
 
@@ -25,10 +27,10 @@ Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Éditori
 ### Qualité et accessibilité
 
 - [ ] **Vérification mobile réelle** à 320, 375, 390 et 768 px (95 % des invités sont sur smartphone), avec captures de référence.
-- [ ] **Audit de contraste AA** de tous les thèmes d'événement (couleur principale sur fond) et avertissement de l'hôte quand un thème choisi est illisible.
-- [ ] **Mode sombre** de l'espace hôte (`prefers-color-scheme`).
+- [x] **Audit de contraste AA** : préréglages conformes (testés), avertissement de l'hôte quand une couleur choisie est illisible, anciens préréglages migrés.
+- [ ] **Mode sombre** de l'espace hôte (`prefers-color-scheme`) : jetons sombres prêts (`[data-theme="dark"]`, utilisé par le thème Fête) ; l'espace hôte reste clair tant que ses composants ne sont pas tous passés aux jetons.
 - [ ] **Navigation au clavier** : parcours complet de l'invitation et des formulaires, focus visibles, fenêtres modales piégeant le focus.
-- [ ] **Polices auto-hébergées** (Fraunces, Figtree) au lieu du CDN, avec `font-display: swap` et préchargement.
+- [x] **Polices auto-hébergées** (Cormorant Garamond, DM Sans, Pinyon Script, woff2, `font-display: swap`, préchargement).
 
 ### Expérience invité
 

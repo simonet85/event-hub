@@ -148,6 +148,9 @@ class Event extends Model
             'location_address' => $this->location_address,
             'welcome_message' => $this->welcome_message,
             'theme_config' => $this->theme_config,
+            'theme_preset' => $this->type->defaultTheme(),
+            'css_class' => $this->type->cssClass(),
+            'dark_theme' => $this->type->prefersDarkTheme(),
             'dress_code' => $this->dress_code,
             'map' => $hasCoordinates ? [
                 'latitude' => $this->latitude,

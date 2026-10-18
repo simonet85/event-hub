@@ -25,7 +25,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
     >
         <Head :title="__('Vérification de l\'email')" />
 
-        <div v-if="verificationLinkSent" class="mb-4 rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+        <div v-if="verificationLinkSent" class="notice notice-success mb-4">
             {{ __("Un nouveau lien de vérification vient d'être envoyé à votre adresse email.") }}
         </div>
 

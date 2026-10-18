@@ -6,9 +6,9 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700|fraunces:400,400i,500,600|great-vibes:400|playfair-display:400,600|montserrat:400,500,600&display=swap" rel="stylesheet" />
+        <!-- Polices auto-hébergées (@font-face dans resources/css/app.css) : on précharge les deux utilisées au premier affichage. -->
+        <link rel="preload" href="/fonts/dm-sans-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
 
         <!-- Scripts -->
         @routes

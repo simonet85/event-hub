@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\EventType;
 use App\Models\Event;
 use App\Models\Gift;
 use App\Models\Guest;
@@ -34,7 +35,7 @@ class DemoSeeder extends Seeder
             'location_name' => 'Château de Versailles',
             'location_address' => 'Place d\'Armes, 78000 Versailles',
             'welcome_message' => 'Nous sommes heureux de vous compter parmi nous !',
-            'theme_config' => ['primary_color' => '#b08968', 'secondary_color' => '#fdf6ee', 'font_family' => 'script'],
+            'theme_config' => EventType::Wedding->defaultTheme(),
             'dress_code' => 'Tenue de soirée',
             'latitude' => 48.8049,
             'longitude' => 2.1204,

@@ -32,7 +32,7 @@ const restore = () => router.post(route('events.restore', props.event.slug));
             <h2 class="display mt-2 text-3xl sm:text-5xl">Modifier l'événement</h2>
         </template>
 
-        <div v-if="event.archived" class="mx-auto mt-6 flex max-w-7xl flex-wrap items-center justify-between gap-3 rounded-2xl bg-amber-50 px-5 py-4 text-sm text-amber-900 sm:mx-6 lg:mx-auto" data-testid="archived-banner">
+        <div v-if="event.archived" class="mx-auto mt-6 flex max-w-7xl flex-wrap items-center justify-between gap-3 notice notice-warning sm:mx-6 lg:mx-auto" data-testid="archived-banner">
             <p>Cet événement est archivé : ses pages invités sont masquées (404).</p>
             <button type="button" class="btn !px-4 !py-2 text-xs" @click="restore">Restaurer l'événement</button>
         </div>
@@ -40,7 +40,7 @@ const restore = () => router.post(route('events.restore', props.event.slug));
         <EventForm :types="types" :event="event" />
 
         <section v-if="!event.archived" class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-            <div class="card border-[#b42318]/30 p-6 sm:p-8">
+            <div class="card border-danger p-6 sm:p-8">
                 <h3 class="display text-2xl">Archiver l'événement</h3>
                 <p class="mt-1 max-w-2xl text-sm text-[var(--muted)]">
                     L'archivage masque la page publique et les invitations aux invités. Rien n'est supprimé : invités, réponses, photos et paiements sont conservés, et vous pouvez restaurer l'événement à tout moment.

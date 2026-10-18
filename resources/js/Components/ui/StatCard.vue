@@ -5,7 +5,7 @@ defineProps<{
     tone?: 'default' | 'good' | 'bad' | 'warn';
 }>();
 
-const tones = { default: '', good: 'text-green-700', bad: 'text-red-700', warn: 'text-amber-600' };
+const tones = { default: '', good: 'text-success', bad: 'text-danger', warn: 'text-warning' };
 </script>
 
 <template>

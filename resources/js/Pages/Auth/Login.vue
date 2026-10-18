@@ -28,7 +28,7 @@ const submit = () => {
     <GuestLayout :title="__('Bon retour !')" :subtitle="__('Connectez-vous pour gérer vos événements.')">
         <Head :title="__('Connexion')" />
 
-        <div v-if="status" class="mb-4 rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700">{{ status }}</div>
+        <div v-if="status" class="notice notice-success mb-4">{{ status }}</div>
 
         <form class="space-y-5" @submit.prevent="submit">
             <FormField

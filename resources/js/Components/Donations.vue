@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import GiftProgress from '@/Components/ui/GiftProgress.vue';
+import StatusPill from '@/Components/ui/StatusPill.vue';
+import { fcfa } from '@/lib/format';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -13,18 +16,18 @@ export interface CagnottePayload {
 const props = defineProps<{ token: string; cagnotte: CagnottePayload }>();
 
 const MIN_AMOUNT = 100;
+const QUICK_AMOUNTS = [5000, 10000, 25000, 50000];
 
 const form = useForm<{ amount: number | null; gift_id: number | null; message: string }>({ amount: null, gift_id: null, message: '' });
-
-const QUICK_AMOUNTS = [5000, 10000, 25000, 50000];
-const fcfa = (n: number) => `${new Intl.NumberFormat('fr-FR').format(n)} FCFA`;
-const percent = (raised: number, target: number) => (target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0);
 
 const returnedStatus = computed(() => (usePage().props.flash as { donation_status?: string } | undefined)?.donation_status);
 const openGifts = computed(() => props.cagnotte.gifts.filter((g) => g.remaining > 0));
 const selectedGift = computed(() => props.cagnotte.gifts.find((g) => g.id === form.gift_id) ?? null);
 const maxAmount = computed(() => selectedGift.value?.remaining ?? 5_000_000);
 const valid = computed(() => form.amount !== null && form.amount >= MIN_AMOUNT && form.amount <= maxAmount.value);
+
+const tone = (status: string): 'success' | 'warning' | 'danger' =>
+    status === 'confirmed' ? 'success' : status === 'failed' || status === 'expired' ? 'danger' : 'warning';
 
 const pick = (giftId: number | null) => {
     form.gift_id = giftId;
@@ -36,51 +39,46 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
 </script>
 
 <template>
-    <section class="w-full max-w-md space-y-4 card p-6 text-left" data-testid="donations">
-        <h2 class="display text-center text-3xl">Cagnotte &amp; <em>cadeaux</em></h2>
-        <p v-if="cagnotte.message" class="text-center text-sm italic">{{ cagnotte.message }}</p>
+    <section id="cadeaux" class="card w-full max-w-md scroll-mt-4 space-y-6 p-6 text-left" data-testid="donations">
+        <header class="text-center">
+            <p class="eyebrow">Cadeaux</p>
+            <h2 class="display-lg mt-1">Cagnotte &amp; <em>cadeaux</em></h2>
+            <p v-if="cagnotte.message" class="mt-2 italic text-ink-muted">{{ cagnotte.message }}</p>
+        </header>
 
         <div v-if="cagnotte.goal" data-testid="goal">
-            <div class="mb-1 flex justify-between text-sm">
-                <span>{{ fcfa(cagnotte.raised) }} collectés</span>
-                <span>objectif {{ fcfa(cagnotte.goal) }}</span>
-            </div>
-            <div class="h-2 overflow-hidden rounded-full bg-black/10">
-                <div class="h-full" :style="{ width: percent(cagnotte.raised, cagnotte.goal) + '%', backgroundColor: 'var(--event-primary)' }" />
-            </div>
+            <GiftProgress :raised="cagnotte.raised" :goal="cagnotte.goal" label="Déjà collecté" />
         </div>
-        <p v-else-if="cagnotte.raised > 0" class="text-center text-sm">{{ fcfa(cagnotte.raised) }} déjà collectés</p>
+        <p v-else-if="cagnotte.raised > 0" class="text-center text-ink-muted">{{ fcfa(cagnotte.raised) }} déjà collectés</p>
 
-        <p v-if="returnedStatus === 'confirmed'" class="rounded bg-green-100 p-2 text-center text-sm text-green-900" data-testid="donation-confirmed">
+        <p v-if="returnedStatus === 'confirmed'" class="notice notice-success" data-testid="donation-confirmed">
             Merci ! Votre contribution est confirmée.
         </p>
-        <p v-else-if="returnedStatus === 'pending'" class="rounded bg-amber-100 p-2 text-center text-sm text-amber-900" data-testid="donation-pending">
+        <p v-else-if="returnedStatus === 'pending'" class="notice notice-warning" data-testid="donation-pending">
             Votre paiement est en cours de confirmation. Il apparaîtra ci-dessous dès qu'il sera validé.
         </p>
-        <p v-else-if="returnedStatus === 'mismatch'" class="rounded bg-amber-100 p-2 text-center text-sm text-amber-900" data-testid="donation-review">
+        <p v-else-if="returnedStatus === 'mismatch'" class="notice notice-warning" data-testid="donation-review">
             Votre paiement est en cours de vérification par les hôtes (le montant reçu diffère). Ils reviendront vers vous si besoin.
         </p>
-        <p v-else-if="returnedStatus === 'failed'" class="rounded bg-red-100 p-2 text-center text-sm text-red-900">
+        <p v-else-if="returnedStatus === 'failed'" class="notice notice-danger">
             Le paiement n'a pas abouti. Vous pouvez réessayer.
         </p>
 
         <ul v-if="cagnotte.gifts.length" class="space-y-3" data-testid="gifts">
-            <li v-for="g in cagnotte.gifts" :key="g.id" class="rounded-2xl border border-[var(--line)] bg-white/50 p-4">
-                <div class="flex items-start justify-between gap-2">
+            <li v-for="g in cagnotte.gifts" :key="g.id" class="border border-line bg-surface-100 p-4">
+                <div class="flex items-start justify-between gap-3">
                     <div>
-                        <p class="font-medium">{{ g.name }}</p>
-                        <p v-if="g.description" class="text-xs opacity-80">{{ g.description }}</p>
+                        <p class="label">{{ g.name }}</p>
+                        <p v-if="g.description" class="caption text-ink-muted">{{ g.description }}</p>
                     </div>
-                    <p class="whitespace-nowrap text-sm">{{ fcfa(g.target_amount) }}</p>
+                    <p class="label whitespace-nowrap">{{ fcfa(g.target_amount) }}</p>
                 </div>
-                <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10">
-                    <div class="h-full" :style="{ width: percent(g.raised, g.target_amount) + '%', backgroundColor: 'var(--event-primary)' }" />
-                </div>
-                <p class="mt-1 text-xs opacity-70">{{ g.remaining === 0 ? 'Entièrement financé' : `Il reste ${fcfa(g.remaining)}` }}</p>
+                <GiftProgress class="mt-3" :raised="g.raised" :goal="g.target_amount" />
+                <p class="caption mt-2 text-ink-muted">{{ g.remaining === 0 ? 'Entièrement financé' : `Il reste ${fcfa(g.remaining)}` }}</p>
             </li>
         </ul>
 
-        <form class="space-y-3" @submit.prevent="submit">
+        <form class="space-y-4" @submit.prevent="submit">
             <label class="block">
                 <span class="field-label">Je participe à</span>
                 <select :value="form.gift_id ?? ''" class="input" @change="pick(($event.target as HTMLSelectElement).value ? Number(($event.target as HTMLSelectElement).value) : null)">
@@ -88,45 +86,48 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
                     <option v-for="g in openGifts" :key="g.id" :value="g.id">{{ g.name }} (reste {{ fcfa(g.remaining) }})</option>
                 </select>
             </label>
-            <label class="block">
-                <span class="field-label">Montant (FCFA, minimum {{ MIN_AMOUNT }})</span>
-                <input v-model.number="form.amount" type="number" :min="MIN_AMOUNT" :max="maxAmount" step="1" inputmode="numeric" class="input" />
-                <span class="mt-2 flex flex-wrap gap-2" data-testid="quick-amounts">
+
+            <div>
+                <label for="donation-amount" class="field-label">Montant (F CFA, minimum {{ MIN_AMOUNT }})</label>
+                <input id="donation-amount" v-model.number="form.amount" type="number" :min="MIN_AMOUNT" :max="maxAmount" step="1" inputmode="numeric" class="input" />
+                <div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Montants suggérés" data-testid="quick-amounts">
                     <button
                         v-for="a in QUICK_AMOUNTS"
                         :key="a"
                         type="button"
-                        class="chip cursor-pointer"
-                        :class="form.amount === a ? '!border-current !bg-[color-mix(in_srgb,currentColor_10%,transparent)]' : ''"
+                        class="chip"
+                        :class="form.amount === a ? '!border-accent !bg-accent !text-on-accent' : ''"
+                        :aria-pressed="form.amount === a"
                         @click="form.amount = a"
                     >
-                        {{ new Intl.NumberFormat('fr-FR').format(a) }}
+                        {{ fcfa(a) }}
                     </button>
-                </span>
-            </label>
+                </div>
+            </div>
+
             <label class="block">
                 <span class="field-label">Un petit mot (optionnel)</span>
                 <input v-model="form.message" type="text" maxlength="500" class="input" />
             </label>
-            <p v-for="(msg, key) in form.errors" :key="key" class="text-sm text-red-700">{{ msg }}</p>
-            <button
-                type="submit"
-                :disabled="form.processing || !valid"
-                class="w-full btn"
-            >
-                Payer avec MoneyFusion
+
+            <p v-for="(msg, key) in form.errors" :key="key" class="flex items-start gap-1 text-sm text-danger" role="alert">
+                <span aria-hidden="true">✕</span> Erreur : {{ msg }}
+            </p>
+
+            <button type="submit" :disabled="form.processing || !valid" :aria-busy="form.processing" class="btn w-full">
+                {{ form.processing ? 'Redirection vers MoneyFusion…' : 'Offrir ma participation' }}
             </button>
-            <p class="text-center text-xs opacity-70">Paiement sécurisé par MoneyFusion (Mobile Money, carte…).</p>
+            <p class="caption text-center text-ink-muted">Paiement sécurisé par MoneyFusion (Mobile Money, carte…).</p>
         </form>
 
         <div v-if="cagnotte.mine.length" data-testid="my-contributions">
-            <h3 class="mb-1 text-sm font-semibold">Mes contributions</h3>
-            <ul class="space-y-1 text-sm">
-                <li v-for="c in cagnotte.mine" :key="c.id" class="flex justify-between gap-2">
+            <h3 class="label mb-2">Mes contributions</h3>
+            <ul class="space-y-2">
+                <li v-for="c in cagnotte.mine" :key="c.id" class="flex flex-wrap items-center justify-between gap-2 text-sm">
                     <span>{{ fcfa(c.amount) }}<span v-if="c.gift"> · {{ c.gift }}</span></span>
-                    <span>
-                        {{ c.status_label }}
-                        <a v-if="c.payment_url" :href="c.payment_url" class="underline">Reprendre</a>
+                    <span class="flex items-center gap-2">
+                        <StatusPill :tone="tone(c.status)" :label="c.status_label" />
+                        <a v-if="c.payment_url" :href="c.payment_url" class="btn-quiet btn !min-h-0 !px-0 !py-0">Reprendre</a>
                     </span>
                 </li>
             </ul>

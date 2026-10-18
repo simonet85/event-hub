@@ -15,16 +15,18 @@ defineProps<{
 }>();
 
 const themes = [
-    { name: 'Bordeaux', accent: '#9b2c3d', paper: '#faf6ef', ink: '#2a1418' },
-    { name: 'Sauge', accent: '#4f6b4a', paper: '#f3f5ee', ink: '#1c2619' },
-    { name: 'Nuit', accent: '#d4af6a', paper: '#16141f', ink: '#f4efe4' },
-    { name: 'Océan', accent: '#1f5f8b', paper: '#eef4f8', ink: '#12202b' },
+    { name: 'Mariage', accent: '#4e6b48', onAccent: '#fffaf2', paper: '#fbf6ee', ink: '#2a1f17' },
+    { name: 'Baptême', accent: '#42698f', onAccent: '#fffaf2', paper: '#fbf6ee', ink: '#2a1f17' },
+    { name: 'Anniversaire', accent: '#a0432a', onAccent: '#fffaf2', paper: '#fbf6ee', ink: '#2a1f17' },
+    // Le thème Fête s'affiche en mode sombre.
+    { name: 'Fête', accent: '#d3a3c8', onAccent: '#1d1711', paper: '#1d1711', ink: '#f4ece0' },
 ];
 const marquee = computed(() => ['Mariages', 'Anniversaires', 'Baptêmes', 'Soirées', 'Cagnotte sécurisée', 'RSVP en ligne'].map((k) => __(k)));
 const current = ref(0);
 const theme = computed(() => themes[current.value]);
 const previewStyle = computed(() => ({
     '--accent': theme.value.accent,
+    '--on-accent': theme.value.onAccent,
     backgroundColor: theme.value.paper,
     color: theme.value.ink,
 }));
@@ -132,11 +134,11 @@ const steps = [
                 </Reveal>
 
                 <Reveal :delay="120">
-                    <div class="rounded-[2rem] p-8 text-center shadow-2xl transition-colors duration-500 sm:p-12" :style="previewStyle" data-testid="theme-preview">
-                        <p class="eyebrow !text-current opacity-70">{{ __('Mariage') }}</p>
+                    <div class="p-8 text-center shadow-card transition-colors duration-500 sm:p-12" :style="previewStyle" data-testid="theme-preview">
+                        <p class="eyebrow !text-current">{{ __(theme.name) }}</p>
                         <p class="display mt-3 text-5xl">Léa &amp; <em>Karim</em></p>
                         <p class="mt-4 text-sm opacity-80">{{ __('Samedi 12 septembre · Domaine des Lilas') }}</p>
-                        <div class="mt-6 inline-flex rounded-full px-5 py-2 text-sm font-semibold text-white" style="background: var(--accent)">{{ __('Confirmer ma présence') }}</div>
+                        <div class="btn pointer-events-none mt-6" aria-hidden="true">{{ __('Confirmer ma présence') }}</div>
                     </div>
                 </Reveal>
             </div>

@@ -39,6 +39,11 @@ export interface PublicEvent {
     location_address: string | null;
     welcome_message: string | null;
     theme_config: Theme;
+    /** Préréglage du type : une valeur identique n'est pas une personnalisation de l'hôte. */
+    theme_preset?: Theme;
+    /** Classe ev-* qui fixe l'accent (ev-mariage, ev-bapteme, ev-anniversaire, ev-fete). */
+    css_class?: string;
+    dark_theme?: boolean;
     dress_code: string | null;
     map: { latitude: number; longitude: number; embed_url: string } | null;
     map_url: string | null;
