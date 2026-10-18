@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError.vue';
 import FormField from '@/Components/ui/FormField.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import type { Theme } from '@/types';
-import { checkContrast, MIN_BORDER_CONTRAST, MIN_TEXT_CONTRAST } from '@/lib/contrast';
+import { auditTheme, effectiveSurface } from '@/lib/contrast';
 import { useForm } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 
@@ -50,9 +50,9 @@ watch(
 const previewTitle = computed(() => form.title || 'Titre de votre événement');
 const selectedType = computed(() => props.types.find((t) => t.value === form.type) ?? props.types[0]);
 
-// Avertissement d'accessibilité : la couleur principale doit rester lisible sur le fond choisi.
-const contrast = computed(() => checkContrast(form.theme_config.primary_color, form.theme_config.secondary_color));
-const contrastLabel = computed(() => (contrast.value ? contrast.value.ratio.toFixed(1).replace('.', ',') : ''));
+// Avertissement d'accessibilité : couleur principale lisible sur le fond réellement affiché (sombre pour la Fête) et texte de bouton lisible.
+const surface = computed(() => effectiveSurface(form.theme_config.secondary_color, selectedType.value.theme.secondary_color, selectedType.value.dark));
+const audit = computed(() => auditTheme(form.theme_config.primary_color, surface.value));
 
 const submit = () => {
     if (props.event) {
@@ -119,10 +119,8 @@ const submit = () => {
                 </div>
             </div>
 
-            <p v-if="contrast && !contrast.textOk" class="notice notice-warning" role="alert" data-testid="contrast-warning">
-                <strong>Contraste insuffisant :</strong> {{ contrastLabel }}:1 entre la couleur principale et le fond
-                ({{ MIN_TEXT_CONTRAST.toString().replace('.', ',') }}:1 requis pour le texte{{ contrast.borderOk ? '' : `, ${MIN_BORDER_CONTRAST}:1 pour une bordure` }}).
-                Choisissez une couleur plus foncée ou un fond plus clair.
+            <p v-for="(problem, i) in audit?.problems ?? []" :key="i" class="notice notice-warning" role="alert" data-testid="contrast-warning">
+                {{ problem }}
             </p>
 
             <button type="submit" :disabled="form.processing" class="btn">

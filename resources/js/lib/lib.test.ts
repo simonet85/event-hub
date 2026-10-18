@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkContrast, contrastRatio, MIN_BORDER_CONTRAST, MIN_TEXT_CONTRAST, onAccent } from './contrast';
+import { auditTheme, checkContrast, contrastRatio, DARK_SURFACE, effectiveSurface, MIN_BORDER_CONTRAST, MIN_TEXT_CONTRAST, onAccent } from './contrast';
 import { fcfa } from './format';
 
 // Jetons de DESIGN-SYSTEM.md (clair / sombre).
@@ -64,5 +64,44 @@ describe('fcfa', () => {
         expect(fcfa(25000)).toBe('25 000 F CFA');
         expect(fcfa(620000)).toBe('620 000 F CFA');
         expect(fcfa(0)).toBe('0 F CFA');
+    });
+});
+
+describe('audit de thème', () => {
+    it.each(Object.entries(accents))('le préréglage %s est lisible en clair et en sombre', (_name, [lightAccent, darkAccent]) => {
+        expect(auditTheme(lightAccent, light.surface)?.problems).toEqual([]);
+        expect(auditTheme(darkAccent, DARK_SURFACE)?.problems).toEqual([]);
+    });
+
+    it('signale une couleur principale trop pâle', () => {
+        const audit = auditTheme('#b08968', '#fdf6ee');
+        expect(audit?.text.textOk).toBe(false);
+        expect(audit?.problems[0]).toContain('Contraste insuffisant');
+        expect(audit?.problems[0]).toContain('3:1 pour une bordure');
+    });
+
+    it("signale une couleur dont aucun texte de bouton n'est lisible", () => {
+        const audit = auditTheme('#7a7a7a', '#ffffff');
+        expect(audit?.buttonOk).toBe(false);
+        expect(audit?.problems.some((p) => p.includes('boutons'))).toBe(true);
+    });
+
+    it('ne signale rien pour un thème personnalisé lisible', () => {
+        expect(auditTheme('#123456', '#ffffff')?.problems).toEqual([]);
+    });
+
+    it('ignore les valeurs qui ne sont pas des couleurs complètes', () => {
+        expect(auditTheme('#12', '#ffffff')).toBeNull();
+    });
+
+    it("évalue le thème Fête sur son fond sombre tant que l'hôte garde le fond du préréglage", () => {
+        expect(effectiveSurface('#fbf6ee', '#fbf6ee', true)).toBe(DARK_SURFACE);
+        expect(effectiveSurface('#ffeedd', '#fbf6ee', true)).toBe('#ffeedd');
+        expect(effectiveSurface('#fbf6ee', '#fbf6ee', false)).toBe('#fbf6ee');
+    });
+
+    it('un accent foncé choisi pour le thème Fête est signalé sur le fond sombre', () => {
+        const audit = auditTheme('#7a3d6f', effectiveSurface('#fbf6ee', '#fbf6ee', true));
+        expect(audit?.text.textOk).toBe(false);
     });
 });

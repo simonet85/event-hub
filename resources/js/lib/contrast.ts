@@ -48,3 +48,53 @@ export function checkContrast(foreground: string, background: string): ContrastR
 
     return { ratio, textOk: ratio >= MIN_TEXT_CONTRAST, borderOk: ratio >= MIN_BORDER_CONTRAST };
 }
+
+/** Fond sombre du Design System, utilisé par le thème Fête tant que l'hôte n'a pas choisi son propre fond. */
+export const DARK_SURFACE = '#1d1711';
+
+/** Fond réellement affiché derrière le texte d'un événement (mode sombre inclus). */
+export function effectiveSurface(secondary: string, presetSecondary: string | undefined, dark: boolean | undefined): string {
+    const customized = presetSecondary !== undefined && secondary.toLowerCase() !== presetSecondary.toLowerCase();
+
+    return dark && !customized ? DARK_SURFACE : secondary;
+}
+
+export interface ThemeAudit {
+    /** Couleur principale (texte, titres d'accent) sur le fond. */
+    text: ContrastReport;
+    /** Meilleur rapport possible pour le texte posé sur un bouton d'accent (clair ou foncé). */
+    buttonRatio: number;
+    buttonOk: boolean;
+    /** Messages à montrer à l'hôte ; vide si le thème est lisible. */
+    problems: string[];
+}
+
+const formatRatio = (ratio: number): string => ratio.toFixed(1).replace('.', ',');
+
+/**
+ * Audit d'un thème d'événement : la couleur principale doit atteindre 4.5:1 comme texte sur le fond
+ * (3:1 au minimum pour une bordure), et le texte des boutons d'accent doit atteindre 4.5:1.
+ */
+export function auditTheme(accent: string, surface: string): ThemeAudit | null {
+    const text = checkContrast(accent, surface);
+
+    if (!text) {
+        return null;
+    }
+
+    const on = onAccent(accent);
+    const buttonRatio = contrastRatio(accent, on);
+    const buttonOk = buttonRatio >= MIN_TEXT_CONTRAST;
+    const problems: string[] = [];
+
+    if (!text.textOk) {
+        problems.push(
+            `Contraste insuffisant : ${formatRatio(text.ratio)}:1 entre la couleur principale et le fond (4,5:1 requis pour le texte${text.borderOk ? '' : ', 3:1 pour une bordure'}). Choisissez une couleur plus foncée ou un fond plus clair.`,
+        );
+    }
+    if (!buttonOk) {
+        problems.push(`Le texte des boutons serait peu lisible sur cette couleur (${formatRatio(buttonRatio)}:1, 4,5:1 requis). Éclaircissez ou assombrissez-la.`);
+    }
+
+    return { text, buttonRatio, buttonOk, problems };
+}
