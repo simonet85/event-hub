@@ -27,8 +27,8 @@ const parts = computed(() => {
 
 <template>
     <p v-if="finished" data-testid="countdown-finished" class="display text-3xl">C'est le <em>grand jour !</em></p>
-    <div v-else class="flex justify-center gap-2 sm:gap-4" data-testid="countdown">
-        <div v-for="part in parts" :key="part.label" class="card min-w-[4.25rem] px-2 py-3 text-center sm:min-w-[5.5rem] sm:py-4">
+    <div v-else class="mx-auto grid w-full max-w-md grid-cols-4 gap-2 sm:gap-4" data-testid="countdown">
+        <div v-for="part in parts" :key="part.label" class="card min-w-0 px-1 py-3 text-center sm:py-4">
             <!-- La clé relance l'animation d'apparition du chiffre à chaque changement. -->
             <div
                 :key="part.value"

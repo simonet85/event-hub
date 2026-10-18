@@ -21,7 +21,7 @@ const tabs = [
 
 <template>
     <div>
-        <Link :href="url('events.index')" class="eyebrow hover:text-[var(--accent)]">← Mes événements</Link>
+        <Link :href="url('events.index')" class="eyebrow inline-flex min-h-tap items-center hover:text-[var(--accent)]">← Mes événements</Link>
         <div class="mt-2 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <p class="text-sm text-[var(--muted)]">{{ event.title }}</p>
@@ -39,7 +39,7 @@ const tabs = [
                 <li v-for="t in tabs" :key="t.key">
                     <Link
                         :href="url(t.route, event.slug)"
-                        class="-mb-px block border-b-2 px-4 py-2.5 text-sm font-semibold transition"
+                        class="-mb-px flex min-h-tap items-center border-b-2 px-4 text-sm font-semibold transition"
                         :class="current === t.key ? 'border-[var(--accent)] text-[var(--accent)]' : 'border-transparent text-[var(--muted)] hover:text-[var(--ink)]'"
                         :aria-current="current === t.key ? 'page' : undefined"
                     >

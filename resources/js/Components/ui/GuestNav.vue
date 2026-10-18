@@ -22,9 +22,9 @@ const items = computed(() =>
 
 <template>
     <nav class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface-100" aria-label="Navigation de l'invitation" data-testid="guest-nav">
-        <ul class="mx-auto flex max-w-3xl overflow-x-auto">
-            <li v-for="i in items" :key="i.href" class="min-w-0 flex-1">
-                <a :href="i.href" class="flex min-h-tap items-center justify-center px-2 text-center text-xs font-semibold text-ink hover:bg-surface-200">
+        <ul class="mx-auto flex max-w-3xl overflow-x-auto [scrollbar-width:none]">
+            <li v-for="i in items" :key="i.href" class="min-w-fit flex-1">
+                <a :href="i.href" class="flex min-h-tap items-center justify-center whitespace-nowrap px-3 text-center text-xs font-semibold text-ink hover:bg-surface-200">
                     {{ i.label }}
                 </a>
             </li>

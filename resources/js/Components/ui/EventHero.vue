@@ -23,7 +23,7 @@ const time = computed(() => new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short
             <span class="h-px w-12 bg-line-strong" />✦<span class="h-px w-12 bg-line-strong" />
         </div>
 
-        <p class="body-lg mt-5 first-letter:uppercase">{{ date }} · {{ time }}</p>
+        <p class="body-lg mt-5"><span class="inline-block first-letter:uppercase">{{ date }}</span><span class="hidden sm:inline"> · </span><span class="block whitespace-nowrap sm:inline">{{ time }}</span></p>
         <p v-if="event.location_name" class="mt-1 text-ink-muted">{{ event.location_name }}</p>
 
         <Countdown :target="event.event_date" class="mt-10" />

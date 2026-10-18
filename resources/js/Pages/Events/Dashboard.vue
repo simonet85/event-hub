@@ -54,7 +54,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                     </dl>
                     <p v-if="rsvp.to_invite > 0" class="mt-2 text-sm text-warning">
                         {{ rsvp.to_invite }} invité(s) n'ont pas encore reçu leur invitation.
-                        <Link :href="route('guests.index', event.slug)" class="underline">Envoyer</Link>
+                        <Link :href="route('guests.index', event.slug)" class="inline-flex min-h-tap items-center underline">Envoyer</Link>
                     </p>
                 </section>
 
@@ -72,7 +72,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                     <section>
                         <div class="mb-3 flex items-center justify-between">
                             <h3 class="display text-2xl">Plan de table</h3>
-                            <Link :href="route('guests.index', event.slug)" class="text-sm font-semibold text-[var(--accent)] hover:underline">Attribuer les tables</Link>
+                            <Link :href="route('guests.index', event.slug)" class="inline-flex min-h-tap items-center text-sm font-semibold text-[var(--accent)] hover:underline">Attribuer les tables</Link>
                         </div>
                         <p v-if="tables.length === 0" class="text-[var(--muted)]">Aucun invité à placer.</p>
                         <ul v-else class="divide-y card" data-testid="tables">
@@ -99,7 +99,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                 <section v-if="cagnotte" class="card p-6" data-testid="cagnotte">
                     <div class="flex items-center justify-between">
                         <h3 class="display text-2xl">Cagnotte</h3>
-                        <Link :href="route('cagnotte.index', event.slug)" class="text-sm font-semibold text-[var(--accent)] hover:underline">Détail</Link>
+                        <Link :href="route('cagnotte.index', event.slug)" class="inline-flex min-h-tap items-center text-sm font-semibold text-[var(--accent)] hover:underline">Détail</Link>
                     </div>
                     <p class="mt-1 text-2xl font-semibold text-success">{{ fcfa(cagnotte.raised) }}</p>
                     <div v-if="cagnotte.goal" class="mt-2">
@@ -113,7 +113,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
 
                 <section v-if="moderation.entries + moderation.photos > 0" class="notice notice-warning" data-testid="moderation">
                     {{ moderation.entries }} message(s) et {{ moderation.photos }} photo(s) attendent votre validation.
-                    <Link :href="route('moderation.index', event.slug)" class="underline">Modérer</Link>
+                    <Link :href="route('moderation.index', event.slug)" class="inline-flex min-h-tap items-center underline">Modérer</Link>
                 </section>
             </div>
         </div>

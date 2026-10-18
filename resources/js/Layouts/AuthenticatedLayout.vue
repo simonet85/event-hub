@@ -11,7 +11,7 @@ const open = ref(false);
         <nav class="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--paper)]/90 backdrop-blur">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-8">
-                    <Link :href="route('events.index')" class="display text-2xl">Event <em>Hub</em></Link>
+                    <Link :href="route('events.index')" class="display inline-flex min-h-tap items-center text-2xl">Event <em>Hub</em></Link>
                     <div class="hidden gap-6 text-sm font-semibold sm:flex">
                         <Link
                             :href="route('events.index')"
@@ -34,7 +34,7 @@ const open = ref(false);
 
                 <button
                     type="button"
-                    class="rounded-md p-2 sm:hidden"
+                    class="inline-flex min-h-tap min-w-tap items-center justify-center rounded-md sm:hidden"
                     :aria-expanded="open"
                     :aria-label="__('Menu')"
                     @click="open = !open"
@@ -47,9 +47,9 @@ const open = ref(false);
             </div>
 
             <div v-if="open" class="space-y-1 border-t border-[var(--line)] px-4 py-3 text-sm font-semibold sm:hidden">
-                <Link :href="route('events.index')" class="block py-2">{{ __('Mes événements') }}</Link>
-                <Link :href="route('profile.edit')" class="block py-2">{{ __('Profil') }}</Link>
-                <Link :href="route('logout')" method="post" as="button" class="block py-2">{{ __('Déconnexion') }}</Link>
+                <Link :href="route('events.index')" class="flex min-h-tap items-center">{{ __('Mes événements') }}</Link>
+                <Link :href="route('profile.edit')" class="flex min-h-tap items-center">{{ __('Profil') }}</Link>
+                <Link :href="route('logout')" method="post" as="button" class="flex min-h-tap w-full items-center">{{ __('Déconnexion') }}</Link>
                 <div class="pt-2"><LocaleSwitcher /></div>
                 <p class="eyebrow pt-2">{{ $page.props.auth.user.email }}</p>
             </div>

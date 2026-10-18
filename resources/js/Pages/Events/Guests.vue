@@ -99,19 +99,21 @@ const pending = computed(() => props.summary.to_invite);
                     </div>
                 </form>
 
-                <form class="flex items-center gap-3 card p-4" @submit.prevent="importCsv">
+                <form class="flex flex-wrap items-center gap-3 card p-4" @submit.prevent="importCsv">
                     <input
                         type="file"
                         accept=".csv,text/csv"
+                        class="block w-full min-w-0 max-w-full text-sm"
                         @change="importForm.file = ($event.target as HTMLInputElement).files?.[0] ?? null"
                     />
                     <button
                         type="submit"
                         :disabled="!importForm.file || importForm.processing"
-                        class="rounded-md border px-3 py-1 text-sm disabled:opacity-40"
+                        class="btn btn-secondary"
                     >
-                        Importer un CSV (name, email, phone, max_companions)
+                        Importer un CSV
                     </button>
+                    <p class="caption w-full text-ink-muted">Colonnes : name, email, phone, max_companions</p>
                 </form>
 
                 <p v-if="guests.data.length === 0" class="text-[var(--muted)]">Aucun invité pour le moment.</p>
@@ -133,14 +135,14 @@ const pending = computed(() => props.summary.to_invite);
                             <p v-if="g.favorite_song" class="text-xs text-[var(--muted)]">Chanson : {{ g.favorite_song }}</p>
                             <p v-if="g.rsvp_message" class="text-xs italic text-[var(--muted)]">« {{ g.rsvp_message }} »</p>
                         </div>
-                        <div class="flex items-center gap-3 text-sm">
-                            <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="input !min-h-0 !w-28 !py-1 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
-                            <a :href="g.invitation_url" target="_blank" class="font-semibold text-[var(--accent)] hover:underline">Voir</a>
-                            <button v-if="g.email" class="font-semibold text-[var(--accent)] hover:underline" @click="send(g)">Envoyer par email</button>
-                            <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="text-success">
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                            <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="input !w-28 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
+                            <a :href="g.invitation_url" target="_blank" class="inline-flex min-h-tap items-center font-semibold text-[var(--accent)] hover:underline">Voir</a>
+                            <button v-if="g.email" class="inline-flex min-h-tap items-center font-semibold text-[var(--accent)] hover:underline" @click="send(g)">Envoyer par email</button>
+                            <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="inline-flex min-h-tap items-center text-success">
                                 WhatsApp
                             </a>
-                            <button class="text-danger" @click="remove(g)">Supprimer</button>
+                            <button class="inline-flex min-h-tap items-center text-danger" @click="remove(g)">Supprimer</button>
                         </div>
                     </li>
                 </ul>
