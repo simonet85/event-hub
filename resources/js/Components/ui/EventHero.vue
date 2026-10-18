@@ -28,9 +28,9 @@ const time = computed(() => new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short
 
         <Countdown :target="event.event_date" class="mt-10" />
 
-        <div v-if="actions" class="mt-10 flex w-full max-w-sm flex-col gap-3 sm:flex-row sm:justify-center">
-            <a href="#rsvp" class="btn">Confirmer ma présence</a>
-            <a v-if="event.schedule.length" href="#programme" class="btn btn-secondary">Voir le programme</a>
+        <div v-if="actions" class="mt-10 flex w-full max-w-lg flex-col gap-3 sm:flex-row sm:justify-center">
+            <a href="#rsvp" class="btn whitespace-nowrap">Confirmer ma présence</a>
+            <a v-if="event.schedule.length" href="#programme" class="btn btn-secondary whitespace-nowrap">Voir le programme</a>
         </div>
     </header>
 </template>

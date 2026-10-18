@@ -192,6 +192,14 @@
         line-height: 1.05;
     }
 
+    /* Chiffres alignés sur la ligne de base (dates, compte à rebours, montants) plutôt qu'elzéviriens. */
+    .display,
+    .display-xl,
+    .display-lg,
+    .heading {
+        font-variant-numeric: lining-nums tabular-nums;
+    }
+
     .display em {
         font-style: italic;
         font-weight: 500;

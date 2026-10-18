@@ -51,7 +51,7 @@ const steps = [
     <Head title="Event Hub — vos événements, sublimés" />
 
     <div class="min-h-screen overflow-x-clip bg-[var(--paper)] text-[var(--ink)]">
-        <div class="bg-[var(--ink)] py-2 text-xs tracking-widest text-[var(--paper)]">
+        <div data-theme="dark" class="bg-surface-100 py-2 text-xs tracking-widest text-ink">
             <Marquee :items="marquee" />
         </div>
 
@@ -69,7 +69,7 @@ const steps = [
 
         <ScrollExpandHero>
             <template #cover>
-                <div class="flex h-full w-full items-center justify-center bg-[var(--ink)] text-[var(--paper)]">
+                <div data-theme="dark" class="flex h-full w-full items-center justify-center bg-surface-100 text-ink">
                     <div class="text-center">
                         <p class="eyebrow !text-[var(--gold)]">{{ __('Vous êtes invité(e)') }}</p>
                         <p class="display mt-4 text-6xl sm:text-8xl md:text-9xl">Event <em class="!text-[var(--gold)]">Hub</em></p>
@@ -157,11 +157,11 @@ const steps = [
             </ol>
         </section>
 
-        <section class="bg-[var(--ink)] py-20 text-center text-[var(--paper)]">
+        <section data-theme="dark" class="bg-surface-100 py-20 text-center text-ink">
             <Reveal>
                 <h2 class="display mx-auto max-w-2xl px-5 text-4xl sm:text-5xl">{{ __('Prêt à inviter') }} <em class="!text-[var(--gold)]">{{ __('tout le monde ?') }}</em></h2>
                 <div class="mt-8 flex justify-center gap-3">
-                    <Link v-if="canRegister" :href="route('register')" class="btn !bg-[var(--paper)] !text-[var(--ink)]">{{ __('Créer mon événement') }}</Link>
+                    <Link v-if="canRegister" :href="route('register')" class="btn">{{ __('Créer mon événement') }}</Link>
                 </div>
             </Reveal>
         </section>
