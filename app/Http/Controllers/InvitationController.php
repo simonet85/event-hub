@@ -39,6 +39,7 @@ class InvitationController extends Controller
                 'rsvp_message' => $guest->rsvp_message,
             ],
             'event' => $event->load('scheduleItems')->publicPayload(),
+            'retention_days' => (int) config('privacy.retention_days'),
             'guestbook' => $event->guestbookEntries()->where('status', ModerationStatus::Approved)->with('guest:id,name')->latest()->get()
                 ->map(fn (GuestbookEntry $e) => ['id' => $e->id, 'author' => $e->guest->name, 'message' => $e->message]),
             'photos' => $event->photos()->where('status', ModerationStatus::Approved)->with('guest:id,name')->latest()->get()

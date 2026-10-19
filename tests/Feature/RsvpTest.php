@@ -15,6 +15,7 @@ test('un invité peut accepter avec accompagnants, régime, chanson et message',
         'rsvp_status' => 'accepted',
         'companions_count' => 2,
         'dietary_restrictions' => 'Végétarien',
+        'consent' => true,
         'favorite_song' => 'September',
         'rsvp_message' => 'Hâte d\'y être !',
     ])->assertRedirect()->assertSessionHas('rsvp_saved', true);

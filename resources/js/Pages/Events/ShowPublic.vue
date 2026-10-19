@@ -4,15 +4,22 @@ import EventHero from '@/Components/ui/EventHero.vue';
 import Reveal from '@/Components/ui/Reveal.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import type { PublicEvent } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps<{ event: PublicEvent }>();
+
+const erased = computed(() => (usePage().props.flash as { data_erased?: boolean } | undefined)?.data_erased === true);
 </script>
 
 <template>
     <Head :title="event.title" />
 
     <EventPublicLayout :theme="event.theme_config" :preset="event.theme_preset" :css-class="event.css_class" :dark="event.dark_theme">
+        <p v-if="erased" class="notice notice-success mb-6 w-full max-w-md text-center" role="status" data-testid="data-erased">
+            Vos données ont été supprimées. Votre invitation n'est plus active.
+        </p>
+
         <EventHero :event="event" />
 
         <Reveal class="w-full">

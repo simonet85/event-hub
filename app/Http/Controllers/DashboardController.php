@@ -32,6 +32,12 @@ class DashboardController extends Controller
                 'guests' => $row['guests']->count(),
                 'headcount' => $row['headcount'],
             ])->all(),
+            'privacy' => [
+                'retention_days' => (int) config('privacy.retention_days'),
+                'purge_on' => $event->event_date->copy()->addDays((int) config('privacy.retention_days'))->toIso8601String(),
+                'purged_at' => $event->guest_data_purged_at?->toIso8601String(),
+                'can_purge' => $event->event_date->isPast() && $event->guest_data_purged_at === null,
+            ],
             'caterer_link' => $event->hasActiveCatererLink() ? [
                 'url' => route('caterer.show', $event->caterer_token),
                 'expires_at' => $event->caterer_link_expires_at->toIso8601String(),

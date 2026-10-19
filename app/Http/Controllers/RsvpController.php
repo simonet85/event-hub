@@ -23,6 +23,7 @@ class RsvpController extends Controller
             'dietary_restrictions' => $accepted ? ($data['dietary_restrictions'] ?? null) : null,
             'favorite_song' => $accepted ? ($data['favorite_song'] ?? null) : null,
             'rsvp_message' => $data['rsvp_message'] ?? null,
+            'consent_at' => $accepted && filled($data['dietary_restrictions'] ?? null) ? now() : null,
             'responded_at' => now(),
         ])->save();
 

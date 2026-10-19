@@ -9,6 +9,7 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\GuestDataController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ModerationController;
@@ -48,6 +49,7 @@ Route::middleware(['event.active', 'noindex'])->group(function () {
     Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middleware('throttle:20,1')->name('rsvp.store');
     Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:10,1')->name('guestbook.store');
     Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:20,1')->name('photos.store');
+    Route::delete('/i/{guest:token}/data', [GuestDataController::class, 'erase'])->middleware('throttle:10,1')->name('guest-data.erase');
     Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
 });
 
@@ -68,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/events/{event}/schedule/{item}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
     Route::patch('/events/{event}/details', [ScheduleController::class, 'updateDetails'])->name('events.details');
     Route::get('/events/{event}/dashboard', [DashboardController::class, 'show'])->name('dashboard.show');
+    Route::delete('/events/{event}/guest-data', [GuestDataController::class, 'purge'])->name('guest-data.purge');
     Route::post('/events/{event}/caterer-link', [CatererLinkController::class, 'store'])->name('caterer-link.store');
     Route::delete('/events/{event}/caterer-link', [CatererLinkController::class, 'destroy'])->name('caterer-link.destroy');
     Route::get('/events/{event}/exports/guests.xlsx', [ExportController::class, 'xlsx'])->name('exports.xlsx');

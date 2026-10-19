@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EventHeader from '@/Components/ui/EventHeader.vue';
+import Modal from '@/Components/Modal.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
@@ -10,10 +11,25 @@ const props = defineProps<{
     rsvp: { total: number; to_invite: number; pending: number; accepted: number; declined: number; headcount: number; response_rate: number };
     dietary: { guest: string; table: string | null; restriction: string; seats: number }[];
     tables: { table: string; guests: number; headcount: number }[];
+    privacy: { retention_days: number; purge_on: string; purged_at: string | null; can_purge: boolean };
     caterer_link: { url: string; expires_at: string } | null;
     cagnotte: { raised: number; goal: number | null; pending: number; to_review: number } | null;
     moderation: { entries: number; photos: number };
 }>();
+
+const confirmingPurge = ref(false);
+const purging = ref(false);
+const purgeGuestData = () => {
+    purging.value = true;
+    router.delete(route('guest-data.purge', props.event.slug), {
+        preserveScroll: true,
+        onFinish: () => {
+            purging.value = false;
+            confirmingPurge.value = false;
+        },
+    });
+};
+const purged = computed(() => (usePage().props.flash as { guest_data_purged?: boolean } | undefined)?.guest_data_purged === true);
 
 const DAYS = [1, 3, 7, 14, 30];
 const days = ref(7);
@@ -82,6 +98,36 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                         <a :href="route('exports.caterer', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">PDF traiteur</a>
                         <a :href="route('exports.seating', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">PDF plan de table</a>
                     </div>
+                </section>
+
+                <section class="card space-y-3 p-6" data-testid="privacy">
+                    <h3 class="display text-2xl">Données des invités</h3>
+                    <p v-if="purged" class="notice notice-success" role="status" data-testid="guest-data-purged">Les données des invités ont été supprimées.</p>
+                    <p v-if="privacy.purged_at" class="text-sm text-ink-muted" data-testid="privacy-purged">
+                        Les données personnelles des invités ont été supprimées le {{ expiry(privacy.purged_at) }}. Les réponses et les montants de la cagnotte restent comptés.
+                    </p>
+                    <template v-else>
+                        <p class="max-w-2xl text-sm text-ink-muted" data-testid="privacy-schedule">
+                            Coordonnées, régimes, messages, livre d'or et photos des invités sont supprimés automatiquement {{ privacy.retention_days }} jours après l'événement
+                            (le {{ expiry(privacy.purge_on) }}). Les montants des contributions sont conservés. Chaque invité peut aussi supprimer ses données depuis son invitation.
+                        </p>
+                        <button v-if="privacy.can_purge" type="button" class="btn btn-ghost !px-4 !py-2 text-xs" data-testid="privacy-purge" @click="confirmingPurge = true">Supprimer les données maintenant</button>
+                        <p v-else class="text-sm text-ink-muted">La suppression manuelle est possible une fois l'événement passé.</p>
+                    </template>
+
+                    <Modal :show="confirmingPurge" max-width="md" @close="confirmingPurge = false">
+                        <div class="p-6 sm:p-8">
+                            <h2 class="display text-2xl">Supprimer les données des invités ?</h2>
+                            <p class="mt-2 text-sm text-ink-muted">
+                                Les noms, e-mails, téléphones, régimes, messages, livre d'or et photos seront effacés définitivement, et les invitations cesseront de fonctionner.
+                                Pensez à exporter ce dont vous avez besoin (Excel, CSV) avant de continuer.
+                            </p>
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" class="btn btn-secondary" @click="confirmingPurge = false">Annuler</button>
+                                <button type="button" class="btn" :disabled="purging" data-testid="privacy-purge-confirm" @click="purgeGuestData">Supprimer définitivement</button>
+                            </div>
+                        </div>
+                    </Modal>
                 </section>
 
                 <section class="card space-y-3 p-6" data-testid="caterer-link">

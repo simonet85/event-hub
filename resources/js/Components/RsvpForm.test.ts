@@ -81,6 +81,48 @@ describe('RsvpForm : confettis', () => {
     });
 });
 
+describe('RsvpForm : consentement et conservation', () => {
+    beforeEach(() => post.mockClear());
+
+    it("ne demande pas de consentement tant qu'aucun régime alimentaire n'est saisi", () => {
+        const w = mount(RsvpForm, { props: { token: 'tok', guest: guest() } });
+
+        expect(w.find('[data-testid="consent"]').exists()).toBe(false);
+    });
+
+    it("demande un consentement explicite dès qu'un régime est saisi, et le poste", async () => {
+        const w = mount(RsvpForm, { props: { token: 'tok', guest: guest() } });
+        await w.get('input[type="text"]').setValue('Sans gluten');
+
+        const box = w.get('[data-testid="consent"] input[type="checkbox"]');
+        expect((box.element as HTMLInputElement).checked).toBe(false);
+        expect(w.get('[data-testid="consent"]').text()).toContain('santé');
+
+        await box.setValue(true);
+        await w.get('form').trigger('submit');
+        expect(post).toHaveBeenCalledTimes(1);
+    });
+
+    it("retire la case si le régime est effacé ou si l'invité décline", async () => {
+        const w = mount(RsvpForm, { props: { token: 'tok', guest: guest() } });
+        await w.get('input[type="text"]').setValue('Sans gluten');
+        expect(w.find('[data-testid="consent"]').exists()).toBe(true);
+
+        await w.get('input[type="text"]').setValue('  ');
+        expect(w.find('[data-testid="consent"]').exists()).toBe(false);
+
+        await w.get('input[type="text"]').setValue('Sans gluten');
+        await w.get('input[value="declined"]').setValue();
+        expect(w.find('[data-testid="consent"]').exists()).toBe(false);
+    });
+
+    it('annonce la durée de conservation des réponses', () => {
+        const w = mount(RsvpForm, { props: { token: 'tok', guest: guest(), retentionDays: 45 } });
+
+        expect(w.get('[data-testid="retention-note"]').text()).toContain('45 jours');
+    });
+});
+
 describe('RsvpForm', () => {
     beforeEach(() => post.mockClear());
 

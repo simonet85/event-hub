@@ -34,6 +34,7 @@ class Event extends Model
             'event_date' => 'datetime',
             'archived_at' => 'datetime',
             'caterer_link_expires_at' => 'datetime',
+            'guest_data_purged_at' => 'datetime',
             'theme_config' => 'array',
             'cagnotte_enabled' => 'boolean',
             'cagnotte_goal' => 'integer',

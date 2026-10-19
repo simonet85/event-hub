@@ -41,6 +41,8 @@ class HandleInertiaRequests extends Middleware
                 'event_updated' => fn () => $request->session()->get('event_updated'),
                 'event_archived' => fn () => $request->session()->get('event_archived'),
                 'event_restored' => fn () => $request->session()->get('event_restored'),
+                'data_erased' => fn () => $request->session()->get('data_erased'),
+                'guest_data_purged' => fn () => $request->session()->get('guest_data_purged'),
                 'sent' => fn () => $request->session()->get('sent'),
                 'imported' => fn () => $request->session()->get('imported'),
                 'details_saved' => fn () => $request->session()->get('details_saved'),

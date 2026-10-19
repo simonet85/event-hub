@@ -8,4 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+Schedule::command('events:purge-guest-data')->daily()->withoutOverlapping();
 Schedule::command('contributions:reconcile')->everyTenMinutes()->withoutOverlapping();

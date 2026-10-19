@@ -3,8 +3,9 @@ import { celebrate, type ConfettiHandle } from '@/lib/confetti';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     token: string;
+    retentionDays?: number;
     guest: {
         max_companions: number;
         rsvp_status: 'pending' | 'accepted' | 'declined';
@@ -13,7 +14,7 @@ const props = defineProps<{
         favorite_song: string | null;
         rsvp_message: string | null;
     };
-}>();
+}>(), { retentionDays: 90 });
 
 const form = useForm({
     rsvp_status: props.guest.rsvp_status === 'pending' ? 'accepted' : props.guest.rsvp_status,
@@ -21,9 +22,12 @@ const form = useForm({
     dietary_restrictions: props.guest.dietary_restrictions ?? '',
     favorite_song: props.guest.favorite_song ?? '',
     rsvp_message: props.guest.rsvp_message ?? '',
+    consent: false,
 });
 
 const accepted = computed(() => form.rsvp_status === 'accepted');
+// Le régime alimentaire peut révéler une donnée de santé : il n'est enregistré qu'avec un consentement explicite.
+const needsConsent = computed(() => accepted.value && form.dietary_restrictions.trim() !== '');
 const saved = computed(() => (usePage().props.flash as { rsvp_saved?: boolean } | undefined)?.rsvp_saved === true);
 let confetti: ConfettiHandle | null = null;
 onBeforeUnmount(() => confetti?.cancel());
@@ -73,6 +77,10 @@ const submit = () =>
                 <span class="field-label">Allergies / régime alimentaire</span>
                 <input v-model="form.dietary_restrictions" type="text" class="input" />
             </label>
+            <label v-if="needsConsent" class="flex items-start gap-3 text-sm" data-testid="consent">
+                <input v-model="form.consent" type="checkbox" class="mt-1 h-5 w-5 shrink-0 accent-[var(--accent)]" />
+                <span>J'accepte que cette information, qui peut concerner ma santé, soit communiquée aux organisateurs et au traiteur pour préparer le repas.</span>
+            </label>
             <label class="block">
                 <span class="field-label">Une chanson pour faire danser ?</span>
                 <input v-model="form.favorite_song" type="text" class="input" />
@@ -92,6 +100,10 @@ const submit = () =>
             <p class="script text-success">Merci</p>
             <p>✓ Votre réponse est enregistrée.</p>
         </div>
+
+        <p class="caption text-center text-ink-muted" data-testid="retention-note">
+            Vos réponses sont visibles des organisateurs et supprimées {{ retentionDays }} jours après l'événement.
+        </p>
 
         <button type="submit" :disabled="form.processing" :aria-busy="form.processing" class="btn w-full">
             {{ guest.rsvp_status === 'pending' ? 'Confirmer ma présence' : 'Mettre à jour ma réponse' }}
