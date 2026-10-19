@@ -9,6 +9,7 @@ use App\Models\Guest;
 use App\Models\GuestbookEntry;
 use App\Models\Photo;
 use App\Services\ShareImage;
+use App\Support\ViteAssets;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
@@ -56,7 +57,19 @@ class InvitationController extends Controller
      * l'événement (pas de livre d'or, de photos, de paiements ni d'autres invités) : c'est tout ce que le
      * service worker peut garder sur l'appareil.
      */
-    public function ticket(Guest $guest): Response
+    /**
+     * Polices du billet (nom en manuscrit, titres, texte) : seulement leur sous-ensemble latin, chargé en premier.
+     *
+     * @var list<string>
+     */
+    private const OFFLINE_FONTS = [
+        '/fonts/dm-sans-normal-latin.woff2',
+        '/fonts/cormorant-garamond-normal-latin.woff2',
+        '/fonts/cormorant-garamond-italic-latin.woff2',
+        '/fonts/pinyon-script-latin.woff2',
+    ];
+
+    public function ticket(Guest $guest, ViteAssets $assets): Response
     {
         $event = $guest->event;
 
@@ -67,6 +80,11 @@ class InvitationController extends Controller
             ]),
             'ticketPath' => route('invitations.ticket', $guest, absolute: false),
             'manifestUrl' => route('invitations.ticket.manifest', $guest),
+            // Exactement ce qu'il faut pour réafficher le billet sans réseau : jamais les autres pages de l'application.
+            'offlineAssets' => [
+                ...$assets->forEntries(['resources/js/app.ts', 'resources/js/Pages/Invitations/Ticket.vue']),
+                ...self::OFFLINE_FONTS,
+            ],
         ]);
     }
 

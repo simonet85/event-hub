@@ -16,6 +16,8 @@ const props = defineProps<{
     event: PublicEvent;
     ticketPath: string;
     manifestUrl: string;
+    /** Fichiers statiques à garder avec le billet (calculés par le serveur). */
+    offlineAssets: string[];
 }>();
 
 const supported = offlineSupported();
@@ -40,7 +42,7 @@ const run = async (action: () => Promise<void>) => {
 
 const keep = () =>
     run(async () => {
-        await saveOfflineTicket(props.ticketPath);
+        await saveOfflineTicket(props.ticketPath, props.offlineAssets);
         saved.value = true;
     });
 
@@ -53,7 +55,7 @@ const clear = () =>
 // Une copie déjà gardée est rafraîchie à chaque visite en ligne (nouvelle version des fichiers de l'interface).
 onMounted(async () => {
     saved.value = await isOfflineTicketSaved(props.ticketPath);
-    if (saved.value && navigator.onLine) await run(() => saveOfflineTicket(props.ticketPath));
+    if (saved.value && navigator.onLine) await run(() => saveOfflineTicket(props.ticketPath, props.offlineAssets));
 });
 </script>
 

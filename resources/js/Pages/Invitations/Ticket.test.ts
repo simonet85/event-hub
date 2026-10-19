@@ -25,6 +25,7 @@ const props = {
     guest: { name: 'Aminata Zéhoré', url: 'https://exemple.test/i/jeton' },
     ticketPath: '/i/jeton/billet',
     manifestUrl: 'https://exemple.test/i/jeton/billet/manifest.webmanifest',
+    offlineAssets: ['/build/assets/app-abc.js', '/fonts/dm-sans-normal-latin.woff2'],
     event: {
         title: 'Awa & Koffi',
         slug: 'awa-koffi',
@@ -75,7 +76,7 @@ describe('Billet', () => {
         await w.get('[data-testid="offline-keep"]').trigger('click');
         await flushPromises();
 
-        expect(offline.saveOfflineTicket).toHaveBeenCalledWith('/i/jeton/billet');
+        expect(offline.saveOfflineTicket).toHaveBeenCalledWith('/i/jeton/billet', props.offlineAssets);
         expect(w.get('[data-testid="offline-saved"]').text()).toContain('Disponible hors ligne');
         expect(w.find('[data-testid="offline-keep"]').exists()).toBe(false);
 
