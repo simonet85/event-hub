@@ -19,12 +19,21 @@ class Event extends Model
     /** @use HasFactory<EventFactory> */
     use HasFactory;
 
+    /**
+     * Le lien traiteur est actif tant qu'il existe et n'a pas expiré.
+     */
+    public function hasActiveCatererLink(): bool
+    {
+        return $this->caterer_token !== null && $this->caterer_link_expires_at?->isFuture() === true;
+    }
+
     protected function casts(): array
     {
         return [
             'type' => EventType::class,
             'event_date' => 'datetime',
             'archived_at' => 'datetime',
+            'caterer_link_expires_at' => 'datetime',
             'theme_config' => 'array',
             'cagnotte_enabled' => 'boolean',
             'cagnotte_goal' => 'integer',

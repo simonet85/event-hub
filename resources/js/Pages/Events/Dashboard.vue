@@ -2,17 +2,34 @@
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     event: { title: string; slug: string; map_missing: boolean; event_date: string; days_left: number };
     rsvp: { total: number; to_invite: number; pending: number; accepted: number; declined: number; headcount: number; response_rate: number };
     dietary: { guest: string; table: string | null; restriction: string; seats: number }[];
     tables: { table: string; guests: number; headcount: number }[];
+    caterer_link: { url: string; expires_at: string } | null;
     cagnotte: { raised: number; goal: number | null; pending: number; to_review: number } | null;
     moderation: { entries: number; photos: number };
 }>();
+
+const DAYS = [1, 3, 7, 14, 30];
+const days = ref(7);
+const copied = ref(false);
+const createCatererLink = () => router.post(route('caterer-link.store', props.event.slug), { days: days.value }, { preserveScroll: true, onSuccess: () => (copied.value = false) });
+const revokeCatererLink = () => router.delete(route('caterer-link.destroy', props.event.slug), { preserveScroll: true });
+const copyCatererLink = async () => {
+    if (!props.caterer_link) return;
+    try {
+        await navigator.clipboard.writeText(props.caterer_link.url);
+        copied.value = true;
+    } catch {
+        copied.value = false; // le champ reste sélectionnable à la main
+    }
+};
+const expiry = (iso: string) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(iso));
 
 const updated = computed(() => (usePage().props.flash as { event_updated?: boolean | null } | undefined)?.event_updated);
 
@@ -64,6 +81,31 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                         <a :href="route('exports.csv', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">CSV des invités</a>
                         <a :href="route('exports.caterer', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">PDF traiteur</a>
                         <a :href="route('exports.seating', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">PDF plan de table</a>
+                    </div>
+                </section>
+
+                <section class="card space-y-3 p-6" data-testid="caterer-link">
+                    <h3 class="display text-2xl">Lien traiteur</h3>
+                    <p class="max-w-2xl text-sm text-ink-muted">
+                        Une page en lecture seule (couverts, tables, régimes et allergies, noms abrégés), accessible à toute personne qui a le lien jusqu'à son expiration.
+                        Aucune coordonnée d'invité n'y figure.
+                    </p>
+                    <div v-if="caterer_link" class="space-y-2">
+                        <input :value="caterer_link.url" readonly class="input" aria-label="Lien traiteur" data-testid="caterer-url" @focus="($event.target as HTMLInputElement).select()" />
+                        <p class="text-sm text-ink-muted">Expire le {{ expiry(caterer_link.expires_at) }}.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button type="button" class="btn btn-ghost !px-4 !py-2 text-xs" @click="copyCatererLink">{{ copied ? 'Lien copié' : 'Copier le lien' }}</button>
+                            <button type="button" class="btn btn-ghost !px-4 !py-2 text-xs" data-testid="caterer-revoke" @click="revokeCatererLink">Révoquer le lien</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-end gap-3">
+                        <label class="block">
+                            <span class="field-label">{{ caterer_link ? 'Nouveau lien valable' : 'Lien valable' }}</span>
+                            <select v-model.number="days" class="input !w-auto">
+                                <option v-for="d in DAYS" :key="d" :value="d">{{ d }} jour{{ d > 1 ? 's' : '' }}</option>
+                            </select>
+                        </label>
+                        <button type="button" class="btn !px-4 !py-2 text-xs" data-testid="caterer-create" @click="createCatererLink">{{ caterer_link ? 'Remplacer le lien' : 'Créer le lien' }}</button>
                     </div>
                 </section>
 

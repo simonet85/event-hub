@@ -32,6 +32,10 @@ class DashboardController extends Controller
                 'guests' => $row['guests']->count(),
                 'headcount' => $row['headcount'],
             ])->all(),
+            'caterer_link' => $event->hasActiveCatererLink() ? [
+                'url' => route('caterer.show', $event->caterer_token),
+                'expires_at' => $event->caterer_link_expires_at->toIso8601String(),
+            ] : null,
             'cagnotte' => $event->cagnotte_enabled ? $report->cagnotte() : null,
             'moderation' => $report->moderationQueue(),
         ]);

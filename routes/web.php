@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\CagnotteController;
+use App\Http\Controllers\CatererLinkController;
+use App\Http\Controllers\CatererViewController;
 use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationController;
@@ -49,6 +51,11 @@ Route::middleware(['event.active', 'noindex'])->group(function () {
     Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
 });
 
+// Vue traiteur en lecture seule : accessible avec le seul lien, jusqu'à son expiration. Jamais mise en cache ni indexée.
+Route::get('/traiteur/{token}', [CatererViewController::class, 'show'])
+    ->middleware(['throttle:60,1', 'noindex', 'cache.headers:private;no_store'])
+    ->name('caterer.show');
+
 // Image de partage : sans donnée d'invité, indexable pour les aperçus de liens ; masquée dès que l'événement est archivé.
 Route::get('/e/{event}/share.png', [ShareImageController::class, 'show'])->middleware('event.active')->name('events.share-image');
 Route::get('/photos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
@@ -61,6 +68,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/events/{event}/schedule/{item}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
     Route::patch('/events/{event}/details', [ScheduleController::class, 'updateDetails'])->name('events.details');
     Route::get('/events/{event}/dashboard', [DashboardController::class, 'show'])->name('dashboard.show');
+    Route::post('/events/{event}/caterer-link', [CatererLinkController::class, 'store'])->name('caterer-link.store');
+    Route::delete('/events/{event}/caterer-link', [CatererLinkController::class, 'destroy'])->name('caterer-link.destroy');
     Route::get('/events/{event}/exports/guests.xlsx', [ExportController::class, 'xlsx'])->name('exports.xlsx');
     Route::get('/events/{event}/exports/guests.csv', [ExportController::class, 'csv'])->name('exports.csv');
     Route::get('/events/{event}/exports/traiteur.pdf', [ExportController::class, 'caterer'])->name('exports.caterer');
