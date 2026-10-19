@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import GiftProgress from '@/Components/ui/GiftProgress.vue';
 import StatusPill from '@/Components/ui/StatusPill.vue';
+import { celebrate, type ConfettiHandle } from '@/lib/confetti';
 import { fcfa } from '@/lib/format';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, watch } from 'vue';
 
 export interface CagnottePayload {
     goal: number | null;
@@ -25,6 +26,16 @@ const openGifts = computed(() => props.cagnotte.gifts.filter((g) => g.remaining 
 const selectedGift = computed(() => props.cagnotte.gifts.find((g) => g.id === form.gift_id) ?? null);
 const maxAmount = computed(() => selectedGift.value?.remaining ?? 5_000_000);
 const valid = computed(() => form.amount !== null && form.amount >= MIN_AMOUNT && form.amount <= maxAmount.value);
+
+// Confettis à l'arrivée d'un don confirmé (retour de paiement), jamais pendant le paiement ni pour un statut en attente.
+let confetti: ConfettiHandle | null = null;
+onMounted(() => {
+    if (returnedStatus.value === 'confirmed') confetti = celebrate();
+});
+watch(returnedStatus, (status, previous) => {
+    if (status === 'confirmed' && previous !== 'confirmed') confetti = celebrate();
+});
+onBeforeUnmount(() => confetti?.cancel());
 
 const tone = (status: string): 'success' | 'warning' | 'danger' =>
     status === 'confirmed' ? 'success' : status === 'failed' || status === 'expired' ? 'danger' : 'warning';

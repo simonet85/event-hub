@@ -1,13 +1,17 @@
 import { flushPromises, mount } from '@vue/test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import QRCode from 'qrcode';
 import QrCode from './QrCode.vue';
 
-vi.mock('qrcode', () => ({
-    default: { toDataURL: vi.fn(async (value: string) => `data:image/png;base64,${btoa(value)}`) },
-}));
-
+// Espion plutôt que vi.mock : avec isolate:false, le cache de modules est partagé entre fichiers et un vi.mock peut être ignoré.
 describe('QrCode', () => {
+    let toDataURL: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+        toDataURL = vi.spyOn(QRCode, 'toDataURL').mockImplementation((async (value: string) => `data:image/png;base64,${btoa(value)}`) as never);
+    });
+    afterEach(() => toDataURL.mockRestore());
+
     it('génère une image à partir de la valeur', async () => {
         const w = mount(QrCode, { props: { value: 'https://exemple.test/i/abc', size: 100 } });
         await flushPromises();
@@ -30,6 +34,6 @@ describe('QrCode', () => {
         mount(QrCode, { props: { value: 'x' } });
         await flushPromises();
 
-        expect(QRCode.toDataURL).toHaveBeenCalledWith('x', expect.objectContaining({ errorCorrectionLevel: 'M' }));
+        expect(toDataURL).toHaveBeenCalledWith('x', expect.objectContaining({ errorCorrectionLevel: 'M' }));
     });
 });

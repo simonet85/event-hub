@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RsvpForm from './RsvpForm.vue';
 
 const post = vi.fn();
@@ -22,6 +22,63 @@ const guest = (over = {}) => ({
     favorite_song: null,
     rsvp_message: null,
     ...over,
+});
+
+const confettiShown = () => document.querySelectorAll('canvas[data-confetti]').length > 0;
+
+let getContextSpy: { mockRestore: () => void } | undefined;
+
+describe('RsvpForm : confettis', () => {
+    beforeEach(() => {
+        post.mockClear();
+        getContextSpy = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ scale: vi.fn(), clearRect: vi.fn(), save: vi.fn(), restore: vi.fn(), translate: vi.fn(), rotate: vi.fn(), beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), fillRect: vi.fn() } as unknown as CanvasRenderingContext2D);
+        vi.stubGlobal('matchMedia', () => ({ matches: false }));
+    });
+    afterEach(() => {
+        document.querySelectorAll('canvas').forEach((c) => c.remove());
+        getContextSpy?.mockRestore();
+        vi.unstubAllGlobals();
+        vi.stubGlobal('route', (name: string, param: string) => `/${name}/${param}`);
+    });
+
+    const submitWith = async (status: 'accepted' | 'declined', succeed: boolean) => {
+        post.mockImplementationOnce((_url: string, options: { onSuccess?: () => void }) => {
+            if (succeed) options.onSuccess?.();
+        });
+        const w = mount(RsvpForm, { props: { token: 'tok', guest: guest() } });
+        await w.get(`input[value="${status}"]`).setValue();
+        await w.get('form').trigger('submit');
+
+        return w;
+    };
+
+    it('lance des confettis quand la présence est confirmée et enregistrée', async () => {
+        await submitWith('accepted', true);
+        expect(confettiShown()).toBe(true);
+    });
+
+    it('n\'en lance pas quand l\'invité décline', async () => {
+        await submitWith('declined', true);
+        expect(confettiShown()).toBe(false);
+    });
+
+    it('n\'en lance pas tant que la réponse n\'est pas enregistrée (erreur de validation)', async () => {
+        await submitWith('accepted', false);
+        expect(confettiShown()).toBe(false);
+    });
+
+    it('n\'en lance pas si l\'utilisateur a demandé de réduire les animations', async () => {
+        vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce') }));
+        await submitWith('accepted', true);
+        expect(confettiShown()).toBe(false);
+    });
+
+    it('arrête les confettis quand le formulaire est retiré de la page', async () => {
+        const w = await submitWith('accepted', true);
+        expect(confettiShown()).toBe(true);
+        w.unmount();
+        expect(confettiShown()).toBe(false);
+    });
 });
 
 describe('RsvpForm', () => {

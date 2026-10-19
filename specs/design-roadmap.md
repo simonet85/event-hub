@@ -35,7 +35,7 @@ Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Papier &
 ### Expérience invité
 
 - [ ] **Ouverture d'enveloppe** : animation d'entrée sur l'invitation, jouée une fois.
-- [ ] **Confettis** à la confirmation de présence et au don confirmé.
+- [x] **Confettis** à la confirmation de présence et au don confirmé (canvas sans dépendance, `prefers-reduced-motion` respecté).
 - [ ] **Galerie** : visionneuse plein écran (lightbox) avec navigation clavier et gestes tactiles.
 - [ ] **Image de partage** (Open Graph) générée par événement, pour les aperçus WhatsApp et messageries.
 - [ ] **Invitation hors ligne** (PWA) : billet QR consultable sans réseau le jour J.

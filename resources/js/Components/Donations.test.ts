@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Donations, { type CagnottePayload } from './Donations.vue';
 
 const post = vi.fn();
@@ -78,6 +78,48 @@ describe('Donations', () => {
         expect(options.some((t) => t.includes('Lune de miel'))).toBe(true);
         expect(options.some((t) => t.includes('Complet'))).toBe(false);
         expect(w.get('[data-testid="gifts"]').text()).toContain('Entièrement financé');
+    });
+
+    let getContextSpy: { mockRestore: () => void } | undefined;
+
+    describe('confettis', () => {
+        const shown = () => document.querySelectorAll('canvas[data-confetti]').length > 0;
+
+        beforeEach(() => {
+            getContextSpy = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ scale: vi.fn(), clearRect: vi.fn(), save: vi.fn(), restore: vi.fn(), translate: vi.fn(), rotate: vi.fn(), beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), fillRect: vi.fn() } as unknown as CanvasRenderingContext2D);
+            vi.stubGlobal('matchMedia', () => ({ matches: false }));
+        });
+        afterEach(() => {
+            document.querySelectorAll('canvas').forEach((c) => c.remove());
+            getContextSpy?.mockRestore();
+            vi.unstubAllGlobals();
+            vi.stubGlobal('route', (name: string, param: string) => `/${name}/${param}`);
+        });
+
+        it('lance des confettis au retour d\'un don confirmé', () => {
+            flash = { donation_status: 'confirmed' };
+            mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
+            expect(shown()).toBe(true);
+        });
+
+        it.each(['pending', 'mismatch', 'failed'])('n\'en lance pas pour un paiement %s', (status) => {
+            flash = { donation_status: status };
+            mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
+            expect(shown()).toBe(false);
+        });
+
+        it('n\'en lance pas en arrivant sur la page sans retour de paiement, ni pendant la saisie d\'un montant', async () => {
+            const w = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
+            await w.get('input[type="number"]').setValue(5000);
+            expect(shown()).toBe(false);
+        });
+
+        it('respecte la demande de réduction des animations', () => {
+            vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce') }));
+            flash = { donation_status: 'confirmed' };
+            mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
+            expect(shown()).toBe(false);
+        });
     });
 
     it('informe du statut au retour du paiement', () => {

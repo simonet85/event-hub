@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { celebrate, type ConfettiHandle } from '@/lib/confetti';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, onBeforeUnmount } from 'vue';
 
 const props = defineProps<{
     token: string;
@@ -24,7 +25,17 @@ const form = useForm({
 
 const accepted = computed(() => form.rsvp_status === 'accepted');
 const saved = computed(() => (usePage().props.flash as { rsvp_saved?: boolean } | undefined)?.rsvp_saved === true);
-const submit = () => form.post(route('rsvp.store', props.token), { preserveScroll: true });
+let confetti: ConfettiHandle | null = null;
+onBeforeUnmount(() => confetti?.cancel());
+
+// Confettis seulement quand l'invité confirme sa présence (pas quand il décline), une fois la réponse enregistrée.
+const submit = () =>
+    form.post(route('rsvp.store', props.token), {
+        preserveScroll: true,
+        onSuccess: () => {
+            if (form.rsvp_status === 'accepted') confetti = celebrate();
+        },
+    });
 </script>
 
 <template>
