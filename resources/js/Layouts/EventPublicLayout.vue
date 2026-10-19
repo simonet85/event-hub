@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onAccent } from '@/lib/contrast';
+import { fontStack } from '@/lib/fonts';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -11,12 +12,6 @@ const props = defineProps<{
     /** Thème Fête : mode sombre, sauf si l'hôte a choisi son propre fond. */
     dark?: boolean;
 }>();
-
-const fonts: Record<string, string> = {
-    script: '"Pinyon Script", "Snell Roundhand", cursive',
-    serif: '"Cormorant Garamond", Cormorant, Georgia, serif',
-    body: '"DM Sans", system-ui, sans-serif',
-};
 
 const differs = (key: 'primary_color' | 'secondary_color' | 'font_family') =>
     !props.preset || props.theme[key].toLowerCase() !== props.preset[key].toLowerCase();
@@ -31,7 +26,7 @@ const style = computed(() => {
     const vars: Record<string, string> = {
         '--event-primary': props.theme.primary_color,
         '--event-secondary': props.theme.secondary_color,
-        '--event-font': fonts[props.theme.font_family] ?? fonts.serif,
+        '--event-font': fontStack(props.theme.font_family),
     };
 
     if (customAccent.value) {

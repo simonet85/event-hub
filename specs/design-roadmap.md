@@ -20,7 +20,7 @@ Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Papier &
 
 - [ ] **Hero vidéo** : vidéo en boucle révélée derrière l'image qui s'ouvre au scroll, ou vidéo synchronisée au scroll (`currentTime = progression × durée`, vidéo très compressée, nombreuses images clés). Dossier `input/` pour déposer les médias de l'hôte.
 - [ ] **Visuel 3D interactif** (modèle GLB via `<model-viewer>`) pour un élément signature d'un événement (gâteau, alliances, faire-part), chargé à la demande.
-- [ ] **Panneau « Tweaks »** pour l'hôte : curseurs et boutons en direct (rayon des coins, police, couleurs, densité) avec aperçu immédiat, retiré de la page publique.
+- [x] **Panneau « Tweaks »** pour l'hôte, version minimale (formulaire d'événement, aperçu en direct) : préréglage par type, couleur d'accent, fond et police, écrits dans `theme_config` avec l'avertissement de contraste. Rayon des coins et densité : non faits, volontairement.
 - [ ] **Témoignages animés** : défilement des messages du livre d'or approuvés sur la page publique.
 - [ ] **Bibliothèque d'inspiration** : trois références visuelles minimum par nouvelle direction, avant de lancer une refonte.
 

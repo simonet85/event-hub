@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
+import TweaksPanel from '@/Components/TweaksPanel.vue';
 import FormField from '@/Components/ui/FormField.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import type { Theme } from '@/types';
@@ -100,28 +101,7 @@ const submit = () => {
                 <InputError :message="form.errors.welcome_message" class="mt-1.5" />
             </div>
 
-            <div class="flex flex-wrap gap-6">
-                <div>
-                    <label for="primary_color" class="field-label">Couleur principale</label>
-                    <input id="primary_color" v-model="form.theme_config.primary_color" type="color" class="color-input" />
-                </div>
-                <div>
-                    <label for="secondary_color" class="field-label">Fond</label>
-                    <input id="secondary_color" v-model="form.theme_config.secondary_color" type="color" class="color-input" />
-                </div>
-                <div>
-                    <label for="font_family" class="field-label">Police</label>
-                    <select id="font_family" v-model="form.theme_config.font_family" class="input !w-auto">
-                        <option value="script">Manuscrite</option>
-                        <option value="serif">Élégante</option>
-                        <option value="body">Moderne</option>
-                    </select>
-                </div>
-            </div>
-
-            <p v-for="(problem, i) in audit?.problems ?? []" :key="i" class="notice notice-warning" role="alert" data-testid="contrast-warning">
-                {{ problem }}
-            </p>
+            <TweaksPanel v-model="form.theme_config" :presets="types" :problems="audit?.problems" />
 
             <button type="submit" :disabled="form.processing" class="btn">
                 {{ editing ? 'Enregistrer les modifications' : 'Créer l\'événement' }}
