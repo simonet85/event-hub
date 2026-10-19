@@ -20,6 +20,8 @@ class DashboardController extends Controller
             'event' => [
                 'title' => $event->title,
                 'slug' => $event->slug,
+                // Adresse renseignée mais pas (encore) placée sur la carte : recherche en cours ou adresse introuvable.
+                'map_missing' => filled($event->location_address) && ($event->latitude === null || $event->longitude === null),
                 'event_date' => $event->event_date->toIso8601String(),
                 'days_left' => max(0, (int) now()->startOfDay()->diffInDays($event->event_date->copy()->startOfDay(), false)),
             ],

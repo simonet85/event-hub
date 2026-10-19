@@ -38,7 +38,6 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'flash' => [
-                'map_not_found' => fn () => $request->session()->get('map_not_found'),
                 'event_updated' => fn () => $request->session()->get('event_updated'),
                 'event_archived' => fn () => $request->session()->get('event_archived'),
                 'event_restored' => fn () => $request->session()->get('event_restored'),

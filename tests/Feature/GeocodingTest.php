@@ -1,10 +1,14 @@
 <?php
 
+use App\Jobs\GeocodeEvent;
 use App\Models\Event;
 use App\Models\User;
 use App\Services\Geocoder;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Inertia\Testing\AssertableInertia as Assert;
 
 const NOMINATIM = 'nominatim.openstreetmap.org/search*';
 
@@ -33,49 +37,134 @@ function eventPayload(Event $event, array $overrides = []): array
     ], $overrides);
 }
 
-test("changer l'adresse met à jour la position sur la carte", function () {
-    Http::fake([NOMINATIM => Http::response([['lat' => '5.3237274', 'lon' => '-4.0240233']])]);
+function runGeocodeJob(Event $event, ?string $address = null): void
+{
+    (new GeocodeEvent($event->id, $address ?? (string) $event->fresh()->location_address))->handle(app(Geocoder::class));
+}
+
+test("changer l'adresse invalide l'ancienne position et lance la recherche en file d'attente", function () {
+    Queue::fake();
+    Http::fake();
 
     $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, [
         'location_address' => 'Mairie du Plateau, Abidjan',
-    ]))->assertRedirect()->assertSessionHas('map_not_found', false);
+    ]))->assertRedirect();
+
+    $event = $this->event->fresh();
+    // Jamais la carte de l'ancien lieu sous la nouvelle adresse.
+    expect($event->latitude)->toBeNull()->and($event->longitude)->toBeNull();
+    Queue::assertPushed(GeocodeEvent::class, fn (GeocodeEvent $job) => $job->eventId === $event->id && $job->address === 'Mairie du Plateau, Abidjan');
+    Http::assertNothingSent();
+});
+
+test("la requête de l'hôte n'appelle jamais le service de géocodage", function () {
+    Queue::fake();
+    Http::fake();
+
+    $this->actingAs($this->host)->post('/events', [
+        'title' => 'Fête au Plateau',
+        'type' => 'party',
+        'event_date' => now()->addMonth()->format('Y-m-d H:i:s'),
+        'location_address' => 'Mairie du Plateau, Abidjan',
+    ])->assertRedirect();
+
+    Http::assertNothingSent();
+    Queue::assertPushed(GeocodeEvent::class, fn (GeocodeEvent $job) => $job->address === 'Mairie du Plateau, Abidjan');
+});
+
+test('une adresse inchangée garde sa position et ne lance rien', function () {
+    Queue::fake();
+
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, ['title' => 'Nouveau titre']))
+        ->assertRedirect();
+
+    Queue::assertNothingPushed();
+    expect($this->event->fresh()->latitude)->toBe(48.8049);
+});
+
+test('une adresse vidée efface la position sans rien chercher', function () {
+    Queue::fake();
+
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, ['location_address' => null]))
+        ->assertRedirect();
+
+    $event = $this->event->fresh();
+    expect($event->latitude)->toBeNull()->and($event->longitude)->toBeNull()->and($event->location_address)->toBeNull();
+    Queue::assertNothingPushed();
+});
+
+test("une adresse inchangée à l'espace près n'est pas considérée comme modifiée", function () {
+    Queue::fake();
+
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, [
+        'location_address' => "  Place d'Armes, 78000 Versailles  ",
+    ]))->assertRedirect();
+
+    Queue::assertNothingPushed();
+    expect($this->event->fresh()->latitude)->toBe(48.8049);
+});
+
+test('le job place la position trouvée sur la carte', function () {
+    Http::fake([NOMINATIM => Http::response([['lat' => '5.3237274', 'lon' => '-4.0240233']])]);
+    $this->event->forceFill(['location_address' => 'Mairie du Plateau, Abidjan', 'latitude' => null, 'longitude' => null])->save();
+
+    runGeocodeJob($this->event);
 
     $event = $this->event->fresh();
     expect($event->latitude)->toBe(5.323727)->and($event->longitude)->toBe(-4.024023);
     Http::assertSent(fn ($request) => $request['q'] === 'Mairie du Plateau, Abidjan' && $request->hasHeader('User-Agent'));
 });
 
-test('une adresse inchangée ne déclenche aucun appel de géocodage', function () {
-    Http::fake();
+test("le job laisse la carte vide quand l'adresse est introuvable ou que le service est en panne", function () {
+    $this->event->forceFill(['location_address' => 'Avenue Charles Konan Banny, Abidjan', 'latitude' => null, 'longitude' => null])->save();
 
-    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, ['title' => 'Nouveau titre']))
-        ->assertRedirect();
+    Http::fake([NOMINATIM => Http::response([])]);
+    runGeocodeJob($this->event);
+    expect($this->event->fresh()->latitude)->toBeNull();
+
+    Http::fake([NOMINATIM => Http::response('erreur', 500)]);
+    runGeocodeJob($this->event);
+    expect($this->event->fresh()->latitude)->toBeNull();
+    // Un échec n'est jamais mémorisé : la prochaine tentative peut réussir.
+    expect(Cache::get('geocode:'.sha1('Avenue Charles Konan Banny, Abidjan')))->toBeNull();
+});
+
+test("le job ignore un résultat devenu obsolète si l'adresse a encore changé", function () {
+    Http::fake([NOMINATIM => Http::response([['lat' => '5.3', 'lon' => '-4.0']])]);
+    $this->event->forceFill(['location_address' => 'Nouvelle adresse', 'latitude' => null, 'longitude' => null])->save();
+
+    runGeocodeJob($this->event, 'Ancienne adresse');
 
     Http::assertNothingSent();
-    expect($this->event->fresh()->latitude)->toBe(48.8049);
+    expect($this->event->fresh()->latitude)->toBeNull();
 });
 
-test("une adresse introuvable conserve la carte et prévient l'hôte", function () {
-    Http::fake([NOMINATIM => Http::response([])]);
+test("le job ne plante pas si l'événement a disparu", function () {
+    Http::fake();
 
-    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, [
-        'location_address' => "Quelque part qui n'existe pas",
-    ]))->assertRedirect()->assertSessionHas('map_not_found', true);
+    (new GeocodeEvent(999999, 'Quelque part'))->handle(app(Geocoder::class));
 
-    expect($this->event->fresh()->latitude)->toBe(48.8049);
+    Http::assertNothingSent();
 });
 
-test('une panne du service de géocodage ne casse pas la modification et rien n\'est mis en cache', function () {
-    Http::fake([NOMINATIM => Http::response('erreur', 500)]);
+test('le job est mis en file avec une limite de temps et un nombre de tentatives bornés', function () {
+    $job = new GeocodeEvent($this->event->id, 'Abidjan');
 
-    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, [
-        'title' => 'Titre conservé',
-        'location_address' => 'Avenue Charles Konan Banny, Abidjan',
-    ]))->assertRedirect()->assertSessionHas('map_not_found', true);
+    expect($job)->toBeInstanceOf(ShouldQueue::class)
+        ->and($job->timeout)->toBe(90)
+        ->and($job->tries)->toBe(2);
+});
 
-    expect($this->event->fresh()->title)->toBe('Titre conservé')
-        ->and($this->event->fresh()->latitude)->toBe(48.8049)
-        ->and(Cache::get('geocode:'.sha1('Avenue Charles Konan Banny, Abidjan')))->toBeNull();
+test("le tableau de bord signale une adresse qui n'a pas (encore) de position", function () {
+    $show = fn () => $this->actingAs($this->host)->get("/events/{$this->event->slug}/dashboard");
+
+    $show()->assertInertia(fn (Assert $page) => $page->where('event.map_missing', false));
+
+    $this->event->forceFill(['latitude' => null, 'longitude' => null])->save();
+    $show()->assertInertia(fn (Assert $page) => $page->where('event.map_missing', true));
+
+    $this->event->forceFill(['location_address' => null])->save();
+    $show()->assertInertia(fn (Assert $page) => $page->where('event.map_missing', false));
 });
 
 test('une adresse trop détaillée est retentée avec des variantes plus courtes', function () {
@@ -84,10 +173,10 @@ test('une adresse trop détaillée est retentée avec des variantes plus courtes
             ->push([])
             ->push([['lat' => '5.3237274', 'lon' => '-4.0240233']]),
     ]);
+    $address = 'Mairie du Plateau, Avenue Charles Konan Banny, Mairie du Plateau, Le Plateau, Abidjan, Côte d’Ivoire';
+    $this->event->forceFill(['location_address' => $address, 'latitude' => null, 'longitude' => null])->save();
 
-    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, [
-        'location_address' => 'Mairie du Plateau, Avenue Charles Konan Banny, Mairie du Plateau, Le Plateau, Abidjan, Côte d’Ivoire',
-    ]))->assertSessionHas('map_not_found', false);
+    runGeocodeJob($this->event);
 
     expect($this->event->fresh()->latitude)->toBe(5.323727);
     Http::assertSentCount(2);
@@ -115,25 +204,13 @@ test('une position trouvée est mise en cache', function () {
     Http::assertSentCount(1);
 });
 
-test("la création d'un événement le place sur la carte", function () {
-    Http::fake([NOMINATIM => Http::response([['lat' => '5.3237274', 'lon' => '-4.0240233']])]);
-
-    $this->actingAs($this->host)->post('/events', [
-        'title' => 'Fête au Plateau',
-        'type' => 'party',
-        'event_date' => now()->addMonth()->format('Y-m-d H:i:s'),
-        'location_address' => 'Mairie du Plateau, Abidjan',
-    ])->assertRedirect();
-
-    expect(Event::firstWhere('title', 'Fête au Plateau')->latitude)->toBe(5.323727);
-});
-
 test("le géocodage désactivé n'appelle jamais le service", function () {
     config(['services.geocoding.enabled' => false]);
     Http::fake();
+    $this->event->forceFill(['latitude' => null, 'longitude' => null])->save();
 
-    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", eventPayload($this->event, ['location_address' => 'Abidjan']))
-        ->assertRedirect();
+    runGeocodeJob($this->event);
 
     Http::assertNothingSent();
+    expect($this->event->fresh()->latitude)->toBeNull();
 });

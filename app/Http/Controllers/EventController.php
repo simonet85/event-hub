@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\EventType;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Jobs\GeocodeEvent;
 use App\Models\Event;
-use App\Services\Geocoder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -47,7 +47,7 @@ class EventController extends Controller
         ])->all();
     }
 
-    public function store(StoreEventRequest $request, Geocoder $geocoder): RedirectResponse
+    public function store(StoreEventRequest $request): RedirectResponse
     {
         $data = $request->validated();
         $type = EventType::from($data['type']);
@@ -58,7 +58,7 @@ class EventController extends Controller
         $data['theme_config'] = array_merge($type->defaultTheme(), array_filter($data['theme_config'] ?? []));
 
         $event = $request->user()->events()->create($data);
-        $this->locateOnMap($event, $geocoder);
+        $this->queueMapLookup($event);
 
         return to_route('events.index')->with('created', $event->slug);
     }
@@ -83,7 +83,7 @@ class EventController extends Controller
         ]);
     }
 
-    public function update(UpdateEventRequest $request, Event $event, Geocoder $geocoder): RedirectResponse
+    public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
         $data = $request->validated();
         $type = EventType::from($data['type']);
@@ -93,35 +93,32 @@ class EventController extends Controller
             array_filter($data['theme_config'] ?? []),
         );
 
+        // Une nouvelle adresse invalide la position : on ne laisse jamais la carte de l'ancien lieu
+        // sous la nouvelle adresse, même si la recherche échoue ou si l'adresse est vidée.
+        $addressChanged = (string) ($data['location_address'] ?? '') !== (string) $event->location_address;
+        if ($addressChanged) {
+            $data['latitude'] = null;
+            $data['longitude'] = null;
+        }
+
         $event->update($data);
 
-        $addressChanged = $event->wasChanged('location_address');
-        $mapFound = $addressChanged ? $this->locateOnMap($event, $geocoder) : null;
+        if ($addressChanged) {
+            $this->queueMapLookup($event);
+        }
 
-        return to_route('dashboard.show', $event)
-            ->with('event_updated', true)
-            ->with('map_not_found', $mapFound === false);
+        return to_route('dashboard.show', $event)->with('event_updated', true);
     }
 
     /**
-     * Place l'événement sur la carte d'après son adresse. Renvoie null s'il n'y a rien à localiser,
-     * true si les coordonnées ont été mises à jour, false si l'adresse est introuvable (la carte reste inchangée).
+     * Cherche la position de l'adresse en file d'attente (plusieurs appels réseau possibles) : la requête de l'hôte
+     * n'attend pas. Sans adresse, il n'y a rien à chercher.
      */
-    private function locateOnMap(Event $event, Geocoder $geocoder): ?bool
+    private function queueMapLookup(Event $event): void
     {
-        if (blank($event->location_address)) {
-            return null;
+        if (filled($event->location_address)) {
+            GeocodeEvent::dispatch($event->id, $event->location_address)->afterCommit();
         }
-
-        $position = $geocoder->locate($event->location_address, $event->location_name);
-
-        if ($position === null) {
-            return false;
-        }
-
-        $event->forceFill($position)->save();
-
-        return true;
     }
 
     public function archive(Event $event): RedirectResponse

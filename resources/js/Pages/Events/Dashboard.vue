@@ -6,7 +6,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 defineProps<{
-    event: { title: string; slug: string; event_date: string; days_left: number };
+    event: { title: string; slug: string; map_missing: boolean; event_date: string; days_left: number };
     rsvp: { total: number; to_invite: number; pending: number; accepted: number; declined: number; headcount: number; response_rate: number };
     dietary: { guest: string; table: string | null; restriction: string; seats: number }[];
     tables: { table: string; guests: number; headcount: number }[];
@@ -14,9 +14,7 @@ defineProps<{
     moderation: { entries: number; photos: number };
 }>();
 
-const flash = computed(() => usePage().props.flash as { event_updated?: boolean | null; map_not_found?: boolean | null } | undefined);
-const updated = computed(() => flash.value?.event_updated);
-const mapNotFound = computed(() => flash.value?.map_not_found);
+const updated = computed(() => (usePage().props.flash as { event_updated?: boolean | null } | undefined)?.event_updated);
 
 const fcfa = (n: number) => `${new Intl.NumberFormat('fr-FR').format(n)} FCFA`;
 const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a / b) * 100)) : 0);
@@ -37,9 +35,10 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <p v-if="updated" class="notice notice-success" data-testid="event-updated">Les modifications ont été enregistrées.</p>
-                <p v-if="mapNotFound" class="notice notice-warning" data-testid="map-not-found">
-                    Adresse introuvable sur la carte : la position précédente est conservée.
-                    <Link :href="route('schedule.index', event.slug)" class="font-semibold underline">Ajustez les coordonnées</Link>
+                <p v-if="event.map_missing" class="notice notice-warning" data-testid="map-missing">
+                    La carte n'a pas encore de position pour cette adresse : la recherche est peut-être en cours.
+                    Si ce message persiste, l'adresse est introuvable :
+                    <Link :href="route('schedule.index', event.slug)" class="font-semibold underline">ajustez les coordonnées</Link>
                     dans l'onglet Programme.
                 </p>
                 <section>
