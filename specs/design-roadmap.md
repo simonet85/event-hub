@@ -28,7 +28,7 @@ Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Papier &
 
 - [ ] **Vérification mobile réelle** à 320, 375, 390 et 768 px (95 % des invités sont sur smartphone), avec captures de référence.
 - [x] **Audit de contraste AA** : préréglages conformes (testés), avertissement de l'hôte quand une couleur choisie est illisible, anciens préréglages migrés.
-- [ ] **Mode sombre** de l'espace hôte (`prefers-color-scheme`) : jetons sombres prêts (`[data-theme="dark"]`, utilisé par le thème Fête) ; l'espace hôte reste clair tant que ses composants ne sont pas tous passés aux jetons.
+- [x] **Mode sombre** de l'espace hôte et des écrans de connexion : suit `prefers-color-scheme` en direct (jetons `[data-theme="dark"]` posés sur `<html>`). Les pages publiques des événements gardent leur propre thème.
 - [ ] **Navigation au clavier** : parcours complet de l'invitation et des formulaires, focus visibles, fenêtres modales piégeant le focus.
 - [x] **Polices auto-hébergées** (Cormorant Garamond, DM Sans, Pinyon Script, woff2, `font-display: swap`, préchargement).
 

@@ -153,7 +153,7 @@ const pending = computed(() => props.summary.to_invite);
                             :href="l.url"
                             preserve-scroll
                             class="rounded border px-3 py-1 text-sm"
-                            :class="l.active ? 'bg-[var(--ink)] text-[var(--paper)]' : 'bg-white/70'"
+                            :class="l.active ? 'bg-[var(--ink)] text-[var(--paper)]' : 'bg-[var(--paper-2)]'"
                             v-html="l.label"
                         />
                         <span v-else class="px-3 py-1 text-sm text-[var(--muted)]" v-html="l.label" />

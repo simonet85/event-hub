@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import LocaleSwitcher from '@/Components/ui/LocaleSwitcher.vue';
+import { useHostColorScheme } from '@/lib/colorScheme';
 import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const open = ref(false);
+useHostColorScheme();
 </script>
 
 <template>

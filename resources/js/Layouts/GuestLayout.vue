@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import LocaleSwitcher from '@/Components/ui/LocaleSwitcher.vue';
+import { useHostColorScheme } from '@/lib/colorScheme';
 import { Link } from '@inertiajs/vue3';
 
 defineProps<{ title?: string; subtitle?: string }>();
+useHostColorScheme();
 </script>
 
 <template>

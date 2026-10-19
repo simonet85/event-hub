@@ -97,7 +97,7 @@ const badge = (status: string) =>
                     </ul>
                     <nav v-if="contributions.links.length > 3" class="mt-4 flex flex-wrap justify-center gap-1" aria-label="Pagination">
                         <template v-for="(l, i) in contributions.links" :key="i">
-                            <Link v-if="l.url" :href="l.url" preserve-scroll class="rounded border px-3 py-1 text-sm" :class="l.active ? 'bg-[var(--ink)] text-[var(--paper)]' : 'bg-white/70'" v-html="l.label" />
+                            <Link v-if="l.url" :href="l.url" preserve-scroll class="rounded border px-3 py-1 text-sm" :class="l.active ? 'bg-[var(--ink)] text-[var(--paper)]' : 'bg-[var(--paper-2)]'" v-html="l.label" />
                             <span v-else class="px-3 py-1 text-sm text-[var(--muted)]" v-html="l.label" />
                         </template>
                     </nav>
