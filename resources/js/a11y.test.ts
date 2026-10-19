@@ -42,6 +42,12 @@ describe('navigation au clavier : garde-fous statiques', () => {
         expect(css).toMatch(/:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--line-strong\)/);
         expect(css).toMatch(/\.skip-link:focus\s*\{\s*transform:\s*none/);
     });
+
+    it('les jetons clairs sont aussi posés sur [data-theme="light"] (bloc clair imbriqué dans l\'espace hôte sombre)', () => {
+        const css = readFileSync(join(root, '..', 'css', 'app.css'), 'utf8');
+
+        expect(css).toMatch(/:root,\s*\[data-theme='light'\]\s*\{\s*--surface-100:\s*#fbf6ee/);
+    });
 });
 
 describe('lien d\'évitement', () => {
