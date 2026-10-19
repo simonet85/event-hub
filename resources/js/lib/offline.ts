@@ -4,6 +4,11 @@
  */
 export const CACHE_NAME = 'eventhub-billet-v1';
 export const SERVICE_WORKER_URL = '/billet-sw.js';
+/**
+ * Portée du service worker : seules les pages sous /i/ (invitation et billet) sont contrôlées. Leurs fichiers
+ * statiques passent aussi par lui (une page contrôlée y fait transiter toutes ses requêtes), le reste du site non.
+ */
+export const SERVICE_WORKER_SCOPE = '/i/';
 
 const STATIC_PATH = /^\/(build\/assets|fonts)\//;
 
@@ -30,7 +35,7 @@ export async function isOfflineTicketSaved(ticketPath: string): Promise<boolean>
 export async function saveOfflineTicket(ticketPath: string): Promise<void> {
     if (!offlineSupported()) throw new Error('Le mode hors ligne n\'est pas disponible sur cet appareil.');
 
-    await navigator.serviceWorker.register(SERVICE_WORKER_URL);
+    await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: SERVICE_WORKER_SCOPE });
     await navigator.serviceWorker.ready;
 
     const cache = await caches.open(CACHE_NAME);

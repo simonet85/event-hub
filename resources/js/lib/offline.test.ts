@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CACHE_NAME, clearOfflineTicket, isOfflineTicketSaved, loadedStaticPaths, offlineSupported, saveOfflineTicket, SERVICE_WORKER_URL } from './offline';
+import { CACHE_NAME, clearOfflineTicket, isOfflineTicketSaved, loadedStaticPaths, offlineSupported, saveOfflineTicket, SERVICE_WORKER_SCOPE, SERVICE_WORKER_URL } from './offline';
 
 const entries = (...names: string[]) => names.map((name) => ({ name }));
 
@@ -62,7 +62,9 @@ describe('billet hors ligne', () => {
     it('garde la page du billet et les fichiers statiques seulement, jamais les photos ni l\'espace hôte', async () => {
         await saveOfflineTicket('/i/jeton/billet');
 
-        expect(register).toHaveBeenCalledWith(SERVICE_WORKER_URL);
+        // Portée étroite : seulement /i/, pas tout le site.
+        expect(register).toHaveBeenCalledWith(SERVICE_WORKER_URL, { scope: SERVICE_WORKER_SCOPE });
+        expect(SERVICE_WORKER_SCOPE).toBe('/i/');
         expect(fake.api.open).toHaveBeenCalledWith(CACHE_NAME);
         expect([...fake.store.keys()]).toEqual(['/i/jeton/billet', '/build/assets/app-abc.js', '/fonts/dm-sans-normal-latin.woff2']);
     });

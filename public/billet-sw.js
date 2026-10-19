@@ -28,15 +28,26 @@ self.addEventListener('fetch', (event) => {
     }
 });
 
-/** Billet : réseau d'abord ; hors ligne, la copie gardée par l'invité (s'il en a gardé une). */
+/**
+ * Billet : réseau d'abord ; hors ligne, la copie gardée par l'invité (s'il en a gardé une).
+ *
+ * Limite connue : hors ligne, le service worker ne peut pas savoir que l'événement a été archivé depuis.
+ * Dès que l'appareil retrouve le réseau et que le serveur répond 404 ou 410 (événement archivé, invité retiré),
+ * la copie est supprimée : « archivé » redevient « introuvable » à la première visite en ligne.
+ */
 async function ticket(request, path) {
     const cache = await caches.open(CACHE);
     const stored = await cache.match(path);
 
     try {
         const response = await fetch(request);
-        // On rafraîchit la copie seulement si l'invité a choisi de la garder.
-        if (stored && response.ok) await cache.put(path, response.clone());
+
+        if (response.status === 404 || response.status === 410) {
+            await cache.delete(path);
+        } else if (stored && response.ok) {
+            // On rafraîchit la copie seulement si l'invité a choisi de la garder.
+            await cache.put(path, response.clone());
+        }
 
         return response;
     } catch (error) {
