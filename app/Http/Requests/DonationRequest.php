@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Guest;
+use App\Rules\NoLinks;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,7 +29,7 @@ class DonationRequest extends FormRequest
         return [
             'amount' => ['required', 'integer', 'min:'.self::MIN_AMOUNT, 'max:'.self::MAX_AMOUNT],
             'gift_id' => ['nullable', 'integer', Rule::exists('gifts', 'id')->where('event_id', $guest->event_id)],
-            'message' => ['nullable', 'string', 'max:500'],
+            'message' => ['nullable', 'string', 'max:500', new NoLinks],
         ];
     }
 

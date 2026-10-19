@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\NoLinks;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GuestbookEntryRequest extends FormRequest
@@ -16,6 +17,6 @@ class GuestbookEntryRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['message' => ['required', 'string', 'min:2', 'max:1000']];
+        return ['message' => ['required', 'string', 'min:2', 'max:1000', new NoLinks]];
     }
 }

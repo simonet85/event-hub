@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\NoLinks;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
@@ -25,7 +26,7 @@ class PhotoUploadRequest extends FormRequest
                     Rule::dimensions()->maxWidth(8000)->maxHeight(8000)
                 ),
             ],
-            'caption' => ['nullable', 'string', 'max:255'],
+            'caption' => ['nullable', 'string', 'max:255', new NoLinks],
         ];
     }
 }

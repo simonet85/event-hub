@@ -87,6 +87,7 @@ const sendPhoto = () =>
                 />
                 <input v-model="photoForm.caption" type="text" placeholder="Légende (optionnel)" class="input" />
                 <p v-if="photoForm.errors.photo" class="text-sm text-danger">{{ photoForm.errors.photo }}</p>
+                <p v-if="photoForm.errors.caption" class="text-sm text-danger" data-testid="caption-error">{{ photoForm.errors.caption }}</p>
                 <button
                     type="submit"
                     :disabled="photoForm.processing || !photoForm.photo"

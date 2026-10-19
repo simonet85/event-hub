@@ -47,8 +47,8 @@ Route::middleware(['event.active', 'noindex'])->group(function () {
     Route::get('/i/{guest:token}/billet', [InvitationController::class, 'ticket'])->middleware('cache.headers:private;no_store')->name('invitations.ticket');
     Route::get('/i/{guest:token}/billet/manifest.webmanifest', [InvitationController::class, 'manifest'])->name('invitations.ticket.manifest');
     Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middleware('throttle:20,1')->name('rsvp.store');
-    Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:10,1')->name('guestbook.store');
-    Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:20,1')->name('photos.store');
+    Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:guest-contributions')->name('guestbook.store');
+    Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:guest-contributions')->name('photos.store');
     Route::delete('/i/{guest:token}/data', [GuestDataController::class, 'erase'])->middleware('throttle:10,1')->name('guest-data.erase');
     Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
 });

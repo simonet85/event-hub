@@ -174,3 +174,67 @@ test('supprimer un événement supprime ses contributions', function () {
 
     expect(GuestbookEntry::count())->toBe(0)->and(Photo::count())->toBe(0);
 });
+
+// --- Anti-spam ------------------------------------------------------------------------------------------------
+
+test('les liens sont refusés dans le livre d\'or, les légendes de photo et les messages de don', function (string $text) {
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => $text])->assertSessionHasErrors('message');
+    $this->post("/i/{$this->guest->token}/photos", ['photo' => UploadedFile::fake()->image('a.jpg'), 'caption' => $text])->assertSessionHasErrors('caption');
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 5000, 'message' => $text])->assertSessionHasErrors('message');
+
+    expect(GuestbookEntry::count())->toBe(0)->and(Photo::count())->toBe(0);
+})->with([
+    'https://spam.example/promo',
+    'Visitez www.gains-faciles.com maintenant',
+    'gagnez de l\'argent sur casino-gratuit.xyz',
+    'HTTP://MAJUSCULES.TEST',
+]);
+
+test('un message normal, même avec de la ponctuation et des points, reste accepté', function () {
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => 'Bravo ! Tous nos voeux... À très vite, Awa et Koffi.'])
+        ->assertSessionHasNoErrors();
+
+    expect(GuestbookEntry::count())->toBe(1);
+});
+
+test('un même message envoyé deux fois par le même invité est ignoré', function () {
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => 'Félicitations !'])->assertSessionHasNoErrors();
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => '  félicitations !  '])->assertSessionHasErrors('message');
+
+    expect(GuestbookEntry::count())->toBe(1);
+});
+
+test('un autre invité peut envoyer le même message', function () {
+    $other = Guest::factory()->for($this->event)->create();
+
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => 'Félicitations !'])->assertSessionHasNoErrors();
+    $this->post("/i/{$other->token}/guestbook", ['message' => 'Félicitations !'])->assertSessionHasNoErrors();
+
+    expect(GuestbookEntry::count())->toBe(2);
+});
+
+test('la file de modération d\'un événement est plafonnée', function () {
+    GuestbookEntry::factory()->count(200)->for(Guest::factory()->for($this->event))->create(['status' => 'pending']);
+
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => 'Un de trop'])->assertSessionHasErrors('message');
+
+    expect($this->guest->guestbookEntries()->count())->toBe(0);
+});
+
+test('les messages déjà publiés ne comptent pas dans le plafond de la file', function () {
+    GuestbookEntry::factory()->count(200)->for(Guest::factory()->for($this->event))->create(['status' => 'approved']);
+
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => 'Bienvenue'])->assertSessionHasNoErrors();
+});
+
+test('le nombre d\'envois par minute est limité par invité, pas pour toute la salle', function () {
+    $other = Guest::factory()->for($this->event)->create();
+
+    foreach (range(1, 5) as $i) {
+        $this->post("/i/{$this->guest->token}/guestbook", ['message' => "Message numéro {$i}"]);
+    }
+    $this->post("/i/{$this->guest->token}/guestbook", ['message' => 'Message de trop'])->assertStatus(429);
+
+    // Même adresse IP, autre invité : il n'est pas bloqué.
+    $this->post("/i/{$other->token}/guestbook", ['message' => 'Mon tour'])->assertSessionHasNoErrors();
+});
