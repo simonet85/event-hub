@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import Modal from '@/Components/Modal.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
@@ -161,7 +162,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                             <h3 class="display text-2xl">Plan de table</h3>
                             <Link :href="route('guests.index', event.slug)" class="inline-flex min-h-tap items-center text-sm font-semibold text-[var(--accent)] hover:underline">Attribuer les tables</Link>
                         </div>
-                        <p v-if="tables.length === 0" class="text-[var(--muted)]">Aucun invité à placer.</p>
+                        <EmptyState v-if="tables.length === 0" class="card" compact icon="table" title="Aucun invité à placer" text="Les tables apparaîtront quand vous aurez ajouté des invités." />
                         <ul v-else class="divide-y card" data-testid="tables">
                             <li v-for="t in tables" :key="t.table" class="flex justify-between p-3 text-sm">
                                 <span class="font-medium text-[var(--ink)]">{{ t.table }}</span>
@@ -172,7 +173,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
 
                     <section>
                         <h3 class="mb-3 display text-2xl">Régimes alimentaires</h3>
-                        <p v-if="dietary.length === 0" class="text-[var(--muted)]">Aucun régime particulier signalé.</p>
+                        <EmptyState v-if="dietary.length === 0" class="card" compact icon="guests" title="Aucun régime particulier signalé" text="Les régimes et allergies indiqués par vos invités apparaîtront ici." />
                         <ul v-else class="divide-y card" data-testid="dietary">
                             <li v-for="d in dietary" :key="d.guest + d.restriction" class="p-3 text-sm">
                                 <span class="font-medium text-[var(--ink)]">{{ d.guest }}</span>

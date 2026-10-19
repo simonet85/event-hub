@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -116,7 +117,7 @@ const pending = computed(() => props.summary.to_invite);
                     <p class="caption w-full text-ink-muted">Colonnes : name, email, phone, max_companions</p>
                 </form>
 
-                <p v-if="guests.data.length === 0" class="text-[var(--muted)]">Aucun invité pour le moment.</p>
+                <EmptyState v-if="guests.data.length === 0" class="card" icon="guests" title="Aucun invité pour le moment" text="Ajoutez vos invités un par un ou importez un fichier CSV : chacun recevra son lien d'invitation personnel." />
                 <ul v-else class="divide-y card">
                     <li v-for="g in guests.data" :key="g.id" class="flex flex-wrap items-center justify-between gap-2 p-4">
                         <div>

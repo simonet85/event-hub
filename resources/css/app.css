@@ -702,3 +702,39 @@
         transition: none;
     }
 }
+
+/* Impression (vue traiteur, tableau de bord, listes) : fond blanc, sans navigation ni boutons, cartes sans ombre, rien coupé en deux. */
+@media print {
+    html,
+    body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    nav,
+    .skip-link,
+    .envelope-intro,
+    canvas[data-confetti],
+    .btn,
+    .btn-quiet,
+    .btn-ghost {
+        display: none !important;
+    }
+
+    .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .card {
+        break-inside: avoid;
+        border: 1px solid #999 !important;
+        box-shadow: none !important;
+    }
+
+    h1,
+    h2,
+    h3 {
+        break-after: avoid;
+    }
+}

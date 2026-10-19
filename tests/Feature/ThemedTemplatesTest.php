@@ -1,0 +1,95 @@
+<?php
+
+use App\Mail\InvitationMail;
+use App\Models\Event;
+use App\Models\Guest;
+use App\Models\User;
+use App\Support\Color;
+
+beforeEach(function () {
+    $this->host = User::factory()->create();
+});
+
+test('l\'e-mail d\'invitation prend les couleurs du thème de l\'événement', function () {
+    $event = Event::factory()->for($this->host)->create(['type' => 'baptism', 'theme_config' => []]);
+    $guest = Guest::factory()->for($event)->create();
+
+    $mail = new InvitationMail($guest);
+
+    $mail->assertSeeInHtml('#42698f');
+    $mail->assertSeeInHtml($event->title);
+    $mail->assertSeeInHtml($guest->token);
+});
+
+test('une couleur choisie par l\'hôte remplace celle du préréglage dans l\'e-mail', function () {
+    $event = Event::factory()->for($this->host)->create(['type' => 'wedding', 'theme_config' => ['primary_color' => '#a0432a', 'secondary_color' => '#fbf6ee', 'font_family' => 'serif']]);
+    $guest = Guest::factory()->for($event)->create();
+
+    $mail = new InvitationMail($guest);
+
+    $mail->assertSeeInHtml('#a0432a');
+    $mail->assertDontSeeInHtml('#4e6b48');
+});
+
+test('le texte du bouton reste lisible : clair sur un accent sombre, foncé sur un accent clair', function () {
+    $dark = Event::factory()->for($this->host)->create(['theme_config' => ['primary_color' => '#1d3b2a', 'secondary_color' => '#fbf6ee', 'font_family' => 'serif']]);
+    $light = Event::factory()->for($this->host)->create(['theme_config' => ['primary_color' => '#f0d78c', 'secondary_color' => '#fbf6ee', 'font_family' => 'serif']]);
+
+    (new InvitationMail(Guest::factory()->for($dark)->create()))->assertSeeInHtml('color:'.Color::ON_ACCENT_LIGHT);
+    (new InvitationMail(Guest::factory()->for($light)->create()))->assertSeeInHtml('color:'.Color::ON_ACCENT_DARK);
+});
+
+test('un accent illisible sur le fond n\'est pas utilisé comme couleur de texte', function () {
+    expect(Color::readableAccent('#f0d78c', '#fbf6ee'))->toBe(Color::INK)
+        ->and(Color::readableAccent('#4e6b48', '#fbf6ee'))->toBe('#4e6b48');
+});
+
+test('une valeur de thème invalide ne casse pas l\'e-mail', function () {
+    $event = Event::factory()->for($this->host)->create(['theme_config' => ['primary_color' => 'rouge', 'secondary_color' => '', 'font_family' => 'serif']]);
+    $guest = Guest::factory()->for($event)->create();
+
+    (new InvitationMail($guest))->assertSeeInHtml('Voir mon invitation');
+});
+
+test('l\'e-mail a aussi une version texte avec le lien', function () {
+    $event = Event::factory()->for($this->host)->create();
+    $guest = Guest::factory()->for($event)->create();
+
+    $mail = new InvitationMail($guest);
+
+    $mail->assertSeeInText($guest->invitationUrl());
+    $mail->assertSeeInText($event->title);
+});
+
+test('les contrastes calculés suivent la norme WCAG', function () {
+    expect(round(Color::contrast('#000000', '#ffffff'), 1))->toBe(21.0)
+        ->and(Color::contrast('#777777', '#777777'))->toBe(1.0)
+        ->and(Color::onAccent('#7a3d6f'))->toBe(Color::ON_ACCENT_LIGHT)
+        ->and(Color::onAccent('#e8dcc8'))->toBe(Color::ON_ACCENT_DARK);
+});
+
+test('le thème résolu combine préréglage et choix de l\'hôte', function () {
+    $event = Event::factory()->for($this->host)->create(['type' => 'party', 'theme_config' => ['primary_color' => '#112233']]);
+
+    expect($event->resolvedTheme())->toBe(['primary_color' => '#112233', 'secondary_color' => '#fbf6ee', 'font_family' => 'serif']);
+});
+
+test('les PDF reprennent la couleur du thème, ont un pied de page et des marges d\'impression', function () {
+    $event = Event::factory()->for($this->host)->create(['type' => 'birthday', 'theme_config' => []]);
+
+    $html = view('pdf.caterer', [
+        'event' => $event,
+        'rsvp' => ['headcount' => 0, 'accepted' => 0, 'pending' => 0, 'declined' => 0],
+        'dietary' => collect(),
+        'dietarySeats' => 0,
+    ])->render();
+
+    expect($html)->toContain('#a0432a')->toContain('@page')->toContain('counter(page)')->toContain('class="footer"');
+});
+
+test('les PDF restent générés pour l\'hôte', function () {
+    $event = Event::factory()->for($this->host)->create(['slug' => 'pdf-theme']);
+
+    $this->actingAs($this->host)->get('/events/pdf-theme/exports/traiteur.pdf')->assertOk()->assertHeader('content-type', 'application/pdf');
+    $this->actingAs($this->host)->get('/events/pdf-theme/exports/plan-de-table.pdf')->assertOk()->assertHeader('content-type', 'application/pdf');
+});

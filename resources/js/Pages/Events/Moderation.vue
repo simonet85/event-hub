@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
@@ -31,7 +32,7 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
             <div class="mx-auto max-w-7xl space-y-10 px-4 sm:px-6 lg:px-8">
                 <section>
                     <h3 class="mb-3 display text-2xl">Livre d'or</h3>
-                    <p v-if="entries.length === 0" class="text-[var(--muted)]">Aucun message.</p>
+                    <EmptyState v-if="entries.length === 0" class="card" icon="messages" title="Aucun message" text="Les messages laissés par vos invités dans le livre d'or arriveront ici, à valider avant publication." />
                     <ul v-else class="divide-y card">
                         <li v-for="e in entries" :key="e.id" class="flex flex-wrap items-start justify-between gap-3 p-4">
                             <div class="min-w-0 flex-1">
@@ -49,7 +50,7 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
 
                 <section>
                     <h3 class="mb-3 display text-2xl">Photos</h3>
-                    <p v-if="photos.length === 0" class="text-[var(--muted)]">Aucune photo.</p>
+                    <EmptyState v-if="photos.length === 0" class="card" icon="photos" title="Aucune photo" text="Les photos envoyées par vos invités arriveront ici, à valider avant publication." />
                     <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <figure v-for="p in photos" :key="p.id" class="overflow-hidden card">
                             <img :src="p.url" :alt="p.caption ?? `Photo de ${p.author}`" loading="lazy" class="aspect-square w-full object-cover" />

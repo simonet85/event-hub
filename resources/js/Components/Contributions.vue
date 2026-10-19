@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EmptyState from '@/Components/ui/EmptyState.vue';
 import PhotoViewer from '@/Components/ui/PhotoViewer.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -75,7 +76,7 @@ const sendPhoto = () =>
                     <figcaption class="caption mt-1 text-ink-muted">{{ p.caption ? `${p.caption} — ` : '' }}{{ p.author }}</figcaption>
                 </figure>
             </div>
-            <p v-else class="caption text-center text-ink-muted">Aucune photo pour le moment.</p>
+            <EmptyState v-else compact icon="photos" title="Aucune photo pour le moment" text="Soyez le premier à partager un souvenir." />
             <PhotoViewer v-model:index="viewerIndex" :photos="photos" />
 
             <form class="space-y-2" @submit.prevent="sendPhoto">

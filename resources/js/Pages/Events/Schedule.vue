@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import type { ScheduleEntry } from '@/types';
@@ -70,7 +71,7 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
                     </button>
                 </form>
 
-                <p v-if="items.length === 0" class="text-[var(--muted)]">Aucune étape pour le moment.</p>
+                <EmptyState v-if="items.length === 0" class="card" icon="calendar" title="Aucune étape pour le moment" text="Ajoutez les moments de la journée : cérémonie, cocktail, dîner… vos invités les verront sur leur invitation." />
                 <ul v-else class="divide-y card">
                     <li v-for="item in items" :key="item.id" class="flex items-center justify-between p-4">
                         <div>

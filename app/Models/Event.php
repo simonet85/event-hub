@@ -20,6 +20,25 @@ class Event extends Model
     use HasFactory;
 
     /**
+     * Thème effectif de l'événement : préréglage du type, surchargé par les valeurs choisies par l'hôte.
+     * Sert aux e-mails et aux PDF, qui n'ont pas accès aux variables CSS du site.
+     *
+     * @return array{primary_color: string, secondary_color: string, font_family: string}
+     */
+    public function resolvedTheme(): array
+    {
+        $theme = $this->type->defaultTheme();
+
+        foreach ($this->theme_config ?? [] as $key => $value) {
+            if (array_key_exists($key, $theme) && filled($value)) {
+                $theme[$key] = $value;
+            }
+        }
+
+        return $theme;
+    }
+
+    /**
      * Le lien traiteur est actif tant qu'il existe et n'a pas expiré.
      */
     public function hasActiveCatererLink(): bool

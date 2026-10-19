@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -84,7 +85,7 @@ const badge = (status: string) =>
 
                 <section>
                     <h3 class="mb-3 display text-2xl">Contributions</h3>
-                    <p v-if="contributions.data.length === 0" class="text-[var(--muted)]">Aucune contribution pour le moment.</p>
+                    <EmptyState v-if="contributions.data.length === 0" class="card" icon="gift" title="Aucune contribution pour le moment" text="Les participations de vos invités apparaîtront ici dès qu'elles seront confirmées." />
                     <ul v-else class="divide-y card">
                         <li v-for="c in contributions.data" :key="c.id" class="flex flex-wrap items-start justify-between gap-2 p-4">
                             <div>

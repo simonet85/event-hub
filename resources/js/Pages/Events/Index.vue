@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EmptyState from '@/Components/ui/EmptyState.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -71,15 +72,11 @@ const restore = (slug: string) => router.post(route('events.restore', slug), {},
                 « {{ flash.event_restored }} » est de nouveau actif.
             </p>
 
-            <div v-if="events.data.length === 0" class="card mx-auto max-w-xl p-10 text-center">
-                <template v-if="showingArchived">
-                    <p class="display text-3xl">Aucun événement <em>archivé</em>.</p>
-                </template>
-                <template v-else>
-                    <p class="display text-3xl">Votre première <em>célébration</em> commence ici.</p>
-                    <p class="mt-2 text-[var(--muted)]">Aucun événement pour le moment.</p>
-                    <Link :href="route('events.create')" class="btn mt-6">Créer un événement</Link>
-                </template>
+            <div v-if="events.data.length === 0" class="card mx-auto max-w-xl">
+                <EmptyState v-if="showingArchived" icon="event" title="Aucun événement archivé" text="Les événements que vous archivez apparaissent ici ; vous pouvez les restaurer à tout moment." />
+                <EmptyState v-else icon="event" title="Votre première célébration commence ici" text="Aucun événement pour le moment. Créez-en un, ajoutez vos invités et envoyez les invitations.">
+                    <Link :href="route('events.create')" class="btn">Créer un événement</Link>
+                </EmptyState>
             </div>
 
             <ul v-else class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">

@@ -45,9 +45,9 @@ Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Papier &
 
 - [ ] **Plan de table visuel** par glisser-déposer.
 - [ ] **Galerie de thèmes prédéfinis** avec aperçu, et bouton « Réinitialiser le thème » selon le type d'événement.
-- [ ] **États vides illustrés** (invités, programme, cagnotte, modération).
-- [ ] **Gabarits d'emails** d'invitation et de relance aux couleurs du thème.
-- [ ] **Styles d'impression** cohérents pour les PDF (traiteur, plan de table).
+- [x] **États vides illustrés** (`EmptyState` : événements, invités, programme, cagnotte, modération, tableau de bord, photos de l'invité).
+- [x] **Gabarit d'e-mail d'invitation** aux couleurs du thème (accent, fond, contraste du bouton vérifié, version texte). L'e-mail de relance n'existe pas encore : il n'y a pas de fonction de relance.
+- [x] **Styles d'impression** : PDF (traiteur, plan de table) aux couleurs du thème avec marges, pied de page numéroté et lignes non coupées ; feuille `@media print` pour les pages web (traiteur, tableau de bord).
 
 ### Traduction
 
