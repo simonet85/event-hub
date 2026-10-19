@@ -95,7 +95,8 @@ class EventController extends Controller
 
         // Une nouvelle adresse invalide la position : on ne laisse jamais la carte de l'ancien lieu
         // sous la nouvelle adresse, même si la recherche échoue ou si l'adresse est vidée.
-        $addressChanged = (string) ($data['location_address'] ?? '') !== (string) $event->location_address;
+        $addressChanged = array_key_exists('location_address', $data)
+            && (string) ($data['location_address'] ?? '') !== (string) $event->location_address;
         if ($addressChanged) {
             $data['latitude'] = null;
             $data['longitude'] = null;

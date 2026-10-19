@@ -82,6 +82,38 @@ test('une adresse inchangée garde sa position et ne lance rien', function () {
     expect($this->event->fresh()->latitude)->toBe(48.8049);
 });
 
+test("un envoi sans champ d'adresse ne touche ni à la position ni au géocodage", function () {
+    Queue::fake();
+
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", [
+        'title' => 'Titre seul',
+        'type' => $this->event->type->value,
+        'event_date' => $this->event->event_date->format('Y-m-d\TH:i'),
+    ])->assertRedirect();
+
+    $event = $this->event->fresh();
+    expect($event->title)->toBe('Titre seul')
+        ->and($event->latitude)->toBe(48.8049)
+        ->and($event->longitude)->toBe(2.1204);
+    Queue::assertNothingPushed();
+});
+
+test("une modification qui n'envoie pas l'adresse ne touche ni à l'adresse ni à la position", function () {
+    Queue::fake();
+
+    $payload = eventPayload($this->event, ['title' => 'Titre seul']);
+    unset($payload['location_address']);
+
+    $this->actingAs($this->host)->patch("/events/{$this->event->slug}", $payload)->assertRedirect();
+
+    $event = $this->event->fresh();
+    expect($event->title)->toBe('Titre seul')
+        ->and($event->location_address)->toBe("Place d'Armes, 78000 Versailles")
+        ->and($event->latitude)->toBe(48.8049)
+        ->and($event->longitude)->toBe(2.1204);
+    Queue::assertNothingPushed();
+});
+
 test('une adresse vidée efface la position sans rien chercher', function () {
     Queue::fake();
 
