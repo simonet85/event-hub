@@ -117,6 +117,28 @@ test('robots.txt laisse les robots d\'aperçu lire /e/ et /i/ tout en fermant l\
         ->not->toMatch('#^Disallow: /(i|e)/#m');
 });
 
+test("sans GD ou sans police, la page reste servie sans image de partage au lieu d'échouer", function () {
+    app()->instance(ShareImage::class, new class extends ShareImage
+    {
+        public function available(): bool
+        {
+            return false;
+        }
+    });
+
+    $meta = metaTags($this->get('/e/mariage-og')->assertOk()->getContent());
+
+    expect($meta)->toContain('og:title')->not->toContain('og:image')->toContain('twitter:card" content="summary"');
+    $this->get('/e/mariage-og/share.png')->assertNotFound();
+    expect($this->event->shareMeta()['image'])->toBeNull();
+});
+
+test('le projet déclare la dépendance à ext-gd', function () {
+    $composer = json_decode(file_get_contents(base_path('composer.json')), true);
+
+    expect($composer['require'])->toHaveKey('ext-gd');
+});
+
 test('la palette suit le thème : préréglage clair, Fête sombre, couleurs de l\'hôte prioritaires', function () {
     $images = app(ShareImage::class);
 

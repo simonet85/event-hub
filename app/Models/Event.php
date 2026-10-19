@@ -37,7 +37,7 @@ class Event extends Model
      * Balises d'aperçu de lien (Open Graph) : uniquement des informations de l'événement,
      * identiques pour tous les invités, et jamais de donnée personnelle.
      *
-     * @return array{title: string, description: string, url: string, image: string, noindex: true}
+     * @return array{title: string, description: string, url: string, image: string|null, noindex: true}
      */
     public function shareMeta(): array
     {
@@ -48,7 +48,9 @@ class Event extends Model
             'description' => trim("{$this->type->label()} · {$when}".($this->location_name ? " · {$this->location_name}" : '')),
             // Adresse canonique de l'événement (jamais le lien personnel d'un invité, qui contient son jeton).
             'url' => route('events.public', $this),
-            'image' => route('events.share-image', $this).'?v='.app(ShareImage::class)->fingerprint($this),
+            'image' => app(ShareImage::class)->available()
+                ? route('events.share-image', $this).'?v='.app(ShareImage::class)->fingerprint($this)
+                : null,
             'noindex' => true,
         ];
     }

@@ -16,13 +16,17 @@
             <meta property="og:title" content="{{ $meta['title'] }}">
             <meta property="og:description" content="{{ $meta['description'] }}">
             <meta property="og:url" content="{{ $meta['url'] }}">
-            <meta property="og:image" content="{{ $meta['image'] }}">
-            <meta property="og:image:type" content="image/png">
-            <meta property="og:image:width" content="1200">
-            <meta property="og:image:height" content="630">
-            <meta name="twitter:card" content="summary_large_image">
+            @if ($meta['image'])
+                <meta property="og:image" content="{{ $meta['image'] }}">
+                <meta property="og:image:type" content="image/png">
+                <meta property="og:image:width" content="1200">
+                <meta property="og:image:height" content="630">
+                <meta name="twitter:card" content="summary_large_image">
+                <meta name="twitter:image" content="{{ $meta['image'] }}">
+            @else
+                <meta name="twitter:card" content="summary">
+            @endif
             <meta name="twitter:title" content="{{ $meta['title'] }}">
-            <meta name="twitter:image" content="{{ $meta['image'] }}">
         @endisset
 
         <!-- Polices auto-hébergées (@font-face dans resources/css/app.css) : on précharge les deux utilisées au premier affichage. -->

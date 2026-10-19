@@ -14,6 +14,8 @@ class ShareImageController extends Controller
      */
     public function show(Event $event, ShareImage $images): BinaryFileResponse
     {
+        abort_unless($images->available(), 404);
+
         $path = $images->path($event);
 
         return response()->file($path, [

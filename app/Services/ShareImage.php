@@ -26,6 +26,15 @@ class ShareImage
 
     private const INK_DARK_THEME = '#f4ece0';
 
+    /**
+     * GD avec FreeType et les polices sont-ils disponibles ? Sans eux, on n'annonce pas d'image de partage
+     * (pas d'og:image, route en 404) plutôt que de répondre par une erreur 500.
+     */
+    public function available(): bool
+    {
+        return extension_loaded('gd') && function_exists('imagettftext') && is_file($this->font('cormorant-garamond-600'));
+    }
+
     /** Chemin du PNG en cache, généré au besoin. */
     public function path(Event $event): string
     {
