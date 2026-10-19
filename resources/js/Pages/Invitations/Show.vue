@@ -3,6 +3,7 @@ import Contributions from '@/Components/Contributions.vue';
 import Donations, { type CagnottePayload } from '@/Components/Donations.vue';
 import EventDetails from '@/Components/EventDetails.vue';
 import RsvpForm from '@/Components/RsvpForm.vue';
+import EnvelopeIntro from '@/Components/ui/EnvelopeIntro.vue';
 import EventHero from '@/Components/ui/EventHero.vue';
 import GuestNav from '@/Components/ui/GuestNav.vue';
 import InvitationCard from '@/Components/ui/InvitationCard.vue';
@@ -35,6 +36,8 @@ defineProps<{
     <Head :title="`Invitation - ${event.title}`" />
 
     <EventPublicLayout :theme="event.theme_config" :preset="event.theme_preset" :css-class="event.css_class" :dark="event.dark_theme">
+        <EnvelopeIntro :token="token" :guest-name="guest.name" />
+
         <EventHero :event="event" actions />
 
         <Reveal class="w-full">
