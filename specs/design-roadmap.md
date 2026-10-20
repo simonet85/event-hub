@@ -51,5 +51,5 @@ Suite de `specs/roadmap.md`, côté interface. Direction retenue : **« Papier &
 
 ### Traduction
 
-- [ ] **Pages hôte et invité en anglais** : passer les textes par `__()` et générer `lang/en.json` avec `php artisan deepl:translate en`.
+- [x] **Pages hôte et invité en anglais** : textes par `__()`, `lang/en.json` généré avec `php artisan deepl:translate en` puis relu. E-mails, PDF et exports restent en français. À refaire après tout nouveau texte : `php artisan deepl:translate en` (le test Vitest signale les clés manquantes).
 - [ ] **Autres langues** (es, de) : ajouter à `SetLocale::SUPPORTED` et au sélecteur.
