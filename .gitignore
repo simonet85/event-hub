@@ -31,3 +31,7 @@ Thumbs.db
 
 # Contient une clé d'API
 /docs/Deepl.txt
+
+# Accès SSH, mots de passe et variables d'environnement de production : jamais versionnés
+/docs/VARIABLES ET ACCES.txt
+/docs/SSH-Access-Hostinger.png

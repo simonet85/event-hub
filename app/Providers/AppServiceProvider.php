@@ -6,6 +6,7 @@ use App\Models\Guest;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +26,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        // Derrière le serveur d'hébergement, le schéma vu par PHP peut être « http » : les URL absolues (retour et webhook
+        // MoneyFusion, image de partage, liens d'invitation) doivent rester en HTTPS.
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
 
         // Livre d'or et photos : limites par invité (jeton) plutôt que par adresse IP seule, car les invités d'une même
         // salle partagent souvent la même connexion ; l'IP garde un plafond large contre les envois en rafale.
