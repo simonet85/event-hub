@@ -35,3 +35,4 @@ Thumbs.db
 # Accès SSH, mots de passe et variables d'environnement de production : jamais versionnés
 /docs/VARIABLES ET ACCES.txt
 /docs/SSH-Access-Hostinger.png
+/docs/Cron-*.png
