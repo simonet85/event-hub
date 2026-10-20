@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { router, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 
 const locales = [
     { code: 'fr', label: 'FR' },
@@ -8,6 +8,11 @@ const locales = [
 ];
 
 const current = computed(() => usePage().props.locale);
+
+// Le changement de langue ne recharge pas la page : l'attribut lang de <html> (lecteurs d'écran, césure) doit suivre.
+watch(current, (code) => {
+    if (typeof code === 'string') document.documentElement.lang = code;
+});
 
 const change = (code: string) => {
     if (code !== current.value) {

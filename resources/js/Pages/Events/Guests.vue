@@ -48,7 +48,7 @@ const pending = computed(() => props.summary.to_invite);
 </script>
 
 <template>
-    <Head :title="`Invités - ${event.title}`" />
+    <Head :title="`${__('Invités')} - ${event.title}`" />
 
     <AuthenticatedLayout>
         <template #header>

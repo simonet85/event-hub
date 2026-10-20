@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { translate as __ } from '@/i18n';
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps<{
     event: { title: string; slug: string };
@@ -10,13 +12,13 @@ defineProps<{
 // `route` est un global (Ziggy) : on l'expose au gabarit via le script pour rester testable.
 const url = (name: string, ...params: string[]): string => String(route(name, ...params));
 
-const tabs = [
-    { key: 'dashboard', label: 'Tableau de bord', route: 'dashboard.show' },
-    { key: 'guests', label: 'Invités', route: 'guests.index' },
-    { key: 'schedule', label: 'Programme', route: 'schedule.index' },
-    { key: 'cagnotte', label: 'Cagnotte', route: 'cagnotte.index' },
-    { key: 'moderation', label: 'Modération', route: 'moderation.index' },
-] as const;
+const tabs = computed(() => [
+    { key: 'dashboard', label: __('Tableau de bord'), route: 'dashboard.show' },
+    { key: 'guests', label: __('Invités'), route: 'guests.index' },
+    { key: 'schedule', label: __('Programme'), route: 'schedule.index' },
+    { key: 'cagnotte', label: __('Cagnotte'), route: 'cagnotte.index' },
+    { key: 'moderation', label: __('Modération'), route: 'moderation.index' },
+]);
 </script>
 
 <template>

@@ -4,6 +4,7 @@ import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 type Status = 'pending' | 'approved' | 'rejected';
 
@@ -13,7 +14,7 @@ const props = defineProps<{
     photos: { id: number; author: string; caption: string | null; status: Status; url: string }[];
 }>();
 
-const labels: Record<Status, string> = { pending: __('En attente'), approved: __('Publié'), rejected: __('Refusé') };
+const labels = computed<Record<Status, string>>(() => ({ pending: __('En attente'), approved: __('Publié'), rejected: __('Refusé') }));
 
 const setEntry = (id: number, status: Status) => router.patch(route('moderation.entries.update', [props.event.slug, id]), { status }, { preserveScroll: true });
 const removeEntry = (id: number) => router.delete(route('moderation.entries.destroy', [props.event.slug, id]), { preserveScroll: true });
@@ -22,7 +23,7 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
 </script>
 
 <template>
-    <Head :title="`Modération - ${event.title}`" />
+    <Head :title="`${__('Modération')} - ${event.title}`" />
 
     <AuthenticatedLayout>
         <template #header>

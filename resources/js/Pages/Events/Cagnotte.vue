@@ -36,7 +36,7 @@ const badge = (status: string) =>
 </script>
 
 <template>
-    <Head :title="`Cagnotte - ${event.title}`" />
+    <Head :title="`${__('Cagnotte')} - ${event.title}`" />
 
     <AuthenticatedLayout>
         <template #header>

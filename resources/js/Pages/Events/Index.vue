@@ -19,14 +19,14 @@ const flash = computed(() => usePage().props.flash as { event_archived?: string 
 
 const fmt = (d: string) => new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'long' }).format(new Date(d));
 const daysLeft = (d: string) => Math.ceil((new Date(d).getTime() - Date.now()) / 86_400_000);
-const typeLabel: Record<string, string> = { wedding: __('Mariage'), baptism: __('Baptême'), birthday: __('Anniversaire'), party: __('Fête'), other: __('Autre') };
+const typeLabel = computed<Record<string, string>>(() => ({ wedding: __('Mariage'), baptism: __('Baptême'), birthday: __('Anniversaire'), party: __('Fête'), other: __('Autre') }));
 
-const actions = [
+const actions = computed(() => [
     { label: __('Invités'), route: 'guests.index' },
     { label: __('Programme'), route: 'schedule.index' },
     { label: __('Cagnotte'), route: 'cagnotte.index' },
     { label: __('Modération'), route: 'moderation.index' },
-] as const;
+]);
 
 const restore = (slug: string) => router.post(route('events.restore', slug), {}, { preserveScroll: true });
 </script>

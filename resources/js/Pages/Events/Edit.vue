@@ -24,7 +24,7 @@ const restore = () => router.post(route('events.restore', props.event.slug));
 </script>
 
 <template>
-    <Head :title="`Modifier - ${event.title}`" />
+    <Head :title="`${__('Modifier')} - ${event.title}`" />
 
     <AuthenticatedLayout>
         <template #header>

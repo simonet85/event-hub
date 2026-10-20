@@ -41,7 +41,7 @@ const time = computed(() => formatTime(new Date(props.event.event_date)));
         </dl>
 
         <p v-if="maxCompanions && maxCompanions > 0" class="text-ink-muted">
-            Vous pouvez venir avec {{ maxCompanions }} accompagnant{{ maxCompanions > 1 ? 's' : '' }}.
+            {{ maxCompanions > 1 ? __('Vous pouvez venir avec :count accompagnants.', { count: maxCompanions }) : __('Vous pouvez venir avec :count accompagnant.', { count: maxCompanions }) }}
         </p>
         <p v-if="event.welcome_message" class="border-t border-line pt-5 italic">{{ event.welcome_message }}</p>
 

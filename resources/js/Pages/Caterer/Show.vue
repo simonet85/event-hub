@@ -19,7 +19,7 @@ const print = () => window.print();
 </script>
 
 <template>
-    <Head :title="`Traiteur - ${event.title}`" />
+    <Head :title="`${__('Traiteur')} - ${event.title}`" />
 
     <div class="min-h-screen bg-[var(--paper)] text-[var(--ink)]">
         <a href="#contenu" class="skip-link">{{ __('Aller au contenu') }}</a>
@@ -48,7 +48,7 @@ const print = () => window.print();
                     <p v-if="tables.length === 0" class="text-ink-muted">{{ __('Aucune table attribuée.') }}</p>
                     <ul v-else class="card divide-y divide-line" data-testid="caterer-tables">
                         <li v-for="t in tables" :key="t.table" class="flex justify-between p-3 text-sm">
-                            <span class="font-medium">{{ t.table }}</span>
+                            <span class="font-medium">{{ t.table === 'Sans table' ? __('Sans table') : t.table }}</span>
                             <span class="text-ink-muted">{{ __(':count couvert(s)', { count: t.headcount }) }}</span>
                         </li>
                     </ul>

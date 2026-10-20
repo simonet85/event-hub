@@ -35,7 +35,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head :title="`Invitation - ${event.title}`" />
+    <Head :title="`${__('Invitation')} - ${event.title}`" />
 
     <EventPublicLayout :theme="event.theme_config" :preset="event.theme_preset" :css-class="event.css_class" :dark="event.dark_theme">
         <EnvelopeIntro :token="token" :guest-name="guest.name" />

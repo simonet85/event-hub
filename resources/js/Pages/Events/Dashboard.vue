@@ -56,7 +56,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
 </script>
 
 <template>
-    <Head :title="`Tableau de bord - ${event.title}`" />
+    <Head :title="`${__('Tableau de bord')} - ${event.title}`" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -162,7 +162,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                         <EmptyState v-if="tables.length === 0" class="card" compact icon="table" :title="__('Aucun invité à placer')" :text="__('Les tables apparaîtront quand vous aurez ajouté des invités.')" />
                         <ul v-else class="divide-y card" data-testid="tables">
                             <li v-for="t in tables" :key="t.table" class="flex justify-between p-3 text-sm">
-                                <span class="font-medium text-[var(--ink)]">{{ t.table }}</span>
+                                <span class="font-medium text-[var(--ink)]">{{ t.table === 'Sans table' ? __('Sans table') : t.table }}</span>
                                 <span class="text-[var(--muted)]">{{ __(':guests invité(s) · :seats couvert(s)', { guests: t.guests, seats: t.headcount }) }}</span>
                             </li>
                         </ul>

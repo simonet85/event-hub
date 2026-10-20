@@ -62,7 +62,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Head :title="`Billet - ${event.title}`">
+    <Head :title="`${__('Billet')} - ${event.title}`">
         <link rel="manifest" :href="manifestUrl" />
     </Head>
 

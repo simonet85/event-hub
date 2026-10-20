@@ -38,7 +38,7 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
 </script>
 
 <template>
-    <Head :title="`Programme - ${event.title}`" />
+    <Head :title="`${__('Programme')} - ${event.title}`" />
 
     <AuthenticatedLayout>
         <template #header>
