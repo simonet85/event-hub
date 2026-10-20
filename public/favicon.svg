@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <title>Event Hub</title>
+    <style>
+        .bg { fill: #4e6b48; }
+        .star { fill: #fbf6ee; }
+        @media (prefers-color-scheme: dark) {
+            .bg { fill: #a4c19c; }
+            .star { fill: #1d1711; }
+        }
+    </style>
+    <rect class="bg" width="64" height="64" rx="10" />
+    <path class="star" d="M32 8 L37.2 26.8 L56 32 L37.2 37.2 L32 56 L26.8 37.2 L8 32 L26.8 26.8 Z" />
+</svg>
