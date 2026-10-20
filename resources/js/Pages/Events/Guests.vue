@@ -52,9 +52,9 @@ const pending = computed(() => props.summary.to_invite);
 
     <AuthenticatedLayout>
         <template #header>
-            <EventHeader :event="event" title="Invités" current="guests">
+            <EventHeader :event="event" :title="__('Invités')" current="guests">
                 <template #aside>
-                    <button :disabled="pending === 0" class="btn !px-4 !py-2 text-xs" @click="sendAll">Envoyer les invitations ({{ pending }})</button>
+                    <button :disabled="pending === 0" class="btn !px-4 !py-2 text-xs" @click="sendAll">{{ __('Envoyer les invitations (:count)', { count: pending }) }}</button>
                 </template>
             </EventHeader>
         </template>
@@ -62,30 +62,30 @@ const pending = computed(() => props.summary.to_invite);
         <div class="space-y-8 py-12">
             <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <p v-if="flash?.sent != null" class="notice notice-success">
-                    {{ flash.sent }} invitation(s) mise(s) en file d'envoi.
+                    {{ __(':count invitation(s) mise(s) en file d\'envoi.', { count: flash.sent }) }}
                 </p>
                 <p v-if="flash?.imported != null" class="notice notice-success">
-                    {{ flash.imported }} invité(s) importé(s).
+                    {{ __(':count invité(s) importé(s).', { count: flash.imported }) }}
                 </p>
 
                 <dl class="grid grid-cols-2 gap-3 text-center sm:grid-cols-5" data-testid="rsvp-summary">
-                    <StatCard label="Invités" :value="summary.total" />
-                    <StatCard label="Présents" :value="summary.accepted" tone="good" />
-                    <StatCard label="Absents" :value="summary.declined" tone="bad" />
-                    <StatCard label="En attente" :value="summary.pending" tone="warn" />
-                    <StatCard label="Personnes attendues" :value="summary.headcount" />
+                    <StatCard :label="__('Invités')" :value="summary.total" />
+                    <StatCard :label="__('Présents')" :value="summary.accepted" tone="good" />
+                    <StatCard :label="__('Absents')" :value="summary.declined" tone="bad" />
+                    <StatCard :label="__('En attente')" :value="summary.pending" tone="warn" />
+                    <StatCard :label="__('Personnes attendues')" :value="summary.headcount" />
                 </dl>
 
                 <form class="grid gap-3 card p-6 sm:grid-cols-5" @submit.prevent="add">
-                    <input v-model="form.name" placeholder="Nom" class="input !w-auto" />
-                    <input v-model="form.email" type="email" placeholder="Email" class="input !w-auto" />
-                    <input v-model="form.phone" placeholder="Téléphone (+33...)" class="input !w-auto" />
+                    <input v-model="form.name" :placeholder="__('Nom')" class="input !w-auto" />
+                    <input v-model="form.email" type="email" :placeholder="__('Email')" class="input !w-auto" />
+                    <input v-model="form.phone" :placeholder="__('Téléphone (+33...)')" class="input !w-auto" />
                     <input
                         v-model.number="form.max_companions"
                         type="number"
                         min="0"
                         max="10"
-                        title="Accompagnants max"
+                        :title="__('Accompagnants max')"
                         class="input !w-auto"
                     />
                     <button
@@ -93,7 +93,7 @@ const pending = computed(() => props.summary.to_invite);
                         :disabled="form.processing"
                         class="btn"
                     >
-                        Ajouter
+                        {{ __('Ajouter') }}
                     </button>
                     <div class="text-sm text-danger sm:col-span-5">
                         <p v-for="(msg, key) in form.errors" :key="key">{{ msg }}</p>
@@ -112,42 +112,42 @@ const pending = computed(() => props.summary.to_invite);
                         :disabled="!importForm.file || importForm.processing"
                         class="btn btn-secondary"
                     >
-                        Importer un CSV
+                        {{ __('Importer un CSV') }}
                     </button>
-                    <p class="caption w-full text-ink-muted">Colonnes : name, email, phone, max_companions</p>
+                    <p class="caption w-full text-ink-muted">{{ __('Colonnes : name, email, phone, max_companions') }}</p>
                 </form>
 
-                <EmptyState v-if="guests.data.length === 0" class="card" icon="guests" title="Aucun invité pour le moment" text="Ajoutez vos invités un par un ou importez un fichier CSV : chacun recevra son lien d'invitation personnel." />
+                <EmptyState v-if="guests.data.length === 0" class="card" icon="guests" :title="__('Aucun invité pour le moment')" :text="__('Ajoutez vos invités un par un ou importez un fichier CSV : chacun recevra son lien d\'invitation personnel.')" />
                 <ul v-else class="divide-y card">
                     <li v-for="g in guests.data" :key="g.id" class="flex flex-wrap items-center justify-between gap-2 p-4">
                         <div>
-                            <p class="font-medium text-[var(--ink)]">{{ g.name }}</p>
+                            <p class="font-medium text-[var(--ink)]">{{ g.name === 'Invité supprimé' ? __('Invité supprimé') : g.name }}</p>
                             <p class="text-sm text-[var(--muted)]">
-                                {{ g.email ?? 'pas d\'email' }} · +{{ g.max_companions }} ·
-                                {{ g.invited_at ? 'invité' : 'non invité' }} ·
+                                {{ g.email ?? __('pas d\'email') }} · +{{ g.max_companions }} ·
+                                {{ g.invited_at ? __('invité') : __('non invité') }} ·
                                 <span :class="{ 'text-success': g.rsvp_status === 'accepted', 'text-danger': g.rsvp_status === 'declined' }">
-                                    {{ { pending: 'en attente', accepted: 'présent(e)', declined: 'absent(e)' }[g.rsvp_status] }}
+                                    {{ { pending: __('en attente'), accepted: __('présent(e)'), declined: __('absent(e)') }[g.rsvp_status] }}
                                 </span>
                                 <template v-if="g.rsvp_status === 'accepted' && g.companions_count > 0">
                                     (+{{ g.companions_count }})
                                 </template>
                             </p>
-                            <p v-if="g.dietary_restrictions" class="text-xs text-[var(--muted)]">Régime : {{ g.dietary_restrictions }}</p>
-                            <p v-if="g.favorite_song" class="text-xs text-[var(--muted)]">Chanson : {{ g.favorite_song }}</p>
+                            <p v-if="g.dietary_restrictions" class="text-xs text-[var(--muted)]">{{ __('Régime : :value', { value: g.dietary_restrictions }) }}</p>
+                            <p v-if="g.favorite_song" class="text-xs text-[var(--muted)]">{{ __('Chanson : :value', { value: g.favorite_song }) }}</p>
                             <p v-if="g.rsvp_message" class="text-xs italic text-[var(--muted)]">« {{ g.rsvp_message }} »</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                            <input :value="g.table_name ?? ''" maxlength="100" placeholder="Table" aria-label="Table" class="input !w-28 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
-                            <a :href="g.invitation_url" target="_blank" class="inline-flex min-h-tap items-center font-semibold text-[var(--accent)] hover:underline">Voir</a>
-                            <button v-if="g.email" class="inline-flex min-h-tap items-center font-semibold text-[var(--accent)] hover:underline" @click="send(g)">Envoyer par email</button>
+                            <input :value="g.table_name ?? ''" maxlength="100" :placeholder="__('Table')" :aria-label="__('Table')" class="input !w-28 text-sm" @change="saveTable(g, ($event.target as HTMLInputElement).value)" />
+                            <a :href="g.invitation_url" target="_blank" class="inline-flex min-h-tap items-center font-semibold text-[var(--accent)] hover:underline">{{ __('Voir') }}</a>
+                            <button v-if="g.email" class="inline-flex min-h-tap items-center font-semibold text-[var(--accent)] hover:underline" @click="send(g)">{{ __('Envoyer par email') }}</button>
                             <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="inline-flex min-h-tap items-center text-success">
-                                WhatsApp
+                                {{ __('WhatsApp') }}
                             </a>
-                            <button class="inline-flex min-h-tap items-center text-danger" @click="remove(g)">Supprimer</button>
+                            <button class="inline-flex min-h-tap items-center text-danger" @click="remove(g)">{{ __('Supprimer') }}</button>
                         </div>
                     </li>
                 </ul>
-                <nav v-if="guests.links.length > 3" class="flex flex-wrap justify-center gap-1" aria-label="Pagination">
+                <nav v-if="guests.links.length > 3" class="flex flex-wrap justify-center gap-1" :aria-label="__('Pagination')">
                     <template v-for="(l, i) in guests.links" :key="i">
                         <Link
                             v-if="l.url"

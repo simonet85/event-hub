@@ -50,7 +50,7 @@ class ContributionPayments
                     ->sum('amount');
 
                 if ($amount > max(0, $locked->target_amount - $reserved)) {
-                    throw new GiftBudgetExceeded("Ce montant dépasse ce qu'il reste à financer pour ce cadeau.");
+                    throw new GiftBudgetExceeded(__("Ce montant dépasse ce qu'il reste à financer pour ce cadeau."));
                 }
             }
 
@@ -81,7 +81,7 @@ class ContributionPayments
             Log::error('Contribution payment could not be created', ['contribution' => $contribution->id, 'error' => $e->getMessage()]);
             $contribution->update(['status' => ContributionStatus::Failed]);
 
-            throw new PaymentUnavailable('Le paiement est momentanément indisponible.', 0, $e);
+            throw new PaymentUnavailable(__('Le paiement est momentanément indisponible.'), 0, $e);
         }
 
         $contribution->update(['payment_token' => $result['token'], 'payment_url' => $result['url']]);

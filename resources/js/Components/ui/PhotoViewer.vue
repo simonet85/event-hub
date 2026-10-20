@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
         ref="dialog"
         data-theme="dark"
         class="m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 text-ink backdrop:bg-transparent"
-        aria-label="Visionneuse de photos"
+        :aria-label="__('Visionneuse de photos')"
         data-testid="photo-viewer"
         @cancel.prevent="close"
         @keydown="onKeydown"
@@ -109,13 +109,13 @@ onBeforeUnmount(() => {
         >
             <div class="flex w-full max-w-5xl items-center justify-between">
                 <p class="label" aria-live="polite" data-testid="viewer-counter">{{ (index as number) + 1 }} / {{ photos.length }}</p>
-                <button type="button" class="btn btn-secondary" data-testid="viewer-close" autofocus @click="close">Fermer</button>
+                <button type="button" class="btn btn-secondary" data-testid="viewer-close" autofocus @click="close">{{ __('Fermer') }}</button>
             </div>
 
             <div class="flex w-full max-w-5xl flex-1 items-center justify-center gap-2 overflow-hidden" style="touch-action: pan-y" @pointerdown="onPointerDown" @pointerup="onPointerUp">
-                <button type="button" class="btn btn-secondary shrink-0 !px-3" aria-label="Photo précédente" data-testid="viewer-prev" :disabled="atStart" @click="go(-1)">‹</button>
+                <button type="button" class="btn btn-secondary shrink-0 !px-3" :aria-label="__('Photo précédente')" data-testid="viewer-prev" :disabled="atStart" @click="go(-1)">‹</button>
                 <img :key="photo.id" :src="photo.url" :alt="photo.caption ?? `Photo de ${photo.author}`" class="max-h-[70vh] min-w-0 max-w-full select-none object-contain" draggable="false" data-testid="viewer-image" />
-                <button type="button" class="btn btn-secondary shrink-0 !px-3" aria-label="Photo suivante" data-testid="viewer-next" :disabled="atEnd" @click="go(1)">›</button>
+                <button type="button" class="btn btn-secondary shrink-0 !px-3" :aria-label="__('Photo suivante')" data-testid="viewer-next" :disabled="atEnd" @click="go(1)">›</button>
             </div>
 
             <p class="caption max-w-xl text-center text-ink-muted" data-testid="viewer-caption">

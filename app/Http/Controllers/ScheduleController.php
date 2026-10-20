@@ -42,7 +42,7 @@ class ScheduleController extends Controller
         Gate::authorize('update', $event);
 
         if ($event->scheduleItems()->count() >= self::MAX_ITEMS) {
-            return back()->withErrors(['title' => 'Le programme est limité à '.self::MAX_ITEMS.' étapes.']);
+            return back()->withErrors(['title' => __('Le programme est limité à :max étapes.', ['max' => self::MAX_ITEMS])]);
         }
 
         $event->scheduleItems()->create($request->validated());

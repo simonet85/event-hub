@@ -41,7 +41,7 @@ onBeforeUnmount(stop);
     <div v-if="playing" class="envelope-intro" :class="{ 'is-leaving': leaving }" aria-hidden="true" data-testid="envelope-intro" @animationend.self="stop">
         <div class="envelope">
             <div class="envelope-letter">
-                <p class="eyebrow">Une invitation pour</p>
+                <p class="eyebrow">{{ __('Une invitation pour') }}</p>
                 <p class="envelope-name">{{ guestName }}</p>
             </div>
             <div class="envelope-front" />

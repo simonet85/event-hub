@@ -10,11 +10,11 @@ useHostColorScheme();
 
 <template>
     <div class="min-h-screen bg-[var(--paper)] text-[var(--ink)]">
-        <a href="#contenu" class="skip-link">Aller au contenu</a>
+        <a href="#contenu" class="skip-link">{{ __('Aller au contenu') }}</a>
         <nav class="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--paper)]/90 backdrop-blur">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-8">
-                    <Link :href="route('events.index')" class="display inline-flex min-h-tap items-center text-2xl">Event <em>Hub</em></Link>
+                    <Link :href="route('events.index')" class="display inline-flex min-h-tap items-center text-2xl">{{ __('Event') }} <em>{{ __('Hub') }}</em></Link>
                     <div class="hidden gap-6 text-sm font-semibold sm:flex">
                         <Link
                             :href="route('events.index')"

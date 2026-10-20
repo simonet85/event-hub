@@ -15,8 +15,8 @@ class ScheduleItemRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'starts_at.after_or_equal' => 'L\'étape doit commencer au plus tôt la veille de l\'événement.',
-            'starts_at.before_or_equal' => 'L\'étape doit commencer au plus tard 2 jours après l\'événement.',
+            'starts_at.after_or_equal' => __("L'étape doit commencer au plus tôt la veille de l'événement."),
+            'starts_at.before_or_equal' => __("L'étape doit commencer au plus tard 2 jours après l'événement."),
         ];
     }
 

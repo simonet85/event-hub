@@ -51,7 +51,7 @@ class CagnotteController extends Controller
                 'amount' => $c->amount,
                 'message' => $c->message,
                 'status' => $c->status->value,
-                'status_label' => $c->status->label(),
+                'status_label' => __($c->status->label()),
                 'created_at' => $c->created_at->toIso8601String(),
             ]),
         ]);
@@ -71,7 +71,7 @@ class CagnotteController extends Controller
         Gate::authorize('update', $event);
 
         if ($event->gifts()->count() >= self::MAX_GIFTS) {
-            return back()->withErrors(['name' => 'La liste est limitée à '.self::MAX_GIFTS.' cadeaux.']);
+            return back()->withErrors(['name' => __('La liste est limitée à :max cadeaux.', ['max' => self::MAX_GIFTS])]);
         }
 
         $event->gifts()->create($request->validated());

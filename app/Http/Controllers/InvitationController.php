@@ -135,7 +135,7 @@ class InvitationController extends Controller
         abort_unless($guest->event_id === $event->id, 404);
 
         if (! $guest->email) {
-            return back()->withErrors(['email' => 'Cet invité n\'a pas d\'adresse email.']);
+            return back()->withErrors(['email' => __("Cet invité n'a pas d'adresse email.")]);
         }
 
         SendInvitation::dispatch($guest, resend: true);

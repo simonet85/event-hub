@@ -15,7 +15,7 @@ class NoLinks implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (is_string($value) && preg_match(self::PATTERN, $value) === 1) {
-            $fail('Les liens ne sont pas autorisés dans les messages.');
+            $fail(__('Les liens ne sont pas autorisés dans les messages.'));
         }
     }
 }

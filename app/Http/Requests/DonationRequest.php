@@ -39,9 +39,9 @@ class DonationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'amount.min' => 'Le montant minimum est de '.self::MIN_AMOUNT.' FCFA.',
-            'amount.max' => 'Le montant maximum est de '.number_format(self::MAX_AMOUNT, 0, ',', ' ').' FCFA.',
-            'amount.integer' => 'Le montant doit être un nombre entier de FCFA.',
+            'amount.min' => __('Le montant minimum est de :amount FCFA.', ['amount' => self::MIN_AMOUNT]),
+            'amount.max' => __('Le montant maximum est de :amount FCFA.', ['amount' => number_format(self::MAX_AMOUNT, 0, ',', ' ')]),
+            'amount.integer' => __('Le montant doit être un nombre entier de FCFA.'),
         ];
     }
 }

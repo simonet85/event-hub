@@ -30,7 +30,7 @@ const submit = () => {
                 v-model="form.email"
                 :label="__('Adresse email')"
                 type="email"
-                placeholder="vous@exemple.com"
+                :placeholder="__('vous@exemple.com')"
                 :error="form.errors.email"
                 required
                 autocomplete="username"

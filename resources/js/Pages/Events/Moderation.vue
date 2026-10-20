@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { translate as __ } from '@/i18n';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -12,7 +13,7 @@ const props = defineProps<{
     photos: { id: number; author: string; caption: string | null; status: Status; url: string }[];
 }>();
 
-const labels: Record<Status, string> = { pending: 'En attente', approved: 'Publié', rejected: 'Refusé' };
+const labels: Record<Status, string> = { pending: __('En attente'), approved: __('Publié'), rejected: __('Refusé') };
 
 const setEntry = (id: number, status: Status) => router.patch(route('moderation.entries.update', [props.event.slug, id]), { status }, { preserveScroll: true });
 const removeEntry = (id: number) => router.delete(route('moderation.entries.destroy', [props.event.slug, id]), { preserveScroll: true });
@@ -25,14 +26,14 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
 
     <AuthenticatedLayout>
         <template #header>
-            <EventHeader :event="event" title="Modération" current="moderation"></EventHeader>
+            <EventHeader :event="event" :title="__('Modération')" current="moderation"></EventHeader>
         </template>
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-10 px-4 sm:px-6 lg:px-8">
                 <section>
-                    <h3 class="mb-3 display text-2xl">Livre d'or</h3>
-                    <EmptyState v-if="entries.length === 0" class="card" icon="messages" title="Aucun message" text="Les messages laissés par vos invités dans le livre d'or arriveront ici, à valider avant publication." />
+                    <h3 class="mb-3 display text-2xl">{{ __('Livre d\'or') }}</h3>
+                    <EmptyState v-if="entries.length === 0" class="card" icon="messages" :title="__('Aucun message')" :text="__('Les messages laissés par vos invités dans le livre d\'or arriveront ici, à valider avant publication.')" />
                     <ul v-else class="divide-y card">
                         <li v-for="e in entries" :key="e.id" class="flex flex-wrap items-start justify-between gap-3 p-4">
                             <div class="min-w-0 flex-1">
@@ -40,26 +41,26 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
                                 <p class="text-xs text-[var(--muted)]">{{ e.author }} · {{ labels[e.status] }}</p>
                             </div>
                             <div class="flex gap-3 text-sm">
-                                <button v-if="e.status !== 'approved'" class="chip cursor-pointer !text-success hover:!bg-surface-300" @click="setEntry(e.id, 'approved')">Publier</button>
-                                <button v-if="e.status !== 'rejected'" class="chip cursor-pointer !text-warning hover:!bg-surface-300" @click="setEntry(e.id, 'rejected')">Refuser</button>
-                                <button class="chip cursor-pointer !text-danger hover:!bg-surface-300" @click="removeEntry(e.id)">Supprimer</button>
+                                <button v-if="e.status !== 'approved'" class="chip cursor-pointer !text-success hover:!bg-surface-300" @click="setEntry(e.id, 'approved')">{{ __('Publier') }}</button>
+                                <button v-if="e.status !== 'rejected'" class="chip cursor-pointer !text-warning hover:!bg-surface-300" @click="setEntry(e.id, 'rejected')">{{ __('Refuser') }}</button>
+                                <button class="chip cursor-pointer !text-danger hover:!bg-surface-300" @click="removeEntry(e.id)">{{ __('Supprimer') }}</button>
                             </div>
                         </li>
                     </ul>
                 </section>
 
                 <section>
-                    <h3 class="mb-3 display text-2xl">Photos</h3>
-                    <EmptyState v-if="photos.length === 0" class="card" icon="photos" title="Aucune photo" text="Les photos envoyées par vos invités arriveront ici, à valider avant publication." />
+                    <h3 class="mb-3 display text-2xl">{{ __('Photos') }}</h3>
+                    <EmptyState v-if="photos.length === 0" class="card" icon="photos" :title="__('Aucune photo')" :text="__('Les photos envoyées par vos invités arriveront ici, à valider avant publication.')" />
                     <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <figure v-for="p in photos" :key="p.id" class="overflow-hidden card">
                             <img :src="p.url" :alt="p.caption ?? `Photo de ${p.author}`" loading="lazy" class="aspect-square w-full object-cover" />
                             <figcaption class="space-y-2 p-3 text-sm">
                                 <p class="text-[var(--muted)]">{{ p.author }} · {{ labels[p.status] }}<span v-if="p.caption"> · {{ p.caption }}</span></p>
                                 <div class="flex gap-3">
-                                    <button v-if="p.status !== 'approved'" class="chip cursor-pointer !text-success hover:!bg-surface-300" @click="setPhoto(p.id, 'approved')">Publier</button>
-                                    <button v-if="p.status !== 'rejected'" class="chip cursor-pointer !text-warning hover:!bg-surface-300" @click="setPhoto(p.id, 'rejected')">Refuser</button>
-                                    <button class="chip cursor-pointer !text-danger hover:!bg-surface-300" @click="removePhoto(p.id)">Supprimer</button>
+                                    <button v-if="p.status !== 'approved'" class="chip cursor-pointer !text-success hover:!bg-surface-300" @click="setPhoto(p.id, 'approved')">{{ __('Publier') }}</button>
+                                    <button v-if="p.status !== 'rejected'" class="chip cursor-pointer !text-warning hover:!bg-surface-300" @click="setPhoto(p.id, 'rejected')">{{ __('Refuser') }}</button>
+                                    <button class="chip cursor-pointer !text-danger hover:!bg-surface-300" @click="removePhoto(p.id)">{{ __('Supprimer') }}</button>
                                 </div>
                             </figcaption>
                         </figure>

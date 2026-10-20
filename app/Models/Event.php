@@ -157,7 +157,7 @@ class Event extends Model
                 'amount' => $c->amount,
                 'gift' => $c->gift?->name,
                 'status' => $c->status->value,
-                'status_label' => $c->status->label(),
+                'status_label' => __($c->status->label()),
                 'payment_url' => $c->status === ContributionStatus::Pending ? $c->payment_url : null,
             ])->all(),
         ];
@@ -194,7 +194,7 @@ class Event extends Model
             'title' => $this->title,
             'slug' => $this->slug,
             'type' => $this->type->value,
-            'type_label' => $this->type->label(),
+            'type_label' => __($this->type->label()),
             'event_date' => $this->event_date->toIso8601String(),
             'location_name' => $this->location_name,
             'location_address' => $this->location_address,

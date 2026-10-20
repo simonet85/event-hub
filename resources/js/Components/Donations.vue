@@ -52,27 +52,27 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
 <template>
     <section id="cadeaux" class="card w-full max-w-md scroll-mt-4 space-y-6 p-6 text-left" data-testid="donations">
         <header class="text-center">
-            <p class="eyebrow">Cadeaux</p>
-            <h2 class="display-lg mt-1">Cagnotte &amp; <em>cadeaux</em></h2>
+            <p class="eyebrow">{{ __('Cadeaux') }}</p>
+            <h2 class="display-lg mt-1">{{ __('Cagnotte &') }} <em>{{ __('cadeaux') }}</em></h2>
             <p v-if="cagnotte.message" class="mt-2 italic text-ink-muted">{{ cagnotte.message }}</p>
         </header>
 
         <div v-if="cagnotte.goal" data-testid="goal">
-            <GiftProgress :raised="cagnotte.raised" :goal="cagnotte.goal" label="Déjà collecté" />
+            <GiftProgress :raised="cagnotte.raised" :goal="cagnotte.goal" :label="__('Déjà collecté')" />
         </div>
-        <p v-else-if="cagnotte.raised > 0" class="text-center text-ink-muted">{{ fcfa(cagnotte.raised) }} déjà collectés</p>
+        <p v-else-if="cagnotte.raised > 0" class="text-center text-ink-muted">{{ __(':amount déjà collectés', { amount: fcfa(cagnotte.raised) }) }}</p>
 
         <p v-if="returnedStatus === 'confirmed'" class="notice notice-success" data-testid="donation-confirmed">
-            Merci ! Votre contribution est confirmée.
+            {{ __('Merci ! Votre contribution est confirmée.') }}
         </p>
         <p v-else-if="returnedStatus === 'pending'" class="notice notice-warning" data-testid="donation-pending">
-            Votre paiement est en cours de confirmation. Il apparaîtra ci-dessous dès qu'il sera validé.
+            {{ __('Votre paiement est en cours de confirmation. Il apparaîtra ci-dessous dès qu\'il sera validé.') }}
         </p>
         <p v-else-if="returnedStatus === 'mismatch'" class="notice notice-warning" data-testid="donation-review">
-            Votre paiement est en cours de vérification par les hôtes (le montant reçu diffère). Ils reviendront vers vous si besoin.
+            {{ __('Votre paiement est en cours de vérification par les hôtes (le montant reçu diffère). Ils reviendront vers vous si besoin.') }}
         </p>
         <p v-else-if="returnedStatus === 'failed'" class="notice notice-danger">
-            Le paiement n'a pas abouti. Vous pouvez réessayer.
+            {{ __('Le paiement n\'a pas abouti. Vous pouvez réessayer.') }}
         </p>
 
         <ul v-if="cagnotte.gifts.length" class="space-y-3" data-testid="gifts">
@@ -85,23 +85,23 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
                     <p class="label whitespace-nowrap">{{ fcfa(g.target_amount) }}</p>
                 </div>
                 <GiftProgress class="mt-3" :raised="g.raised" :goal="g.target_amount" />
-                <p class="caption mt-2 text-ink-muted">{{ g.remaining === 0 ? 'Entièrement financé' : `Il reste ${fcfa(g.remaining)}` }}</p>
+                <p class="caption mt-2 text-ink-muted">{{ g.remaining === 0 ? __('Entièrement financé') : __('Il reste :amount', { amount: fcfa(g.remaining) }) }}</p>
             </li>
         </ul>
 
         <form class="space-y-4" @submit.prevent="submit">
             <label class="block">
-                <span class="field-label">Je participe à</span>
+                <span class="field-label">{{ __('Je participe à') }}</span>
                 <select :value="form.gift_id ?? ''" class="input" @change="pick(($event.target as HTMLSelectElement).value ? Number(($event.target as HTMLSelectElement).value) : null)">
-                    <option value="">La cagnotte générale</option>
-                    <option v-for="g in openGifts" :key="g.id" :value="g.id">{{ g.name }} (reste {{ fcfa(g.remaining) }})</option>
+                    <option value="">{{ __('La cagnotte générale') }}</option>
+                    <option v-for="g in openGifts" :key="g.id" :value="g.id">{{ __(':name (reste :amount)', { name: g.name, amount: fcfa(g.remaining) }) }}</option>
                 </select>
             </label>
 
             <div>
-                <label for="donation-amount" class="field-label">Montant (F CFA, minimum {{ MIN_AMOUNT }})</label>
+                <label for="donation-amount" class="field-label">{{ __('Montant (F CFA, minimum :min)', { min: MIN_AMOUNT }) }}</label>
                 <input id="donation-amount" v-model.number="form.amount" type="number" :min="MIN_AMOUNT" :max="maxAmount" step="1" inputmode="numeric" class="input" />
-                <div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Montants suggérés" data-testid="quick-amounts">
+                <div class="mt-2 flex flex-wrap gap-2" role="group" :aria-label="__('Montants suggérés')" data-testid="quick-amounts">
                     <button
                         v-for="a in QUICK_AMOUNTS"
                         :key="a"
@@ -117,28 +117,28 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
             </div>
 
             <label class="block">
-                <span class="field-label">Un petit mot (optionnel)</span>
+                <span class="field-label">{{ __('Un petit mot (optionnel)') }}</span>
                 <input v-model="form.message" type="text" maxlength="500" class="input" />
             </label>
 
             <p v-for="(msg, key) in form.errors" :key="key" class="flex items-start gap-1 text-sm text-danger" role="alert">
-                <span aria-hidden="true">✕</span> Erreur : {{ msg }}
+                <span aria-hidden="true">✕</span> {{ __('Erreur : :message', { message: String(msg) }) }}
             </p>
 
             <button type="submit" :disabled="form.processing || !valid" :aria-busy="form.processing" class="btn w-full">
-                {{ form.processing ? 'Redirection vers MoneyFusion…' : 'Offrir ma participation' }}
+                {{ form.processing ? __('Redirection vers MoneyFusion…') : __('Offrir ma participation') }}
             </button>
-            <p class="caption text-center text-ink-muted">Paiement sécurisé par MoneyFusion (Mobile Money, carte…).</p>
+            <p class="caption text-center text-ink-muted">{{ __('Paiement sécurisé par MoneyFusion (Mobile Money, carte…).') }}</p>
         </form>
 
         <div v-if="cagnotte.mine.length" data-testid="my-contributions">
-            <h3 class="label mb-2">Mes contributions</h3>
+            <h3 class="label mb-2">{{ __('Mes contributions') }}</h3>
             <ul class="space-y-2">
                 <li v-for="c in cagnotte.mine" :key="c.id" class="flex flex-wrap items-center justify-between gap-2 text-sm">
                     <span>{{ fcfa(c.amount) }}<span v-if="c.gift"> · {{ c.gift }}</span></span>
                     <span class="flex items-center gap-2">
                         <StatusPill :tone="tone(c.status)" :label="c.status_label" />
-                        <a v-if="c.payment_url" :href="c.payment_url" class="btn-quiet btn !min-h-0 !px-0 !py-0">Reprendre</a>
+                        <a v-if="c.payment_url" :href="c.payment_url" class="btn-quiet btn !min-h-0 !px-0 !py-0">{{ __('Reprendre') }}</a>
                     </span>
                 </li>
             </ul>

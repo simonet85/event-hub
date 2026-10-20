@@ -68,35 +68,35 @@ const submit = () => {
     <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:px-8">
         <form class="card space-y-5 p-6 sm:p-8" @submit.prevent="submit">
             <div>
-                <label for="type" class="field-label">Type</label>
+                <label for="type" class="field-label">{{ __('Type') }}</label>
                 <select id="type" v-model="form.type" class="input">
                     <option v-for="t in types" :key="t.value" :value="t.value">{{ t.label }}</option>
                 </select>
                 <InputError :message="form.errors.type" class="mt-1.5" />
             </div>
 
-            <FormField id="title" v-model="form.title" label="Titre" :error="form.errors.title" />
+            <FormField id="title" v-model="form.title" :label="__('Titre')" :error="form.errors.title" />
 
             <FormField
                 v-if="!editing"
                 id="slug"
                 v-model="form.slug"
-                label="Adresse personnalisée (optionnel)"
+                :label="__('Adresse personnalisée (optionnel)')"
                 placeholder="mariage-clara-thomas-2026"
                 :error="form.errors.slug"
             />
             <div v-else>
-                <span class="field-label">Adresse de l'événement</span>
+                <span class="field-label">{{ __('Adresse de l\'événement') }}</span>
                 <p class="input flex items-center bg-[var(--paper-2)] text-[var(--muted)]" data-testid="frozen-slug">/e/{{ form.slug }}</p>
-                <p class="mt-1.5 text-xs text-[var(--muted)]">Figée : les liens et QR codes déjà envoyés restent valides.</p>
+                <p class="mt-1.5 text-xs text-[var(--muted)]">{{ __('Figée : les liens et QR codes déjà envoyés restent valides.') }}</p>
             </div>
 
-            <FormField id="event_date" v-model="form.event_date" label="Date et heure" type="datetime-local" :error="form.errors.event_date" />
-            <FormField id="location_name" v-model="form.location_name as string" label="Lieu" :error="form.errors.location_name" />
-            <FormField id="location_address" v-model="form.location_address as string" label="Adresse du lieu" :error="form.errors.location_address" />
+            <FormField id="event_date" v-model="form.event_date" :label="__('Date et heure')" type="datetime-local" :error="form.errors.event_date" />
+            <FormField id="location_name" v-model="form.location_name as string" :label="__('Lieu')" :error="form.errors.location_name" />
+            <FormField id="location_address" v-model="form.location_address as string" :label="__('Adresse du lieu')" :error="form.errors.location_address" />
 
             <div>
-                <label for="welcome_message" class="field-label">Message d'accueil</label>
+                <label for="welcome_message" class="field-label">{{ __('Message d\'accueil') }}</label>
                 <textarea id="welcome_message" v-model="form.welcome_message as string" rows="3" class="input" />
                 <InputError :message="form.errors.welcome_message" class="mt-1.5" />
             </div>
@@ -104,7 +104,7 @@ const submit = () => {
             <TweaksPanel v-model="form.theme_config" :presets="types" :problems="audit?.problems" />
 
             <button type="submit" :disabled="form.processing" class="btn">
-                {{ editing ? 'Enregistrer les modifications' : 'Créer l\'événement' }}
+                {{ editing ? __('Enregistrer les modifications') : __("Créer l'événement") }}
             </button>
         </form>
 
@@ -112,8 +112,8 @@ const submit = () => {
             <EventPublicLayout :theme="form.theme_config" :preset="selectedType.theme" :css-class="selectedType.css_class" :dark="selectedType.dark">
                 <p class="eyebrow mt-20">{{ selectedType.label }}</p>
                 <h3 class="display-lg mt-2" style="font-family: var(--event-font)">{{ previewTitle }}</h3>
-                <span class="btn mt-6 mb-20" aria-hidden="true">Confirmer ma présence</span>
-                <p class="caption -mt-14 mb-16 text-ink-muted">Aperçu du thème</p>
+                <span class="btn mt-6 mb-20" aria-hidden="true">{{ __('Confirmer ma présence') }}</span>
+                <p class="caption -mt-14 mb-16 text-ink-muted">{{ __('Aperçu du thème') }}</p>
             </EventPublicLayout>
         </div>
     </div>

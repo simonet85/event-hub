@@ -34,7 +34,7 @@ const sendPhoto = () =>
 <template>
     <div class="w-full max-w-md space-y-6 text-left">
         <section id="livre-dor" class="card scroll-mt-4 space-y-4 p-6" data-testid="guestbook">
-            <div class="text-center"><p class="eyebrow">Livre d'or</p><h2 class="display-lg mt-1">Vos <em>mots</em></h2></div>
+            <div class="text-center"><p class="eyebrow">{{ __('Livre d\'or') }}</p><h2 class="display-lg mt-1">{{ __('Vos') }} <em>{{ __('mots') }}</em></h2></div>
 
             <ul v-if="guestbook.length" class="space-y-3">
                 <li v-for="e in guestbook" :key="e.id" class="border-b border-line pb-3 last:border-0">
@@ -42,13 +42,13 @@ const sendPhoto = () =>
                     <p class="caption mt-1 text-ink-muted">— {{ e.author }}</p>
                 </li>
             </ul>
-            <p v-else class="caption text-center text-ink-muted">Soyez le premier à laisser un mot.</p>
+            <p v-else class="caption text-center text-ink-muted">{{ __('Soyez le premier à laisser un mot.') }}</p>
 
             <form class="space-y-2" @submit.prevent="sendEntry">
                 <textarea
                     v-model="entryForm.message"
                     rows="3"
-                    placeholder="Laissez un message aux hôtes…"
+                    :placeholder="__('Laissez un message aux hôtes…')"
                     class="input"
                 />
                 <p v-if="entryForm.errors.message" class="text-sm text-danger">{{ entryForm.errors.message }}</p>
@@ -57,16 +57,16 @@ const sendPhoto = () =>
                     :disabled="entryForm.processing || !entryForm.message"
                     class="w-full btn"
                 >
-                    Publier mon message
+                    {{ __('Publier mon message') }}
                 </button>
             </form>
             <p v-if="saved === 'entry' || mine.pending_entries > 0" class="notice notice-warning text-center" data-testid="entry-pending">
-                Votre message sera visible après validation par les hôtes.
+                {{ __('Votre message sera visible après validation par les hôtes.') }}
             </p>
         </section>
 
         <section id="photos" class="card scroll-mt-4 space-y-4 p-6" data-testid="gallery">
-            <div class="text-center"><p class="eyebrow">Galerie photo</p><h2 class="display-lg mt-1">Vos <em>photos</em></h2></div>
+            <div class="text-center"><p class="eyebrow">{{ __('Galerie photo') }}</p><h2 class="display-lg mt-1">{{ __('Vos') }} <em>{{ __('photos') }}</em></h2></div>
 
             <div v-if="photos.length" class="grid grid-cols-2 gap-2">
                 <figure v-for="(p, i) in photos" :key="p.id">
@@ -76,7 +76,7 @@ const sendPhoto = () =>
                     <figcaption class="caption mt-1 text-ink-muted">{{ p.caption ? `${p.caption} — ` : '' }}{{ p.author }}</figcaption>
                 </figure>
             </div>
-            <EmptyState v-else compact icon="photos" title="Aucune photo pour le moment" text="Soyez le premier à partager un souvenir." />
+            <EmptyState v-else compact icon="photos" :title="__('Aucune photo pour le moment')" :text="__('Soyez le premier à partager un souvenir.')" />
             <PhotoViewer v-model:index="viewerIndex" :photos="photos" />
 
             <form class="space-y-2" @submit.prevent="sendPhoto">
@@ -86,7 +86,7 @@ const sendPhoto = () =>
                     accept="image/jpeg,image/png,image/webp"
                     @change="photoForm.photo = ($event.target as HTMLInputElement).files?.[0] ?? null"
                 />
-                <input v-model="photoForm.caption" type="text" placeholder="Légende (optionnel)" class="input" />
+                <input v-model="photoForm.caption" type="text" :placeholder="__('Légende (optionnel)')" class="input" />
                 <p v-if="photoForm.errors.photo" class="text-sm text-danger">{{ photoForm.errors.photo }}</p>
                 <p v-if="photoForm.errors.caption" class="text-sm text-danger" data-testid="caption-error">{{ photoForm.errors.caption }}</p>
                 <button
@@ -94,11 +94,11 @@ const sendPhoto = () =>
                     :disabled="photoForm.processing || !photoForm.photo"
                     class="w-full btn"
                 >
-                    Partager ma photo
+                    {{ __('Partager ma photo') }}
                 </button>
             </form>
             <p v-if="saved === 'photo' || mine.pending_photos > 0" class="notice notice-warning text-center" data-testid="photo-pending">
-                Votre photo sera visible après validation par les hôtes.
+                {{ __('Votre photo sera visible après validation par les hôtes.') }}
             </p>
         </section>
     </div>

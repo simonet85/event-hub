@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
     // isolate: false réutilise l'environnement jsdom entre fichiers (les tests nettoient leurs globaux eux-mêmes).
-    test: { environment: 'jsdom', include: ['resources/js/**/*.test.ts'], isolate: false },
+    test: { environment: 'jsdom', include: ['resources/js/**/*.test.ts'], isolate: false, setupFiles: ['resources/js/test-setup.ts'] },
     plugins: [
         laravel({
             input: 'resources/js/app.ts',

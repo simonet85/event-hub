@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatTime, intlLocale } from '@/lib/locale';
 import Countdown from '@/Components/Countdown.vue';
 import type { PublicEvent } from '@/types';
 import { computed } from 'vue';
@@ -9,8 +10,8 @@ const props = defineProps<{
     actions?: boolean;
 }>();
 
-const date = computed(() => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'full' }).format(new Date(props.event.event_date)));
-const time = computed(() => new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short' }).format(new Date(props.event.event_date)).replace(':', ' h '));
+const date = computed(() => new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'full' }).format(new Date(props.event.event_date)));
+const time = computed(() => formatTime(new Date(props.event.event_date)));
 </script>
 
 <template>
@@ -29,8 +30,8 @@ const time = computed(() => new Intl.DateTimeFormat('fr-FR', { timeStyle: 'short
         <Countdown :target="event.event_date" class="mt-10" />
 
         <div v-if="actions" class="mt-10 flex w-full max-w-lg flex-col gap-3 sm:flex-row sm:justify-center">
-            <a href="#rsvp" class="btn whitespace-nowrap">Confirmer ma présence</a>
-            <a v-if="event.schedule.length" href="#programme" class="btn btn-secondary whitespace-nowrap">Voir le programme</a>
+            <a href="#rsvp" class="btn whitespace-nowrap">{{ __('Confirmer ma présence') }}</a>
+            <a v-if="event.schedule.length" href="#programme" class="btn btn-secondary whitespace-nowrap">{{ __('Voir le programme') }}</a>
         </div>
     </header>
 </template>

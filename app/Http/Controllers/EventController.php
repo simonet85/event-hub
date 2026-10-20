@@ -40,7 +40,7 @@ class EventController extends Controller
     {
         return collect(EventType::cases())->map(fn (EventType $t) => [
             'value' => $t->value,
-            'label' => $t->label(),
+            'label' => __($t->label()),
             'theme' => $t->defaultTheme(),
             'css_class' => $t->cssClass(),
             'dark' => $t->prefersDarkTheme(),

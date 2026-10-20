@@ -47,7 +47,7 @@ defineProps<{
         </Reveal>
 
         <p class="mt-6 w-full text-center">
-            <a :href="route('invitations.ticket', token)" class="btn-quiet btn" data-testid="ticket-link">Ouvrir mon billet (utilisable hors ligne)</a>
+            <a :href="route('invitations.ticket', token)" class="btn-quiet btn" data-testid="ticket-link">{{ __('Ouvrir mon billet (utilisable hors ligne)') }}</a>
         </p>
 
         <Reveal class="mt-12 w-full"><EventDetails :event="event" /></Reveal>

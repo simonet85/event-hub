@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatTime, intlLocale } from '@/lib/locale';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import EventHeader from '@/Components/ui/EventHeader.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -29,7 +30,7 @@ const details = useForm({
 
 const saved = computed(() => (usePage().props.flash as { details_saved?: boolean } | undefined)?.details_saved === true);
 const fmt = (iso: string) =>
-    new Intl.DateTimeFormat('fr-FR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(iso));
+    new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'short', timeStyle: 'short' }).format(new Date(iso));
 
 const addItem = () => itemForm.post(route('schedule.store', props.event.slug), { onSuccess: () => itemForm.reset('title', 'description') });
 const removeItem = (item: ScheduleEntry) => router.delete(route('schedule.destroy', [props.event.slug, item.id]));
@@ -41,44 +42,44 @@ const saveDetails = () => details.patch(route('events.details', props.event.slug
 
     <AuthenticatedLayout>
         <template #header>
-            <EventHeader :event="event" title="Programme" current="schedule"></EventHeader>
+            <EventHeader :event="event" :title="__('Programme')" current="schedule"></EventHeader>
         </template>
 
         <div class="py-12">
             <div class="mx-auto max-w-3xl space-y-8 px-4 sm:px-6 lg:px-8">
                 <form class="space-y-3 card p-6" @submit.prevent="saveDetails">
-                    <h3 class="display text-2xl">Dress code et carte</h3>
-                    <input v-model="details.dress_code" placeholder="Dress code (ex : tenue de soirée)" class="input" />
+                    <h3 class="display text-2xl">{{ __('Dress code et carte') }}</h3>
+                    <input v-model="details.dress_code" :placeholder="__('Dress code (ex : tenue de soirée)')" class="input" />
                     <div class="grid grid-cols-2 gap-3">
-                        <input v-model.number="details.latitude" type="number" step="any" placeholder="Latitude" class="input !w-auto" />
-                        <input v-model.number="details.longitude" type="number" step="any" placeholder="Longitude" class="input !w-auto" />
+                        <input v-model.number="details.latitude" type="number" step="any" :placeholder="__('Latitude')" class="input !w-auto" />
+                        <input v-model.number="details.longitude" type="number" step="any" :placeholder="__('Longitude')" class="input !w-auto" />
                     </div>
                     <p v-for="(msg, key) in details.errors" :key="key" class="text-sm text-danger">{{ msg }}</p>
-                    <p v-if="saved" class="text-sm text-success">Enregistré.</p>
+                    <p v-if="saved" class="text-sm text-success">{{ __('Enregistré.') }}</p>
                     <button type="submit" :disabled="details.processing" class="btn disabled:opacity-50">
-                        Enregistrer
+                        {{ __('Enregistrer') }}
                     </button>
                 </form>
 
                 <form class="space-y-3 card p-6" @submit.prevent="addItem">
-                    <h3 class="display text-2xl">Ajouter une étape</h3>
+                    <h3 class="display text-2xl">{{ __('Ajouter une étape') }}</h3>
                     <input v-model="itemForm.starts_at" type="datetime-local" class="input" />
-                    <input v-model="itemForm.title" placeholder="Titre (ex : Cérémonie)" class="input" />
-                    <input v-model="itemForm.description" placeholder="Description (optionnel)" class="input" />
+                    <input v-model="itemForm.title" :placeholder="__('Titre (ex : Cérémonie)')" class="input" />
+                    <input v-model="itemForm.description" :placeholder="__('Description (optionnel)')" class="input" />
                     <p v-for="(msg, key) in itemForm.errors" :key="key" class="text-sm text-danger">{{ msg }}</p>
                     <button type="submit" :disabled="itemForm.processing" class="btn">
-                        Ajouter
+                        {{ __('Ajouter') }}
                     </button>
                 </form>
 
-                <EmptyState v-if="items.length === 0" class="card" icon="calendar" title="Aucune étape pour le moment" text="Ajoutez les moments de la journée : cérémonie, cocktail, dîner… vos invités les verront sur leur invitation." />
+                <EmptyState v-if="items.length === 0" class="card" icon="calendar" :title="__('Aucune étape pour le moment')" :text="__('Ajoutez les moments de la journée : cérémonie, cocktail, dîner… vos invités les verront sur leur invitation.')" />
                 <ul v-else class="divide-y card">
                     <li v-for="item in items" :key="item.id" class="flex items-center justify-between p-4">
                         <div>
                             <p class="font-medium text-[var(--ink)]">{{ item.title }}</p>
                             <p class="text-sm text-[var(--muted)]">{{ fmt(item.starts_at) }}<span v-if="item.description"> · {{ item.description }}</span></p>
                         </div>
-                        <button class="text-sm text-danger" @click="removeItem(item)">Supprimer</button>
+                        <button class="text-sm text-danger" @click="removeItem(item)">{{ __('Supprimer') }}</button>
                     </li>
                 </ul>
             </div>

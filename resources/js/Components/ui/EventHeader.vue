@@ -21,7 +21,7 @@ const tabs = [
 
 <template>
     <div>
-        <Link :href="url('events.index')" class="eyebrow inline-flex min-h-tap items-center hover:text-[var(--accent)]">← Mes événements</Link>
+        <Link :href="url('events.index')" class="eyebrow inline-flex min-h-tap items-center hover:text-[var(--accent)]">{{ __('← Mes événements') }}</Link>
         <div class="mt-2 flex flex-wrap items-end justify-between gap-3">
             <div>
                 <p class="text-sm text-[var(--muted)]">{{ event.title }}</p>
@@ -29,12 +29,12 @@ const tabs = [
             </div>
             <div class="flex items-center gap-3">
                 <slot name="aside" />
-                <Link :href="url('events.edit', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">Modifier</Link>
-                <a :href="url('events.public', event.slug)" target="_blank" rel="noopener" class="btn btn-ghost !px-4 !py-2 text-xs">Page publique ↗</a>
+                <Link :href="url('events.edit', event.slug)" class="btn btn-ghost !px-4 !py-2 text-xs">{{ __('Modifier') }}</Link>
+                <a :href="url('events.public', event.slug)" target="_blank" rel="noopener" class="btn btn-ghost !px-4 !py-2 text-xs">{{ __('Page publique ↗') }}</a>
             </div>
         </div>
 
-        <nav class="-mx-4 mt-6 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Sections de l'événement">
+        <nav class="-mx-4 mt-6 overflow-x-auto px-4 sm:mx-0 sm:px-0" :aria-label="__('Sections de l\'événement')">
             <ul class="flex min-w-max gap-1 border-b border-[var(--line)]">
                 <li v-for="t in tabs" :key="t.key">
                     <Link

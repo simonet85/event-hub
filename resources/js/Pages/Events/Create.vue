@@ -10,11 +10,11 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Nouvel événement" />
+    <Head :title="__('Nouvel événement')" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="display text-3xl sm:text-4xl">Nouvel événement</h2>
+            <h2 class="display text-3xl sm:text-4xl">{{ __('Nouvel événement') }}</h2>
         </template>
 
         <EventForm :types="types" />

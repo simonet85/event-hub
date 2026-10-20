@@ -16,22 +16,22 @@ const erase = () => {
 
 <template>
     <section id="donnees" class="card w-full max-w-md scroll-mt-4 space-y-3 p-6 text-left" data-testid="privacy">
-        <p class="eyebrow">Vos données</p>
+        <p class="eyebrow">{{ __('Vos données') }}</p>
         <p class="text-sm text-ink-muted">
-            Vos réponses ne sont visibles que des organisateurs. Elles sont supprimées automatiquement {{ retentionDays }} jours après l'événement.
-            Vous pouvez aussi les supprimer dès maintenant : vos coordonnées, votre réponse, vos messages du livre d'or et vos photos seront effacés.
+            {{ __('Vos réponses ne sont visibles que des organisateurs. Elles sont supprimées automatiquement :days jours après l\'événement.', { days: retentionDays }) }}
+            {{ __('Vous pouvez aussi les supprimer dès maintenant : vos coordonnées, votre réponse, vos messages du livre d\'or et vos photos seront effacés.') }}
         </p>
-        <button type="button" class="btn btn-secondary" data-testid="privacy-open" @click="confirming = true">Supprimer mes données</button>
+        <button type="button" class="btn btn-secondary" data-testid="privacy-open" @click="confirming = true">{{ __('Supprimer mes données') }}</button>
 
         <Modal :show="confirming" max-width="md" @close="confirming = false">
             <div class="p-6 sm:p-8" data-testid="privacy-confirm">
-                <h2 class="heading">Supprimer vos données ?</h2>
+                <h2 class="heading">{{ __('Supprimer vos données ?') }}</h2>
                 <p class="mt-2 text-sm text-ink-muted">
-                    Cette action est définitive. Votre invitation ne fonctionnera plus et les organisateurs ne verront plus votre nom, votre réponse, vos messages ni vos photos.
+                    {{ __('Cette action est définitive. Votre invitation ne fonctionnera plus et les organisateurs ne verront plus votre nom, votre réponse, vos messages ni vos photos.') }}
                 </p>
                 <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="btn btn-secondary" @click="confirming = false">Annuler</button>
-                    <button type="button" class="btn" :disabled="working" data-testid="privacy-confirm-button" @click="erase">Supprimer définitivement</button>
+                    <button type="button" class="btn btn-secondary" @click="confirming = false">{{ __('Annuler') }}</button>
+                    <button type="button" class="btn" :disabled="working" data-testid="privacy-confirm-button" @click="erase">{{ __('Supprimer définitivement') }}</button>
                 </div>
             </div>
         </Modal>

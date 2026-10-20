@@ -21,5 +21,5 @@ watch(() => [props.value, props.size, props.color], render);
 </script>
 
 <template>
-    <img v-if="dataUrl" :src="dataUrl" :width="size ?? 192" :height="size ?? 192" alt="QR code de l'invitation" />
+    <img v-if="dataUrl" :src="dataUrl" :width="size ?? 192" :height="size ?? 192" :alt="__('QR code de l\'invitation')" />
 </template>

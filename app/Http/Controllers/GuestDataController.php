@@ -29,7 +29,7 @@ class GuestDataController extends Controller
     {
         Gate::authorize('update', $event);
 
-        abort_unless($event->event_date->isPast(), 422, 'Les données des invités ne peuvent être supprimées qu\'après l\'événement.');
+        abort_unless($event->event_date->isPast(), 422, __("Les données des invités ne peuvent être supprimées qu'après l'événement."));
 
         $eraser->purge($event);
 

@@ -25,10 +25,10 @@ const change = (patch: Partial<Theme>) => emit('update:modelValue', { ...props.m
 
 <template>
     <fieldset class="space-y-5 border border-line bg-surface-100 p-4" data-testid="tweaks">
-        <legend class="eyebrow px-2">Apparence</legend>
+        <legend class="eyebrow px-2">{{ __('Apparence') }}</legend>
 
         <div>
-            <p id="tweaks-presets" class="field-label">Préréglage</p>
+            <p id="tweaks-presets" class="field-label">{{ __('Préréglage') }}</p>
             <div class="flex flex-wrap gap-2" role="group" aria-labelledby="tweaks-presets">
                 <button
                     v-for="p in uniquePresets"
@@ -48,17 +48,17 @@ const change = (patch: Partial<Theme>) => emit('update:modelValue', { ...props.m
 
         <div class="flex flex-wrap items-end gap-6">
             <div>
-                <label for="primary_color" class="field-label">Couleur d'accent</label>
+                <label for="primary_color" class="field-label">{{ __('Couleur d\'accent') }}</label>
                 <input id="primary_color" :value="modelValue.primary_color" type="color" class="color-input" @input="change({ primary_color: ($event.target as HTMLInputElement).value })" />
             </div>
             <div>
-                <label for="secondary_color" class="field-label">Fond</label>
+                <label for="secondary_color" class="field-label">{{ __('Fond') }}</label>
                 <input id="secondary_color" :value="modelValue.secondary_color" type="color" class="color-input" @input="change({ secondary_color: ($event.target as HTMLInputElement).value })" />
             </div>
         </div>
 
         <div>
-            <p id="tweaks-fonts" class="field-label">Police</p>
+            <p id="tweaks-fonts" class="field-label">{{ __('Police') }}</p>
             <div class="flex flex-wrap gap-2" role="group" aria-labelledby="tweaks-fonts">
                 <button
                     v-for="(font, key) in EVENT_FONTS"
@@ -70,8 +70,8 @@ const change = (patch: Partial<Theme>) => emit('update:modelValue', { ...props.m
                     :data-testid="`font-${key}`"
                     @click="change({ font_family: key })"
                 >
-                    <span class="text-lg leading-none" :style="{ fontFamily: font.stack }" aria-hidden="true">Aa</span>
-                    {{ font.label }}
+                    <span class="text-lg leading-none" :style="{ fontFamily: font.stack }" aria-hidden="true">{{ __('Aa') }}</span>
+                    {{ __(font.label) }}
                 </button>
             </div>
         </div>

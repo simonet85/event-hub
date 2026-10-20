@@ -19,7 +19,7 @@ class CatererViewController extends Controller
 
         // Jeton inconnu, révoqué ou événement archivé : 404 identique. Lien expiré : 410, pour que le traiteur sache qu'il doit en demander un nouveau.
         abort_if($event === null, 404);
-        abort_if(! $event->hasActiveCatererLink(), 410, 'Ce lien a expiré. Demandez un nouveau lien à l\'organisateur.');
+        abort_if(! $event->hasActiveCatererLink(), 410, __("Ce lien a expiré. Demandez un nouveau lien à l'organisateur."));
 
         $report = new EventReport($event);
         $rsvp = $report->rsvp();
@@ -27,7 +27,7 @@ class CatererViewController extends Controller
         return Inertia::render('Caterer/Show', [
             'event' => [
                 'title' => $event->title,
-                'type_label' => $event->type->label(),
+                'type_label' => __($event->type->label()),
                 'event_date' => $event->event_date->toIso8601String(),
                 'location_name' => $event->location_name,
             ],

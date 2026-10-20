@@ -17,7 +17,7 @@ const erased = computed(() => (usePage().props.flash as { data_erased?: boolean 
 
     <EventPublicLayout :theme="event.theme_config" :preset="event.theme_preset" :css-class="event.css_class" :dark="event.dark_theme">
         <p v-if="erased" class="notice notice-success mb-6 w-full max-w-md text-center" role="status" data-testid="data-erased">
-            Vos données ont été supprimées. Votre invitation n'est plus active.
+            {{ __('Vos données ont été supprimées. Votre invitation n\'est plus active.') }}
         </p>
 
         <EventHero :event="event" />
@@ -25,7 +25,7 @@ const erased = computed(() => (usePage().props.flash as { data_erased?: boolean 
         <Reveal class="w-full">
             <section class="card mx-auto w-full max-w-md space-y-5 p-8">
                 <div v-if="event.location_name">
-                    <h2 class="eyebrow">Lieu</h2>
+                    <h2 class="eyebrow">{{ __('Lieu') }}</h2>
                     <p class="heading mt-1">{{ event.location_name }}</p>
                     <p v-if="event.location_address" class="caption text-ink-muted">{{ event.location_address }}</p>
                 </div>

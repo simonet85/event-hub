@@ -34,7 +34,7 @@ class DonationController extends Controller
             ->count();
 
         if ($openRecently >= self::MAX_OPEN_PER_HOUR) {
-            return back()->withErrors(['amount' => 'Vous avez déjà des paiements en cours : terminez-les ou réessayez dans une heure.']);
+            return back()->withErrors(['amount' => __('Vous avez déjà des paiements en cours : terminez-les ou réessayez dans une heure.')]);
         }
 
         $gift = $request->integer('gift_id') ? Gift::find($request->integer('gift_id')) : null;
@@ -44,7 +44,7 @@ class DonationController extends Controller
         } catch (GiftBudgetExceeded $e) {
             return back()->withErrors(['amount' => $e->getMessage()]);
         } catch (PaymentUnavailable $e) {
-            return back()->withErrors(['amount' => $e->getMessage().' Merci de réessayer dans quelques instants.']);
+            return back()->withErrors(['amount' => $e->getMessage().' '.__('Merci de réessayer dans quelques instants.')]);
         }
 
         // Redirection externe vers MoneyFusion (compatible Inertia).

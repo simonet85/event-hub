@@ -48,16 +48,16 @@ const steps = [
 </script>
 
 <template>
-    <Head title="Event Hub — vos événements, sublimés" />
+    <Head :title="__('Event Hub — vos événements, sublimés')" />
 
     <div class="min-h-screen overflow-x-clip bg-[var(--paper)] text-[var(--ink)]">
-        <a href="#contenu" class="skip-link">Aller au contenu</a>
+        <a href="#contenu" class="skip-link">{{ __('Aller au contenu') }}</a>
         <div data-theme="dark" class="bg-surface-100 py-2 text-xs tracking-widest text-ink">
             <Marquee :items="marquee" />
         </div>
 
         <header class="absolute inset-x-0 top-9 z-20 mx-auto flex max-w-6xl items-center justify-between px-5 text-white mix-blend-difference">
-            <span class="display text-2xl">Event <em class="!text-current">Hub</em></span>
+            <span class="display text-2xl">{{ __('Event') }} <em class="!text-current">{{ __('Hub') }}</em></span>
             <nav class="flex items-center gap-4 text-sm font-semibold">
                 <LocaleSwitcher />
                 <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="underline">{{ __('Mon espace') }}</Link>
@@ -74,7 +74,7 @@ const steps = [
                 <div data-theme="dark" class="flex h-full w-full items-center justify-center bg-surface-100 text-ink">
                     <div class="text-center">
                         <p class="eyebrow !text-[var(--gold)]">{{ __('Vous êtes invité(e)') }}</p>
-                        <p class="display mt-4 text-6xl sm:text-8xl md:text-9xl">Event <em class="!text-[var(--gold)]">Hub</em></p>
+                        <p class="display mt-4 text-6xl sm:text-8xl md:text-9xl">{{ __('Event') }} <em class="!text-[var(--gold)]">{{ __('Hub') }}</em></p>
                         <p class="mt-6 text-xs tracking-[0.3em] text-[var(--gold)]">{{ __('FAITES DÉFILER') }} ↓</p>
                     </div>
                 </div>
@@ -137,7 +137,7 @@ const steps = [
                 <Reveal :delay="120">
                     <div class="p-8 text-center shadow-card transition-colors duration-500 sm:p-12" :style="previewStyle" data-testid="theme-preview">
                         <p class="eyebrow !text-current">{{ __(theme.name) }}</p>
-                        <p class="display mt-3 text-5xl">Léa &amp; <em>Karim</em></p>
+                        <p class="display mt-3 text-5xl">{{ __('Léa &') }} <em>{{ __('Karim') }}</em></p>
                         <p class="mt-4 text-sm opacity-80">{{ __('Samedi 12 septembre · Domaine des Lilas') }}</p>
                         <div class="btn pointer-events-none mt-6" aria-hidden="true">{{ __('Confirmer ma présence') }}</div>
                     </div>

@@ -1,3 +1,4 @@
+import { translate as __ } from '@/i18n';
 /** Contraste WCAG entre deux couleurs hexadécimales (#rrggbb). */
 
 const channel = (value: number): number => {
@@ -89,11 +90,13 @@ export function auditTheme(accent: string, surface: string): ThemeAudit | null {
 
     if (!text.textOk) {
         problems.push(
-            `Contraste insuffisant : ${formatRatio(text.ratio)}:1 entre la couleur principale et le fond (4,5:1 requis pour le texte${text.borderOk ? '' : ', 3:1 pour une bordure'}). Choisissez une couleur plus foncée ou un fond plus clair.`,
+            text.borderOk
+                ? __('Contraste insuffisant : :ratio entre la couleur principale et le fond (4,5:1 requis pour le texte). Choisissez une couleur plus foncée ou un fond plus clair.', { ratio: `${formatRatio(text.ratio)}:1` })
+                : __('Contraste insuffisant : :ratio entre la couleur principale et le fond (4,5:1 requis pour le texte, 3:1 pour une bordure). Choisissez une couleur plus foncée ou un fond plus clair.', { ratio: `${formatRatio(text.ratio)}:1` }),
         );
     }
     if (!buttonOk) {
-        problems.push(`Le texte des boutons serait peu lisible sur cette couleur (${formatRatio(buttonRatio)}:1, 4,5:1 requis). Éclaircissez ou assombrissez-la.`);
+        problems.push(__('Le texte des boutons serait peu lisible sur cette couleur (:ratio, 4,5:1 requis). Éclaircissez ou assombrissez-la.', { ratio: `${formatRatio(buttonRatio)}:1` }));
     }
 
     return { text, buttonRatio, buttonOk, problems };

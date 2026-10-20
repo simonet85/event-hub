@@ -44,6 +44,6 @@ class RsvpRequest extends FormRequest
      */
     public function messages(): array
     {
-        return ['consent.accepted' => 'Cochez la case pour que nous puissions enregistrer votre régime alimentaire.'];
+        return ['consent.accepted' => __('Cochez la case pour que nous puissions enregistrer votre régime alimentaire.')];
     }
 }
