@@ -65,6 +65,7 @@ class DonationController extends Controller
             $status = $contribution->status;
         }
 
-        return to_route('invitations.show', $guest->token)->with('donation_status', $status->value);
+        // Retour directement sur la section Cadeaux, où s'affichent le message de statut et les confettis.
+        return to_route('invitations.show', $guest->token)->withFragment('cadeaux')->with('donation_status', $status->value);
     }
 }

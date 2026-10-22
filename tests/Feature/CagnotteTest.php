@@ -225,7 +225,7 @@ test('le retour navigateur confirme une contribution payée, montant vérifié',
     fakeCheck('paid', 5000);
 
     $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return")
-        ->assertRedirect(route('invitations.show', $this->guest->token))
+        ->assertRedirect(route('invitations.show', $this->guest->token).'#cadeaux')
         ->assertSessionHas('donation_status', 'confirmed');
 
     $contribution->refresh();
