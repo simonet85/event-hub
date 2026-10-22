@@ -40,7 +40,7 @@ class DonationController extends Controller
         $gift = $request->integer('gift_id') ? Gift::find($request->integer('gift_id')) : null;
 
         try {
-            $contribution = $payments->start($guest, $request->integer('amount'), $gift, $request->validated('message'));
+            $contribution = $payments->start($guest, $request->integer('amount'), $gift, $request->validated('message'), $request->validated('phone'));
         } catch (GiftBudgetExceeded $e) {
             return back()->withErrors(['amount' => $e->getMessage()]);
         } catch (PaymentUnavailable $e) {

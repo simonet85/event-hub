@@ -11,21 +11,26 @@ export interface CagnottePayload {
     message: string | null;
     raised: number;
     gifts: { id: number; name: string; description: string | null; target_amount: number; raised: number; remaining: number }[];
+    needs_phone?: boolean;
     mine: { id: number; amount: number; gift: string | null; status: string; status_label: string; payment_url: string | null }[];
 }
 
 const props = defineProps<{ token: string; cagnotte: CagnottePayload }>();
 
-const MIN_AMOUNT = 100;
+// MoneyFusion refuse les paiements de 200 F ou moins.
+const MIN_AMOUNT = 250;
+const MIN_PHONE_DIGITS = 8;
 const QUICK_AMOUNTS = [5000, 10000, 25000, 50000];
 
-const form = useForm<{ amount: number | null; gift_id: number | null; message: string }>({ amount: null, gift_id: null, message: '' });
+const form = useForm<{ amount: number | null; gift_id: number | null; message: string; phone: string }>({ amount: null, gift_id: null, message: '', phone: '' });
 
 const returnedStatus = computed(() => (usePage().props.flash as { donation_status?: string } | undefined)?.donation_status);
 const openGifts = computed(() => props.cagnotte.gifts.filter((g) => g.remaining > 0));
 const selectedGift = computed(() => props.cagnotte.gifts.find((g) => g.id === form.gift_id) ?? null);
 const maxAmount = computed(() => selectedGift.value?.remaining ?? 5_000_000);
-const valid = computed(() => form.amount !== null && form.amount >= MIN_AMOUNT && form.amount <= maxAmount.value);
+const needsPhone = computed(() => props.cagnotte.needs_phone === true);
+const phoneOk = computed(() => !needsPhone.value || form.phone.replace(/\D+/g, '').length >= MIN_PHONE_DIGITS);
+const valid = computed(() => form.amount !== null && form.amount >= MIN_AMOUNT && form.amount <= maxAmount.value && phoneOk.value);
 
 // Confettis à l'arrivée d'un don confirmé (retour de paiement), jamais pendant le paiement ni pour un statut en attente.
 let confetti: ConfettiHandle | null = null;
@@ -115,6 +120,12 @@ const submit = () => form.post(route('donations.store', props.token), { preserve
                     </button>
                 </div>
             </div>
+
+            <label v-if="needsPhone" class="block">
+                <span class="field-label">{{ __('Numéro Mobile Money du paiement') }}</span>
+                <input v-model="form.phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" class="input" data-testid="donation-phone" />
+                <span class="caption text-ink-muted">{{ __('Utilisé uniquement pour ce paiement, jamais enregistré.') }}</span>
+            </label>
 
             <label class="block">
                 <span class="field-label">{{ __('Un petit mot (optionnel)') }}</span>

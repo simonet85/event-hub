@@ -435,3 +435,33 @@ test('l\'expiration traite aussi plusieurs lots', function () {
 
     expect(Contribution::where('status', 'expired')->count())->toBe(230);
 });
+
+// ───────────── Contraintes MoneyFusion : montant et téléphone ─────────────
+
+test('MoneyFusion refuse 200 F ou moins : le minimum est de 250 F', function () {
+    fakeCreate();
+
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 200])->assertSessionHasErrors('amount');
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 250])->assertSessionHasNoErrors();
+});
+
+test('un invité sans téléphone doit indiquer un numéro, transmis à MoneyFusion sans être enregistré', function () {
+    fakeCreate();
+    $guest = Guest::factory()->for($this->event)->create(['phone' => null]);
+
+    $this->post("/i/{$guest->token}/donations", ['amount' => 500])->assertSessionHasErrors('phone');
+    $this->post("/i/{$guest->token}/donations", ['amount' => 500, 'phone' => 'abc'])->assertSessionHasErrors('phone');
+
+    $this->post("/i/{$guest->token}/donations", ['amount' => 500, 'phone' => '+225 01 01 01 01 01'])->assertSessionHasNoErrors();
+
+    Http::assertSent(fn ($request) => ($request['numeroSend'] ?? null) === '2250101010101');
+    expect($guest->fresh()->phone)->toBeNull();
+});
+
+test('un invité qui a déjà un téléphone n\'a pas à le ressaisir', function () {
+    fakeCreate();
+
+    $this->post("/i/{$this->guest->token}/donations", ['amount' => 500])->assertSessionHasNoErrors();
+
+    Http::assertSent(fn ($request) => ($request['numeroSend'] ?? null) === '2250707070707');
+});

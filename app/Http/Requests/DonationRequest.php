@@ -9,7 +9,8 @@ use Illuminate\Validation\Rule;
 
 class DonationRequest extends FormRequest
 {
-    public const MIN_AMOUNT = 100;
+    /** MoneyFusion refuse tout paiement de 200 F ou moins (« Montant doit etre supérieur a 200 F »). */
+    public const MIN_AMOUNT = 250;
 
     public const MAX_AMOUNT = 5_000_000;
 
@@ -28,6 +29,7 @@ class DonationRequest extends FormRequest
 
         return [
             'amount' => ['required', 'integer', 'min:'.self::MIN_AMOUNT, 'max:'.self::MAX_AMOUNT],
+            'phone' => [Rule::requiredIf(blank($guest->phone)), 'nullable', 'string', 'regex:/^\+?[0-9 ().-]{8,20}$/'],
             'gift_id' => ['nullable', 'integer', Rule::exists('gifts', 'id')->where('event_id', $guest->event_id)],
             'message' => ['nullable', 'string', 'max:500', new NoLinks],
         ];
@@ -41,6 +43,8 @@ class DonationRequest extends FormRequest
         return [
             'amount.min' => __('Le montant minimum est de :amount FCFA.', ['amount' => self::MIN_AMOUNT]),
             'amount.max' => __('Le montant maximum est de :amount FCFA.', ['amount' => number_format(self::MAX_AMOUNT, 0, ',', ' ')]),
+            'phone.required' => __('Indiquez le numéro Mobile Money qui effectuera le paiement.'),
+            'phone.regex' => __('Ce numéro de téléphone n\'est pas valide.'),
             'amount.integer' => __('Le montant doit être un nombre entier de FCFA.'),
         ];
     }

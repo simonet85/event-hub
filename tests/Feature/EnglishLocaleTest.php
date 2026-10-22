@@ -36,7 +36,7 @@ test('les messages de validation et d\'erreur suivent la langue', function () {
 
 test('les limites par invité s\'affichent en anglais', function () {
     $this->withSession(['locale' => 'en'])->post("/i/{$this->guest->token}/donations", ['amount' => 10])
-        ->assertSessionHasErrors(['amount' => 'The minimum amount is 100 FCFA.']);
+        ->assertSessionHasErrors(['amount' => 'The minimum amount is 250 FCFA.']);
 });
 
 test('les statuts de contribution envoyés à l\'hôte sont traduits', function () {

@@ -152,6 +152,7 @@ class Event extends Model
                     'remaining' => max(0, $gift->target_amount - $raised),
                 ];
             })->all(),
+            'needs_phone' => blank($guest->phone),
             'mine' => $guest->contributions()->with('gift:id,name')->latest()->limit(20)->get()->map(fn (Contribution $c): array => [
                 'id' => $c->id,
                 'amount' => $c->amount,

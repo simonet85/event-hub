@@ -431,5 +431,9 @@
     "Manuscrite": "Handwritten",
     "Élégante": "Elegant",
     "Moderne": "Modern",
-    "Sans table": "No table"
+    "Sans table": "No table",
+    "Indiquez le numéro Mobile Money qui effectuera le paiement.": "Enter the Mobile Money number that will make the payment.",
+    "Ce numéro de téléphone n'est pas valide.": "This phone number is not valid.",
+    "Numéro Mobile Money du paiement": "Mobile Money number for the payment",
+    "Utilisé uniquement pour ce paiement, jamais enregistré.": "Used only for this payment, never stored."
 }

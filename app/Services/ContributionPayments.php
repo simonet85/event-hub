@@ -30,11 +30,12 @@ class ContributionPayments
 
     /**
      * Crée la contribution puis la session de paiement MoneyFusion.
+     * MoneyFusion exige un numéro de téléphone : celui de l'invité, ou `$payerPhone` s'il n'en a pas (jamais enregistré).
      *
      * @throws GiftBudgetExceeded si le montant dépasse ce qu'il reste à financer pour le cadeau
      * @throws PaymentUnavailable si MoneyFusion refuse ou ne répond pas
      */
-    public function start(Guest $guest, int $amount, ?Gift $gift = null, ?string $message = null): Contribution
+    public function start(Guest $guest, int $amount, ?Gift $gift = null, ?string $message = null, ?string $payerPhone = null): Contribution
     {
         $event = $guest->event;
 
@@ -72,7 +73,7 @@ class ContributionPayments
                     'quantity' => 1,
                 ]],
                 'nom_client' => $guest->name,
-                'numero_send' => preg_replace('/\D+/', '', (string) $guest->phone),
+                'numero_send' => preg_replace('/\D+/', '', (string) ($payerPhone ?: $guest->phone)),
                 'order_id' => $contribution->id,
                 'return_url' => route('donations.return', [$guest->token, $contribution]),
                 'webhook_url' => route('webhooks.moneyfusion'),

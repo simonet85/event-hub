@@ -46,17 +46,30 @@ describe('Donations', () => {
 
     it('n\'autorise pas l\'envoi sous le montant minimum', async () => {
         const w = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
-        await w.get('input[type="number"]').setValue(50);
+        await w.get('input[type="number"]').setValue(200);
         expect(w.get('button[type="submit"]').attributes('disabled')).toBeDefined();
     });
 
-    it('autorise l\'envoi à partir de 100 FCFA et poste vers la route de paiement', async () => {
+    it('autorise l\'envoi à partir de 250 FCFA et poste vers la route de paiement', async () => {
         const w = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
-        await w.get('input[type="number"]').setValue(100);
+        await w.get('input[type="number"]').setValue(250);
         expect(w.get('button[type="submit"]').attributes('disabled')).toBeUndefined();
 
         await w.get('form').trigger('submit');
         expect(post).toHaveBeenCalledWith('/donations.store/tok', { preserveScroll: true });
+    });
+
+    it('demande le numéro Mobile Money seulement si l\'invité n\'a pas de téléphone', async () => {
+        const without = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte({ needs_phone: true }) } });
+        const withPhone = mount(Donations, { props: { token: 'tok', cagnotte: cagnotte() } });
+        expect(without.find('[data-testid="donation-phone"]').exists()).toBe(true);
+        expect(withPhone.find('[data-testid="donation-phone"]').exists()).toBe(false);
+
+        await without.get('input[type="number"]').setValue(500);
+        expect(without.get('button[type="submit"]').attributes('disabled')).toBeDefined();
+
+        await without.get('[data-testid="donation-phone"]').setValue('+225 01 01 01 01 01');
+        expect(without.get('button[type="submit"]').attributes('disabled')).toBeUndefined();
     });
 
     it('limite le montant à ce qu\'il reste pour le cadeau choisi', async () => {
