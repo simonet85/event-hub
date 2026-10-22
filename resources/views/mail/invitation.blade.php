@@ -25,6 +25,13 @@
     <meta name="color-scheme" content="light only">
     <meta name="supported-color-schemes" content="light only">
     <title>{{ $event->title }}</title>
+    <style>
+        @media only screen and (max-width: 480px) {
+            .stack { display: block !important; width: 100% !important; box-sizing: border-box; border-left: 0 !important; }
+            .stack + .stack { border-top: 1px solid {{ $line }} !important; }
+            .hero-title { font-size: 34px !important; }
+        }
+    </style>
 </head>
 <body style="margin:0;padding:0;background:{{ $paper }};-webkit-text-size-adjust:100%;">
 {{-- Aperçu affiché par la boîte de réception à côté de l'objet --}}
@@ -37,7 +44,7 @@
                 <tr>
                     <td align="center" bgcolor="{{ $accent }}" style="background:{{ $accent }};padding:44px 32px 36px;font-family:{{ $sans }};">
                         <p style="margin:0;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:{{ $onAccent }};opacity:0.85;">{{ $event->type->label() }}</p>
-                        <h1 style="margin:16px 0 14px;font-family:{{ $serif }};font-size:42px;line-height:1.1;font-weight:500;color:{{ $onAccent }};">{{ $event->title }}</h1>
+                        <h1 class="hero-title" style="margin:16px 0 14px;font-family:{{ $serif }};font-size:42px;line-height:1.1;font-weight:500;color:{{ $onAccent }};">{{ $event->title }}</h1>
                         <p style="margin:0;font-size:16px;letter-spacing:6px;color:{{ $onAccent }};" aria-hidden="true">&mdash; ✦ &mdash;</p>
                     </td>
                 </tr>
@@ -53,13 +60,13 @@
                     <td style="padding:24px 32px 8px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{{ $panel }};border:1px solid {{ $line }};border-radius:4px;">
                             <tr>
-                                <td width="{{ $event->location_name ? '50%' : '100%' }}" valign="top" align="center" style="padding:20px 16px;font-family:{{ $sans }};">
+                                <td class="stack" width="{{ $event->location_name ? '50%' : '100%' }}" valign="top" align="center" style="padding:20px 16px;font-family:{{ $sans }};">
                                     <p style="margin:0 0 6px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:{{ $muted }};">Date</p>
                                     <p style="margin:0;font-family:{{ $serif }};font-size:20px;line-height:1.3;color:{{ $ink }};">{{ ucfirst($date) }}</p>
                                     <p style="margin:4px 0 0;font-size:14px;color:{{ $accentText }};">à {{ $time }}</p>
                                 </td>
                                 @if ($event->location_name)
-                                    <td width="50%" valign="top" align="center" style="padding:20px 16px;border-left:1px solid {{ $line }};font-family:{{ $sans }};">
+                                    <td class="stack" width="50%" valign="top" align="center" style="padding:20px 16px;border-left:1px solid {{ $line }};font-family:{{ $sans }};">
                                         <p style="margin:0 0 6px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:{{ $muted }};">Lieu</p>
                                         <p style="margin:0;font-family:{{ $serif }};font-size:20px;line-height:1.3;color:{{ $ink }};">{{ $event->location_name }}</p>
                                         @if ($address)
