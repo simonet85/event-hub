@@ -5,11 +5,13 @@ namespace App\Services;
 use App\Enums\ContributionStatus;
 use App\Exceptions\GiftBudgetExceeded;
 use App\Exceptions\PaymentUnavailable;
+use App\Mail\ContributionReceiptMail;
 use App\Models\Contribution;
 use App\Models\Gift;
 use App\Models\Guest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Simonet85\LaravelMoneyFusion\Facades\MoneyFusion;
 use Simonet85\LaravelMoneyFusion\MoneyFusionService;
 
@@ -115,7 +117,9 @@ class ContributionPayments
         $data = $result['data'] ?? [];
         $apiStatus = MoneyFusionService::normalizeStatus($data['statut'] ?? null);
 
-        return DB::transaction(function () use ($contribution, $data, $apiStatus): ContributionStatus {
+        $justConfirmed = false;
+
+        $status = DB::transaction(function () use ($contribution, $data, $apiStatus, &$justConfirmed): ContributionStatus {
             $locked = Contribution::whereKey($contribution->id)->lockForUpdate()->first();
 
             if ($locked->status !== ContributionStatus::Pending) {
@@ -130,6 +134,7 @@ class ContributionPayments
                     $locked->update(['status' => ContributionStatus::Mismatch]);
                 } else {
                     $locked->update(['status' => ContributionStatus::Confirmed, 'confirmed_at' => now()]);
+                    $justConfirmed = true;
                 }
             } elseif ($apiStatus === 'failed') {
                 $locked->update(['status' => ContributionStatus::Failed]);
@@ -139,6 +144,30 @@ class ContributionPayments
 
             return $locked->status;
         });
+
+        if ($justConfirmed) {
+            $this->sendReceipt($contribution);
+        }
+
+        return $status;
+    }
+
+    /**
+     * Envoie le reçu à l'invité s'il a une adresse e-mail. Un échec d'envoi ne remet jamais en cause la confirmation.
+     */
+    private function sendReceipt(Contribution $contribution): void
+    {
+        $contribution->loadMissing(['guest', 'event', 'gift']);
+
+        if (! $contribution->guest->email) {
+            return;
+        }
+
+        try {
+            Mail::to($contribution->guest->email)->send(new ContributionReceiptMail($contribution));
+        } catch (\Throwable $e) {
+            Log::error('Contribution receipt could not be queued', ['contribution' => $contribution->id, 'error' => $e->getMessage()]);
+        }
     }
 
     /**

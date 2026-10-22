@@ -1,12 +1,14 @@
 <?php
 
 use App\Enums\ContributionStatus;
+use App\Mail\ContributionReceiptMail;
 use App\Models\Contribution;
 use App\Models\Event;
 use App\Models\Gift;
 use App\Models\Guest;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Simonet85\LaravelMoneyFusion\Models\MoneyFusionPayment;
 
 const MF_CREATE = 'https://www.pay.moneyfusion.net/*';
@@ -490,4 +492,71 @@ test('un montant net + frais inférieur à la contribution reste à vérifier', 
     $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return");
 
     expect($contribution->fresh()->status)->toBe(ContributionStatus::Mismatch);
+});
+
+// ───────────── Reçu de contribution ─────────────
+
+test('une contribution confirmée envoie un reçu à l\'invité, une seule fois', function () {
+    Mail::fake();
+    $this->guest->update(['email' => 'alice@example.test']);
+    $contribution = pendingContribution($this->guest, 5000);
+    fakeCheck('paid', 5000);
+
+    $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return");
+    $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return");
+
+    Mail::assertQueued(ContributionReceiptMail::class, 1);
+    Mail::assertQueued(ContributionReceiptMail::class, fn (ContributionReceiptMail $mail) => $mail->hasTo('alice@example.test')
+        && $mail->contribution->is($contribution));
+});
+
+test('aucun reçu pour un paiement en attente, échoué, à vérifier ou sans adresse e-mail', function () {
+    Mail::fake();
+    Http::fake([
+        'https://pay.moneyfusion.net/paiementNotif/tok_p' => Http::response(['statut' => true, 'data' => ['statut' => 'pending'], 'message' => 'ok']),
+        'https://pay.moneyfusion.net/paiementNotif/tok_f' => Http::response(['statut' => true, 'data' => ['statut' => 'failure'], 'message' => 'ok']),
+        'https://pay.moneyfusion.net/paiementNotif/tok_m' => Http::response(['statut' => true, 'data' => ['statut' => 'paid', 'Montant' => 100, 'frais' => 0], 'message' => 'ok']),
+        'https://pay.moneyfusion.net/paiementNotif/tok_n' => Http::response(['statut' => true, 'data' => ['statut' => 'paid', 'Montant' => 5000, 'frais' => 0], 'message' => 'ok']),
+    ]);
+    $this->guest->update(['email' => 'alice@example.test']);
+
+    foreach (['tok_p', 'tok_f', 'tok_m'] as $token) {
+        $contribution = pendingContribution($this->guest, 5000, $token);
+        $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return");
+    }
+
+    $this->guest->update(['email' => null]);
+    $noEmail = pendingContribution($this->guest, 5000, 'tok_n');
+    $this->get("/i/{$this->guest->token}/donations/{$noEmail->id}/return");
+
+    Mail::assertNothingQueued();
+    expect($noEmail->fresh()->status)->toBe(ContributionStatus::Confirmed);
+});
+
+test('le reçu indique le montant, la destination, la référence et le petit mot', function () {
+    $gift = Gift::factory()->for($this->event)->create(['name' => 'Voyage de noces', 'target_amount' => 300000]);
+    $contribution = pendingContribution($this->guest, 25000, 'tok_r', ['gift_id' => $gift->id, 'message' => 'Bonne route !', 'status' => 'confirmed', 'confirmed_at' => now()]);
+
+    $mail = new ContributionReceiptMail($contribution);
+
+    $mail->assertSeeInHtml("25\u{00A0}000");
+    $mail->assertSeeInHtml('Voyage de noces');
+    $mail->assertSeeInHtml("N° {$contribution->id}");
+    $mail->assertSeeInHtml('Bonne route !');
+    $mail->assertSeeInHtml('Revoir mon invitation');
+    $mail->assertSeeInHtml($this->guest->token);
+    $mail->assertSeeInText('Voyage de noces');
+    $mail->assertSeeInText("N° {$contribution->id}");
+    expect($mail->envelope()->subject)->toBe("Merci pour votre contribution : {$this->event->title}");
+});
+
+test('un échec de mise en file du reçu ne remet pas en cause la confirmation', function () {
+    Mail::shouldReceive('to')->andThrow(new RuntimeException('file indisponible'));
+    $this->guest->update(['email' => 'alice@example.test']);
+    $contribution = pendingContribution($this->guest, 5000);
+    fakeCheck('paid', 5000);
+
+    $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return")->assertSessionHas('donation_status', 'confirmed');
+
+    expect($contribution->fresh()->status)->toBe(ContributionStatus::Confirmed);
 });
