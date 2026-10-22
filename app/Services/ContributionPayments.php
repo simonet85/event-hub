@@ -123,7 +123,7 @@ class ContributionPayments
             }
 
             if ($apiStatus === 'paid') {
-                $amountMatches = ! isset($data['Montant']) || (int) $data['Montant'] === $locked->amount;
+                $amountMatches = $this->paidAmountMatches($data, $locked->amount);
 
                 if (! $amountMatches) {
                     Log::error('Contribution amount mismatch', ['contribution' => $locked->id, 'expected' => $locked->amount, 'received' => $data['Montant']]);
@@ -139,5 +139,23 @@ class ContributionPayments
 
             return $locked->status;
         });
+    }
+
+    /**
+     * MoneyFusion renvoie `Montant` net de ses frais (250 F payés => Montant 242,5 + frais 7,5) :
+     * le paiement est conforme si le montant brut (Montant + frais) ou le montant seul correspond à la contribution.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function paidAmountMatches(array $data, int $expected): bool
+    {
+        if (! isset($data['Montant'])) {
+            return true;
+        }
+
+        $net = (float) $data['Montant'];
+        $gross = $net + (float) ($data['frais'] ?? 0);
+
+        return abs($gross - $expected) < 0.01 || abs($net - $expected) < 0.01;
     }
 }

@@ -465,3 +465,29 @@ test('un invité qui a déjà un téléphone n\'a pas à le ressaisir', function
 
     Http::assertSent(fn ($request) => ($request['numeroSend'] ?? null) === '2250707070707');
 });
+
+test('MoneyFusion renvoie le montant net de ses frais : 250 F payés (242,5 + 7,5 de frais) sont confirmés', function () {
+    $contribution = pendingContribution($this->guest, 250);
+    Http::fake([MF_CHECK => Http::response([
+        'statut' => true,
+        'data' => ['tokenPay' => 'tok_1', 'statut' => 'paid', 'Montant' => 242.5, 'frais' => 7.5, 'moyen' => 'wave-ci'],
+        'message' => 'details paiement',
+    ], 200)]);
+
+    $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return")->assertSessionHas('donation_status', 'confirmed');
+
+    expect($contribution->fresh()->status)->toBe(ContributionStatus::Confirmed);
+});
+
+test('un montant net + frais inférieur à la contribution reste à vérifier', function () {
+    $contribution = pendingContribution($this->guest, 250);
+    Http::fake([MF_CHECK => Http::response([
+        'statut' => true,
+        'data' => ['tokenPay' => 'tok_1', 'statut' => 'paid', 'Montant' => 142.5, 'frais' => 7.5],
+        'message' => 'details paiement',
+    ], 200)]);
+
+    $this->get("/i/{$this->guest->token}/donations/{$contribution->id}/return");
+
+    expect($contribution->fresh()->status)->toBe(ContributionStatus::Mismatch);
+});
