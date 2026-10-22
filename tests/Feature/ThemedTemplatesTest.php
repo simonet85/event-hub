@@ -93,3 +93,53 @@ test('les PDF restent générés pour l\'hôte', function () {
     $this->actingAs($this->host)->get('/events/pdf-theme/exports/traiteur.pdf')->assertOk()->assertHeader('content-type', 'application/pdf');
     $this->actingAs($this->host)->get('/events/pdf-theme/exports/plan-de-table.pdf')->assertOk()->assertHeader('content-type', 'application/pdf');
 });
+
+test('l\'e-mail affiche le lieu, l\'adresse, le dress code et le mot d\'accueil quand ils existent', function () {
+    $event = Event::factory()->for($this->host)->create([
+        'location_name' => 'Mairie du Plateau', 'location_address' => '1 avenue Franchet, Abidjan',
+        'dress_code' => 'Tenue élégante', 'welcome_message' => 'Nous avons hâte de vous voir.',
+    ]);
+    $guest = Guest::factory()->for($event)->create();
+
+    $mail = new InvitationMail($guest);
+
+    $mail->assertSeeInHtml('Mairie du Plateau');
+    $mail->assertSeeInHtml('1 avenue Franchet, Abidjan');
+    $mail->assertSeeInHtml('Tenue élégante');
+    $mail->assertSeeInHtml('Nous avons hâte de vous voir.');
+    $mail->assertSeeInText('Tenue élégante');
+    $mail->assertSeeInText('Nous avons hâte de vous voir.');
+});
+
+test('l\'e-mail reste correct sans lieu, dress code ni mot d\'accueil', function () {
+    $event = Event::factory()->for($this->host)->create(['location_name' => null, 'location_address' => null, 'dress_code' => null, 'welcome_message' => null]);
+    $guest = Guest::factory()->for($event)->create();
+
+    $mail = new InvitationMail($guest);
+
+    $mail->assertSeeInHtml('Voir mon invitation');
+    $mail->assertDontSeeInHtml('Tenue souhaitée');
+    $mail->assertDontSeeInHtml('>Lieu<');
+});
+
+test('l\'e-mail est envoyé avec l\'objet et le destinataire attendus', function () {
+    Mail::fake();
+    $event = Event::factory()->for($this->host)->create();
+    $guest = Guest::factory()->for($event)->create(['email' => 'invite@example.test']);
+
+    Mail::to($guest->email)->send(new InvitationMail($guest));
+
+    Mail::assertSent(InvitationMail::class, fn (InvitationMail $mail) => $mail->hasTo('invite@example.test')
+        && $mail->envelope()->subject === "Vous êtes invité(e) : {$event->title}");
+});
+
+test('l\'adresse géocodée ne répète pas le nom du lieu dans l\'e-mail', function () {
+    $event = Event::factory()->for($this->host)->create(['location_name' => 'Mairie du Plateau', 'location_address' => 'Mairie du Plateau, Avenue Franchet, Abidjan']);
+    $guest = Guest::factory()->for($event)->create();
+
+    $mail = new InvitationMail($guest);
+
+    $mail->assertSeeInHtml('Avenue Franchet, Abidjan');
+    $mail->assertDontSeeInHtml('Mairie du Plateau, Avenue Franchet');
+    $mail->assertSeeInText('(Avenue Franchet, Abidjan)');
+});
