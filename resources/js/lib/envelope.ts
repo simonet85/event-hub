@@ -2,7 +2,7 @@ import { prefersReducedMotion } from '@/lib/confetti';
 
 /**
  * Ouverture d'enveloppe : jouée une seule fois par invité et par appareil. Elle est ignorée quand l'invité demande
- * moins d'animations, ou qu'il arrive sur une ancre précise (lien direct vers #rsvp, #cadeaux…) : il vient pour agir.
+ * moins d'animations, ou qu'il arrive sur une ancre précise (lien direct vers ?onglet=rsvp, #cadeaux…) : il vient pour agir.
  */
 export const ENVELOPE_PREFIX = 'eventhub-envelope:';
 
@@ -10,6 +10,7 @@ export interface EnvelopeContext {
     storage?: Pick<Storage, 'getItem' | 'setItem'> | null;
     reducedMotion?: boolean;
     hash?: string;
+    search?: string;
 }
 
 function defaultStorage(): Storage | null {
@@ -23,7 +24,8 @@ function defaultStorage(): Storage | null {
 export function shouldPlayEnvelope(token: string, context: EnvelopeContext = {}): boolean {
     const reducedMotion = context.reducedMotion ?? prefersReducedMotion();
     const hash = context.hash ?? window.location.hash;
-    if (reducedMotion || hash.length > 1) return false;
+    const search = context.search ?? window.location.search;
+    if (reducedMotion || hash.length > 1 || new URLSearchParams(search).has('onglet')) return false;
 
     try {
         const storage = context.storage === undefined ? defaultStorage() : context.storage;

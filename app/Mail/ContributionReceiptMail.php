@@ -38,7 +38,7 @@ class ContributionReceiptMail extends Mailable implements ShouldQueue
                 'amount' => number_format($this->contribution->amount, 0, ',', "\u{00A0}")."\u{00A0}F CFA",
                 'target' => $this->contribution->gift?->name ?? 'La cagnotte générale',
                 'paidAt' => ($this->contribution->confirmed_at ?? now())->locale('fr')->isoFormat('D MMMM YYYY [à] HH:mm'),
-                'url' => $guest->invitationUrl().'#cadeaux',
+                'url' => $guest->invitationUrl().'?onglet=cadeaux',
             ],
         );
     }

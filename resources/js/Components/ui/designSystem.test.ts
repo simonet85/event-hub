@@ -65,11 +65,26 @@ describe('InvitationCard', () => {
 });
 
 describe('GuestNav', () => {
-    it('ne propose que les sections disponibles, avec des cibles de 44 px', () => {
-        const w = mount(GuestNav, { props: { withRsvp: true, hasSchedule: false, hasGifts: true } });
-        const labels = w.findAll('a').map((a) => a.text());
-        expect(labels).toEqual(['Invitation', 'RSVP', "Livre d'or", 'Photos', 'Cadeaux']);
+    const tabs = [
+        { key: 'invitation' as const, label: 'Invitation' },
+        { key: 'rsvp' as const, label: 'RSVP' },
+        { key: 'cadeaux' as const, label: 'Cadeaux' },
+    ];
+
+    it('affiche un onglet par entrée, avec des cibles de 44 px', () => {
+        const w = mount(GuestNav, { props: { tabs, active: 'invitation' } });
+        expect(w.findAll('a').map((a) => a.text())).toEqual(['Invitation', 'RSVP', 'Cadeaux']);
         expect(w.get('a').classes()).toContain('min-h-tap');
+    });
+
+    it("marque l'onglet actif et émet la sélection sans suivre le lien", async () => {
+        const w = mount(GuestNav, { props: { tabs, active: 'rsvp' } });
+        const links = w.findAll('a');
+        expect(links.map((a) => a.attributes('aria-current'))).toEqual([undefined, 'page', undefined]);
+        expect(links[2].attributes('href')).toBe('/?onglet=cadeaux');
+
+        await links[2].trigger('click');
+        expect(w.emitted('select')).toEqual([['cadeaux']]);
     });
 });
 

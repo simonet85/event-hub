@@ -10,6 +10,8 @@ const props = defineProps<{
     actions?: boolean;
 }>();
 
+defineEmits<{ rsvp: [] }>();
+
 const date = computed(() => new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'full' }).format(new Date(props.event.event_date)));
 const time = computed(() => formatTime(new Date(props.event.event_date)));
 </script>
@@ -30,7 +32,7 @@ const time = computed(() => formatTime(new Date(props.event.event_date)));
         <Countdown :target="event.event_date" class="mt-10" />
 
         <div v-if="actions" class="mt-10 flex w-full max-w-lg flex-col gap-3 sm:flex-row sm:justify-center">
-            <a href="#rsvp" class="btn whitespace-nowrap">{{ __('Confirmer ma présence') }}</a>
+            <a href="?onglet=rsvp" class="btn whitespace-nowrap" @click.prevent="$emit('rsvp')">{{ __('Confirmer ma présence') }}</a>
             <a v-if="event.schedule.length" href="#programme" class="btn btn-secondary whitespace-nowrap">{{ __('Voir le programme') }}</a>
         </div>
     </header>

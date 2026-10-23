@@ -11,9 +11,12 @@ import InvitationCard from '@/Components/ui/InvitationCard.vue';
 import Reveal from '@/Components/ui/Reveal.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import type { PublicEvent } from '@/types';
+import { translate as __ } from '@/i18n';
+import { GUEST_TABS, resolveTab, tabUrl, type GuestTab } from '@/lib/guestTabs';
 import { Head } from '@inertiajs/vue3';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     guest: {
         name: string;
         max_companions: number;
@@ -32,6 +35,38 @@ defineProps<{
     retention_days: number;
     event: PublicEvent;
 }>();
+
+const LABELS: Record<GuestTab, string> = {
+    invitation: __('Invitation'),
+    rsvp: __('RSVP'),
+    billet: __('Billet'),
+    cadeaux: __('Cadeaux'),
+    souvenirs: __('Souvenirs'),
+};
+
+const tabs = computed(() => GUEST_TABS.filter((t) => t !== 'cadeaux' || props.cagnotte !== null).map((key) => ({ key, label: LABELS[key] })));
+const available = computed(() => tabs.value.map((t) => t.key));
+const active = ref<GuestTab>('invitation');
+
+// Une ancre héritée (ancien e-mail) est remplacée par le paramètre d'onglet, sans ajouter d'entrée d'historique.
+function syncFromUrl(canonicalize = false) {
+    active.value = resolveTab(window.location.search, window.location.hash, available.value);
+    if (canonicalize && window.location.hash) window.history.replaceState(window.history.state, '', tabUrl(active.value));
+}
+
+function select(tab: GuestTab) {
+    if (tab === active.value) return;
+    active.value = tab;
+    window.history.pushState(window.history.state, '', tabUrl(tab));
+    window.scrollTo({ top: 0 });
+}
+
+const onPopState = () => syncFromUrl();
+onMounted(() => {
+    syncFromUrl(true);
+    window.addEventListener('popstate', onPopState);
+});
+onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
 </script>
 
 <template>
@@ -40,23 +75,35 @@ defineProps<{
     <EventPublicLayout :theme="event.theme_config" :preset="event.theme_preset" :css-class="event.css_class" :dark="event.dark_theme">
         <EnvelopeIntro :token="token" :guest-name="guest.name" />
 
-        <EventHero :event="event" actions />
+        <template v-if="active === 'invitation'">
+            <EventHero :event="event" actions @rsvp="select('rsvp')" />
 
-        <Reveal class="w-full">
-            <InvitationCard :event="event" :guest-name="guest.name" :qr-url="guest.url" :max-companions="guest.max_companions" />
-        </Reveal>
+            <Reveal class="w-full">
+                <InvitationCard :event="event" :guest-name="guest.name" :qr-url="guest.url" :max-companions="guest.max_companions" />
+            </Reveal>
 
-        <p class="mt-6 w-full text-center">
-            <a :href="route('invitations.ticket', token)" class="btn-quiet btn" data-testid="ticket-link">{{ __('Ouvrir mon billet (utilisable hors ligne)') }}</a>
-        </p>
+            <Reveal class="mt-12 w-full"><EventDetails :event="event" /></Reveal>
+        </template>
 
-        <Reveal class="mt-12 w-full"><EventDetails :event="event" /></Reveal>
-        <Reveal class="mt-12 flex w-full justify-center"><RsvpForm :token="token" :guest="guest" :retention-days="retention_days" /></Reveal>
-        <Reveal v-if="cagnotte" class="mt-12 flex w-full justify-center"><Donations :token="token" :cagnotte="cagnotte" /></Reveal>
-        <Reveal class="mt-12 flex w-full justify-center"><Contributions :token="token" :guestbook="guestbook" :photos="photos" :mine="mine" /></Reveal>
+        <div v-else-if="active === 'rsvp'" class="mt-8 flex w-full justify-center">
+            <RsvpForm :token="token" :guest="guest" :retention-days="retention_days" />
+        </div>
 
-        <Reveal class="mt-12 flex w-full justify-center"><PrivacyPanel :token="token" :retention-days="retention_days" /></Reveal>
+        <template v-else-if="active === 'billet'">
+            <p class="mt-8 w-full text-center">
+                <a :href="route('invitations.ticket', token)" class="btn-quiet btn" data-testid="ticket-link">{{ __('Ouvrir mon billet (utilisable hors ligne)') }}</a>
+            </p>
+            <div class="mt-12 flex w-full justify-center"><PrivacyPanel :token="token" :retention-days="retention_days" /></div>
+        </template>
 
-        <GuestNav with-rsvp :has-schedule="event.schedule.length > 0" :has-gifts="cagnotte !== null" />
+        <div v-else-if="active === 'cadeaux' && cagnotte" class="mt-8 flex w-full justify-center">
+            <Donations :token="token" :cagnotte="cagnotte" />
+        </div>
+
+        <div v-else class="mt-8 flex w-full justify-center">
+            <Contributions :token="token" :guestbook="guestbook" :photos="photos" :mine="mine" />
+        </div>
+
+        <GuestNav :tabs="tabs" :active="active" @select="select" />
     </EventPublicLayout>
 </template>
