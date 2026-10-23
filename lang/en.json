@@ -463,5 +463,19 @@
     "Indiquez le numéro Mobile Money qui effectuera le paiement.": "Enter the Mobile Money number that will make the payment.",
     "Ce numéro de téléphone n'est pas valide.": "This phone number is not valid.",
     "Numéro Mobile Money du paiement": "Mobile Money number for the payment",
-    "Utilisé uniquement pour ce paiement, jamais enregistré.": "Used only for this payment, never stored."
+    "Utilisé uniquement pour ce paiement, jamais enregistré.": "Used only for this payment, never stored.",
+    ":count place(s)": ":count seat(s)",
+    "Enregistrer mon billet": "Save my ticket",
+    "Ex. sans arachide, végétarien": "E.g. no peanuts, vegetarian",
+    "Imprimer": "Print",
+    "Jusqu'à :count place(s)": "Up to :count seat(s)",
+    "Modifier ma réponse": "Change my reply",
+    "N° :number": "No. :number",
+    "Places": "Seats",
+    "Un accompagnant de moins": "One less guest",
+    "Un accompagnant de plus": "One more guest",
+    "Voir mon billet": "View my ticket",
+    "Votre présence est confirmée. À très vite !": "Your attendance is confirmed. See you soon!",
+    "Votre réponse est enregistrée. Vous nous manquerez.": "Your reply has been saved. We will miss you.",
+    "Vous avez indiqué que vous ne pourrez pas venir : il n'y a pas de billet.": "You said you cannot come: there is no ticket."
 }

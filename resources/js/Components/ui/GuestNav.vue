@@ -11,7 +11,7 @@ defineEmits<{ select: [tab: GuestTab] }>();
 </script>
 
 <template>
-    <nav class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface-100" :aria-label="__('Navigation de l\'invitation')" data-testid="guest-nav">
+    <nav class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface-100 print:hidden" :aria-label="__('Navigation de l\'invitation')" data-testid="guest-nav">
         <ul class="mx-auto flex max-w-3xl">
             <li v-for="t in tabs" :key="t.key" class="min-w-0 flex-1">
                 <a

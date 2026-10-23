@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import GiftProgress from './GiftProgress.vue';
 import GuestNav from './GuestNav.vue';
-import InvitationCard from './InvitationCard.vue';
+import EventHero from './EventHero.vue';
 import StatusPill from './StatusPill.vue';
 
 
@@ -34,7 +34,7 @@ describe('GiftProgress', () => {
     });
 });
 
-describe('InvitationCard', () => {
+describe('EventHero (invitation personnelle)', () => {
     const event = {
         title: 'Awa & Koffi',
         slug: 'awa-koffi',
@@ -51,16 +51,20 @@ describe('InvitationCard', () => {
         schedule: [],
     };
 
-    it('met le nom de l\'invité en manuscrit et affiche date, lieu et QR', () => {
-        const w = mount(InvitationCard, {
-            props: { event, guestName: 'Famille Kouassi', qrUrl: 'https://exemple.test/i/abc', maxCompanions: 2 },
-            global: { stubs: { QrCode: { template: '<img alt="QR code" />' } } },
-        });
+    it('met le nom de linvité en manuscrit, une seule fois, avec le titre, la date et le lieu', () => {
+        const w = mount(EventHero, { props: { event, actions: true, guestName: 'Famille Kouassi', maxCompanions: 2 } });
         expect(w.get('[data-testid="invitation-guest"]').classes()).toContain('script');
         expect(w.text()).toContain('Famille Kouassi');
-        expect(w.text()).toContain('Hôtel Ivoire');
-        expect(w.text()).toContain('2 accompagnants');
-        expect(w.classes()).toContain('card-invitation');
+        expect(w.text().match(/Awa & Koffi/g)).toHaveLength(1);
+        expect(w.text().match(/Hôtel Ivoire/g)).toHaveLength(1);
+        expect(w.get('[data-testid="invitation-companions"]').text()).toContain('2 accompagnants');
+        expect(w.get('[data-testid="invitation-welcome"]').text()).toBe('Soyez les bienvenus');
+    });
+
+    it('reste neutre sur la page publique : ni nom d invité ni accompagnants', () => {
+        const w = mount(EventHero, { props: { event } });
+        expect(w.find('[data-testid="invitation-guest"]').exists()).toBe(false);
+        expect(w.find('[data-testid="invitation-companions"]').exists()).toBe(false);
     });
 });
 

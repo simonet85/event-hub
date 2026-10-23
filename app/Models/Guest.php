@@ -67,6 +67,16 @@ class Guest extends Model
     }
 
     /**
+     * Numéro du billet, du type « A1B2-C3D4 » : stable et lisible à l'entrée, sans rien révéler du jeton d'invitation.
+     */
+    public function ticketNumber(): string
+    {
+        $code = strtoupper(substr(hash('sha256', "{$this->id}|{$this->event_id}|".config('app.key')), 0, 8));
+
+        return substr($code, 0, 4).'-'.substr($code, 4);
+    }
+
+    /**
      * Lien WhatsApp avec message pré-rempli, ou null sans numéro exploitable.
      */
     public function whatsappUrl(): ?string

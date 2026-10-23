@@ -8,6 +8,9 @@ const props = defineProps<{
     event: PublicEvent;
     /** Boutons « Confirmer ma présence » / « Voir le programme » (page d'invitation personnelle). */
     actions?: boolean;
+    /** Invitation personnelle : nom de l'invité (le seul moment manuscrit) et nombre d'accompagnants permis. */
+    guestName?: string;
+    maxCompanions?: number;
 }>();
 
 defineEmits<{ rsvp: [] }>();
@@ -20,6 +23,11 @@ const time = computed(() => formatTime(new Date(props.event.event_date)));
     <header id="invitation" class="flex min-h-[80vh] w-full scroll-mt-4 flex-col items-center justify-center py-12 text-center">
         <p class="eyebrow">{{ event.type_label }}</p>
 
+        <template v-if="guestName">
+            <p class="script mt-4 break-words text-accent" data-testid="invitation-guest">{{ guestName }}</p>
+            <p class="mt-1 text-ink-muted">{{ __('vous invite à') }}</p>
+        </template>
+
         <h1 class="display-xl my-6 max-w-3xl break-words" style="font-family: var(--event-font)">{{ event.title }}</h1>
 
         <div class="flex items-center gap-4 text-gold" aria-hidden="true">
@@ -30,6 +38,11 @@ const time = computed(() => formatTime(new Date(props.event.event_date)));
         <p v-if="event.location_name" class="mt-1 text-ink-muted">{{ event.location_name }}</p>
 
         <Countdown :target="event.event_date" class="mt-10" />
+
+        <p v-if="maxCompanions && maxCompanions > 0" class="mt-8 text-ink-muted" data-testid="invitation-companions">
+            {{ maxCompanions > 1 ? __('Vous pouvez venir avec :count accompagnants.', { count: maxCompanions }) : __('Vous pouvez venir avec :count accompagnant.', { count: maxCompanions }) }}
+        </p>
+        <p v-if="actions && event.welcome_message" class="mt-3 max-w-md italic" data-testid="invitation-welcome">{{ event.welcome_message }}</p>
 
         <div v-if="actions" class="mt-10 flex w-full max-w-lg flex-col gap-3 sm:flex-row sm:justify-center">
             <a href="?onglet=rsvp" class="btn whitespace-nowrap" @click.prevent="$emit('rsvp')">{{ __('Confirmer ma présence') }}</a>

@@ -3,12 +3,11 @@ import Contributions from '@/Components/Contributions.vue';
 import Donations, { type CagnottePayload } from '@/Components/Donations.vue';
 import Gallery, { type GalleryPhoto } from '@/Components/Gallery.vue';
 import EventDetails from '@/Components/EventDetails.vue';
-import PrivacyPanel from '@/Components/PrivacyPanel.vue';
+import TicketPanel from '@/Components/TicketPanel.vue';
 import RsvpForm from '@/Components/RsvpForm.vue';
 import EnvelopeIntro from '@/Components/ui/EnvelopeIntro.vue';
 import EventHero from '@/Components/ui/EventHero.vue';
 import GuestNav from '@/Components/ui/GuestNav.vue';
-import InvitationCard from '@/Components/ui/InvitationCard.vue';
 import Reveal from '@/Components/ui/Reveal.vue';
 import EventPublicLayout from '@/Layouts/EventPublicLayout.vue';
 import type { PublicEvent } from '@/types';
@@ -27,6 +26,7 @@ const props = defineProps<{
         dietary_restrictions: string | null;
         favorite_song: string | null;
         rsvp_message: string | null;
+        ticket_number: string;
         erasure_requested: boolean;
     };
     token: string;
@@ -78,26 +78,17 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
         <EnvelopeIntro :token="token" :guest-name="guest.name" />
 
         <template v-if="active === 'invitation'">
-            <EventHero :event="event" actions @rsvp="select('rsvp')" />
-
-            <Reveal class="w-full">
-                <InvitationCard :event="event" :guest-name="guest.name" :qr-url="guest.url" :max-companions="guest.max_companions" />
-            </Reveal>
+            <EventHero :event="event" actions :guest-name="guest.name" :max-companions="guest.max_companions" @rsvp="select('rsvp')" />
 
             <Reveal class="mt-12 w-full"><EventDetails :event="event" /></Reveal>
         </template>
 
         <div v-else-if="active === 'rsvp'" class="mt-8 flex w-full flex-col items-center gap-6">
-            <RsvpForm :token="token" :guest="guest" :retention-days="retention_days" />
+            <RsvpForm :token="token" :guest="guest" :retention-days="retention_days" @ticket="select('billet')" />
             <Contributions :token="token" :guestbook="guestbook" :mine="mine" />
         </div>
 
-        <template v-else-if="active === 'billet'">
-            <p class="mt-8 w-full text-center">
-                <a :href="route('invitations.ticket', token)" class="btn-quiet btn" data-testid="ticket-link">{{ __('Ouvrir mon billet (utilisable hors ligne)') }}</a>
-            </p>
-            <div class="mt-12 flex w-full justify-center"><PrivacyPanel :token="token" :retention-days="retention_days" :requested="guest.erasure_requested" /></div>
-        </template>
+        <TicketPanel v-else-if="active === 'billet'" :token="token" :event="event" :guest="guest" :retention-days="retention_days" @rsvp="select('rsvp')" />
 
         <div v-else-if="active === 'cadeaux' && cagnotte" class="mt-8 flex w-full justify-center">
             <Donations :token="token" :cagnotte="cagnotte" />

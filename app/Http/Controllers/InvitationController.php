@@ -37,6 +37,7 @@ class InvitationController extends Controller
                 'dietary_restrictions' => $guest->dietary_restrictions,
                 'favorite_song' => $guest->favorite_song,
                 'rsvp_message' => $guest->rsvp_message,
+                'ticket_number' => $guest->ticketNumber(),
                 'erasure_requested' => $guest->erasure_requested_at !== null,
             ],
             'event' => $event->load('scheduleItems')->publicPayload(),

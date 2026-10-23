@@ -123,6 +123,63 @@ describe('RsvpForm : consentement et conservation', () => {
     });
 });
 
+describe('RsvpForm : accompagnants et remerciement', () => {
+    beforeEach(() => post.mockClear());
+
+    it('règle le nombre d accompagnants avec + et −, entre 0 et le maximum', async () => {
+        const w = mount(RsvpForm, { props: { token: 'tok', guest: guest({ max_companions: 2 }) } });
+        const count = () => w.get('[data-testid="companions-count"]').text();
+        const minus = w.get('[data-testid="companions-minus"]');
+        const plus = w.get('[data-testid="companions-plus"]');
+
+        expect(count()).toBe('0');
+        expect(minus.attributes('disabled')).toBeDefined();
+
+        await plus.trigger('click');
+        await plus.trigger('click');
+        expect(count()).toBe('2');
+        expect(plus.attributes('disabled')).toBeDefined();
+
+        await minus.trigger('click');
+        expect(count()).toBe('1');
+    });
+
+    const submitted = async (status: 'accepted' | 'declined') => {
+        vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+        post.mockImplementationOnce((_url: string, options: { onSuccess?: () => void }) => options.onSuccess?.());
+        const w = mount(RsvpForm, { props: { token: 'tok', guest: guest() } });
+        await w.get(`input[value="${status}"]`).setValue();
+        await w.get('form').trigger('submit');
+
+        return w;
+    };
+
+    it('une fois enregistrée, remplace le formulaire par un remerciement qui mène au billet', async () => {
+        const w = await submitted('accepted');
+
+        expect(w.find('form').exists()).toBe(false);
+        expect(w.get('[data-testid="rsvp-saved"]').text()).toContain('Merci');
+
+        await w.get('[data-testid="rsvp-ticket"]').trigger('click');
+        expect(w.emitted('ticket')).toHaveLength(1);
+    });
+
+    it('un invité qui décline n a pas de billet vers lequel être renvoyé', async () => {
+        const w = await submitted('declined');
+
+        expect(w.get('[data-testid="rsvp-saved"]').text()).toContain('Vous nous manquerez');
+        expect(w.find('[data-testid="rsvp-ticket"]').exists()).toBe(false);
+    });
+
+    it('« Modifier ma réponse » rouvre le formulaire', async () => {
+        const w = await submitted('accepted');
+
+        await w.get('[data-testid="rsvp-edit"]').trigger('click');
+
+        expect(w.find('form').exists()).toBe(true);
+    });
+});
+
 describe('RsvpForm', () => {
     beforeEach(() => post.mockClear());
 
