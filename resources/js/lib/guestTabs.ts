@@ -1,5 +1,5 @@
 /** Onglets de la page d'invitation. L'onglet actif vit dans l'URL (`?onglet=`) : retour arrière et liens partageables. */
-export const GUEST_TABS = ['invitation', 'rsvp', 'billet', 'cadeaux', 'souvenirs'] as const;
+export const GUEST_TABS = ['invitation', 'rsvp', 'billet', 'cadeaux', 'galerie'] as const;
 export type GuestTab = (typeof GUEST_TABS)[number];
 
 export const TAB_PARAM = 'onglet';
@@ -11,8 +11,9 @@ const LEGACY_HASH: Record<string, GuestTab> = {
     rsvp: 'rsvp',
     donnees: 'billet',
     cadeaux: 'cadeaux',
-    'livre-dor': 'souvenirs',
-    photos: 'souvenirs',
+    'livre-dor': 'galerie',
+    photos: 'galerie',
+    galerie: 'galerie',
 };
 
 /** Onglet demandé par l'URL (paramètre, sinon ancre héritée), limité aux onglets disponibles. */

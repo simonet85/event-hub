@@ -6,7 +6,7 @@ import { computed } from 'vue';
 defineProps<{
     event: { title: string; slug: string };
     title: string;
-    current: 'dashboard' | 'guests' | 'schedule' | 'cagnotte' | 'moderation';
+    current: 'dashboard' | 'guests' | 'schedule' | 'cagnotte' | 'gallery' | 'moderation';
 }>();
 
 // `route` est un global (Ziggy) : on l'expose au gabarit via le script pour rester testable.
@@ -17,6 +17,7 @@ const tabs = computed(() => [
     { key: 'guests', label: __('Invités'), route: 'guests.index' },
     { key: 'schedule', label: __('Programme'), route: 'schedule.index' },
     { key: 'cagnotte', label: __('Cagnotte'), route: 'cagnotte.index' },
+    { key: 'gallery', label: __('Galerie'), route: 'gallery.index' },
     { key: 'moderation', label: __('Modération'), route: 'moderation.index' },
 ]);
 </script>

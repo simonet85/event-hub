@@ -174,6 +174,16 @@ class Event extends Model
         return $this->hasMany(Photo::class);
     }
 
+    /**
+     * Photos de la galerie : celles publiées par l'hôte, sans invité auteur, dans l'ordre d'envoi.
+     *
+     * @return HasMany<Photo, $this>
+     */
+    public function galleryPhotos(): HasMany
+    {
+        return $this->hasMany(Photo::class)->whereNull('guest_id')->orderBy('id');
+    }
+
     public function scheduleItems(): HasMany
     {
         return $this->hasMany(ScheduleItem::class)->orderBy('starts_at')->orderBy('id');

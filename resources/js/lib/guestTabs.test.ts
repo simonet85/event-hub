@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolveTab, tabUrl, type GuestTab } from './guestTabs';
 
-const all: GuestTab[] = ['invitation', 'rsvp', 'billet', 'cadeaux', 'souvenirs'];
+const all: GuestTab[] = ['invitation', 'rsvp', 'billet', 'cadeaux', 'galerie'];
 
 describe('resolveTab', () => {
     it("lit le paramètre d'onglet", () => {
@@ -10,8 +10,8 @@ describe('resolveTab', () => {
 
     it('traduit les anciennes ancres vers leur onglet', () => {
         expect(resolveTab('', '#cadeaux', all)).toBe('cadeaux');
-        expect(resolveTab('', '#livre-dor', all)).toBe('souvenirs');
-        expect(resolveTab('', '#photos', all)).toBe('souvenirs');
+        expect(resolveTab('', '#livre-dor', all)).toBe('galerie');
+        expect(resolveTab('', '#photos', all)).toBe('galerie');
         expect(resolveTab('', '#programme', all)).toBe('invitation');
         expect(resolveTab('', '#donnees', all)).toBe('billet');
     });

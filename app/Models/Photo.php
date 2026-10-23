@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['event_id', 'path', 'caption', 'status'])]
+#[Fillable(['event_id', 'path', 'thumb_path', 'caption', 'status'])]
 class Photo extends Model
 {
     /** @use HasFactory<PhotoFactory> */
@@ -19,7 +19,7 @@ class Photo extends Model
     protected static function booted(): void
     {
         static::deleting(function (Photo $photo): void {
-            Storage::disk('local')->delete($photo->path);
+            Storage::disk('local')->delete(array_filter([$photo->path, $photo->thumb_path]));
         });
     }
 

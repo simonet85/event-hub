@@ -46,5 +46,20 @@ class AppServiceProvider extends ServiceProvider
                 Limit::perMinute(120)->by("{$route}:ip:{$request->ip()}"),
             ];
         });
+
+        // Galerie : une grille de miniatures déclenche des centaines de requêtes d'un coup, d'où un plafond large par invité ;
+        // l'archive .zip, coûteuse, est limitée de près.
+        RateLimiter::for('guest-gallery', fn (Request $request): Limit => Limit::perMinute(600)->by('gallery:'.$this->guestToken($request)));
+        RateLimiter::for('guest-gallery-archive', fn (Request $request): array => [
+            Limit::perMinute(4)->by('gallery-zip:minute:'.$this->guestToken($request)),
+            Limit::perHour(20)->by('gallery-zip:hour:'.$this->guestToken($request)),
+        ]);
+    }
+
+    private function guestToken(Request $request): string
+    {
+        $guest = $request->route('guest');
+
+        return $guest instanceof Guest ? $guest->token : (string) $guest;
     }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Contributions from '@/Components/Contributions.vue';
 import Donations, { type CagnottePayload } from '@/Components/Donations.vue';
+import Gallery, { type GalleryPhoto } from '@/Components/Gallery.vue';
 import EventDetails from '@/Components/EventDetails.vue';
 import PrivacyPanel from '@/Components/PrivacyPanel.vue';
 import RsvpForm from '@/Components/RsvpForm.vue';
@@ -29,6 +30,7 @@ const props = defineProps<{
     };
     token: string;
     cagnotte: CagnottePayload | null;
+    gallery: GalleryPhoto[];
     guestbook: { id: number; author: string; message: string }[];
     mine: { pending_entries: number };
     retention_days: number;
@@ -40,7 +42,7 @@ const LABELS: Record<GuestTab, string> = {
     rsvp: __('RSVP'),
     billet: __('Billet'),
     cadeaux: __('Cadeaux'),
-    souvenirs: __('Souvenirs'),
+    galerie: __('Galerie'),
 };
 
 const tabs = computed(() => GUEST_TABS.filter((t) => t !== 'cadeaux' || props.cagnotte !== null).map((key) => ({ key, label: LABELS[key] })));
@@ -99,7 +101,8 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
             <Donations :token="token" :cagnotte="cagnotte" />
         </div>
 
-        <div v-else class="mt-8 flex w-full justify-center">
+        <div v-else class="mt-8 flex w-full flex-col items-center gap-6">
+            <Gallery :token="token" :photos="gallery" />
             <Contributions :token="token" :guestbook="guestbook" :mine="mine" />
         </div>
 

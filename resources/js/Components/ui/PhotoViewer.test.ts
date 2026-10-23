@@ -70,6 +70,17 @@ describe('PhotoViewer', () => {
         expect((await mountViewer(1)).get('[data-testid="viewer-caption"]').text()).toBe('Bob');
     });
 
+    it('sans auteur ni légende (photo de l\'hôte), n\'affiche pas de crédit mais propose le téléchargement', async () => {
+        const w = mount(PhotoViewer, { props: { photos: [{ id: 9, url: '/full/9', download: '/dl/9' }], index: 0 }, attachTo: document.body });
+        await nextTick();
+        await nextTick();
+
+        expect(w.find('[data-testid="viewer-caption"]').exists()).toBe(false);
+        expect(w.get('[data-testid="viewer-download"]').attributes('href')).toBe('/dl/9');
+        expect(w.get('[data-testid="viewer-image"]').attributes('alt')).toBe("Photo de l'événement");
+        w.unmount();
+    });
+
     it('navigue avec les flèches, Début et Fin', async () => {
         const w = await mountViewer(1);
         const dialog = w.get('dialog');

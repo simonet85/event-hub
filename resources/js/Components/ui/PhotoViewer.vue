@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { translate as __ } from '@/i18n';
 import { neighbour, swipeDirection } from '@/lib/swipe';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
 export interface ViewerPhoto {
     id: number;
     url: string;
-    author: string;
-    caption: string | null;
+    author?: string | null;
+    caption?: string | null;
+    /** Lien de téléchargement de la photo, s'il y en a un. */
+    download?: string;
 }
 
 /**
@@ -20,6 +23,8 @@ const emit = defineEmits<{ 'update:index': [value: number | null] }>();
 const dialog = ref<HTMLDialogElement | null>(null);
 const isOpen = computed(() => props.index !== null && props.photos.length > 0);
 const photo = computed(() => (isOpen.value ? props.photos[props.index as number] : null));
+const label = computed(() => photo.value?.caption ?? (photo.value?.author ? `Photo de ${photo.value.author}` : __("Photo de l'événement")));
+const credit = computed(() => [photo.value?.caption, photo.value?.author].filter(Boolean).join(' — '));
 const atStart = computed(() => props.index === 0);
 const atEnd = computed(() => props.index === props.photos.length - 1);
 
@@ -114,13 +119,12 @@ onBeforeUnmount(() => {
 
             <div class="flex w-full max-w-5xl flex-1 items-center justify-center gap-2 overflow-hidden" style="touch-action: pan-y" @pointerdown="onPointerDown" @pointerup="onPointerUp">
                 <button type="button" class="btn btn-secondary shrink-0 !px-3" :aria-label="__('Photo précédente')" data-testid="viewer-prev" :disabled="atStart" @click="go(-1)">‹</button>
-                <img :key="photo.id" :src="photo.url" :alt="photo.caption ?? `Photo de ${photo.author}`" class="max-h-[70vh] min-w-0 max-w-full select-none object-contain" draggable="false" data-testid="viewer-image" />
+                <img :key="photo.id" :src="photo.url" :alt="label" class="max-h-[70vh] min-w-0 max-w-full select-none object-contain" draggable="false" data-testid="viewer-image" />
                 <button type="button" class="btn btn-secondary shrink-0 !px-3" :aria-label="__('Photo suivante')" data-testid="viewer-next" :disabled="atEnd" @click="go(1)">›</button>
             </div>
 
-            <p class="caption max-w-xl text-center text-ink-muted" data-testid="viewer-caption">
-                {{ photo.caption ? `${photo.caption} — ` : '' }}{{ photo.author }}
-            </p>
+            <p v-if="credit" class="caption max-w-xl text-center text-ink-muted" data-testid="viewer-caption">{{ credit }}</p>
+            <a v-if="photo.download" :href="photo.download" class="btn btn-secondary" data-testid="viewer-download">{{ __('Télécharger cette photo') }}</a>
         </div>
     </dialog>
 </template>

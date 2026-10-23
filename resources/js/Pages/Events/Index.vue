@@ -25,6 +25,7 @@ const actions = computed(() => [
     { label: __('Invités'), route: 'guests.index' },
     { label: __('Programme'), route: 'schedule.index' },
     { label: __('Cagnotte'), route: 'cagnotte.index' },
+    { label: __('Galerie'), route: 'gallery.index' },
     { label: __('Modération'), route: 'moderation.index' },
 ]);
 

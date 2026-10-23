@@ -16,7 +16,9 @@ class PhotoController extends Controller
     {
         abort_unless($request->user()?->can('view', $photo->event), 404);
 
-        return Storage::disk('local')->response($photo->path, null, [
+        $path = $request->query('taille') === 'mini' && $photo->thumb_path ? $photo->thumb_path : $photo->path;
+
+        return Storage::disk('local')->response($path, null, [
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'private, no-store',
         ]);
