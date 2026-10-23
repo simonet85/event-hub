@@ -56,15 +56,18 @@ const steps = [
             <Marquee :items="marquee" />
         </div>
 
-        <header class="absolute inset-x-0 top-9 z-20 mx-auto flex max-w-6xl items-center justify-between px-5 text-white mix-blend-difference">
-            <span class="display text-2xl">{{ __('Event') }} <em class="!text-current">{{ __('Hub') }}</em></span>
-            <nav class="flex items-center gap-4 text-sm font-semibold">
-                <LocaleSwitcher />
-                <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="underline">{{ __('Mon espace') }}</Link>
-                <template v-else>
-                    <Link :href="route('login')" class="hover:underline">{{ __('Connexion') }}</Link>
-                    <Link v-if="canRegister" :href="route('register')" class="rounded-full border border-white px-4 py-2">{{ __('Créer un compte') }}</Link>
-                </template>
+        <!-- Mobile : logo + langue sur une ligne, accès au compte sur la suivante ; dès `sm`, tout tient sur une seule ligne. -->
+        <header class="absolute inset-x-0 top-9 z-20 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 text-white mix-blend-difference sm:flex-nowrap">
+            <span class="display order-1 whitespace-nowrap text-2xl">{{ __('Event') }} <em class="!text-current">{{ __('Hub') }}</em></span>
+            <nav class="contents text-sm font-semibold">
+                <LocaleSwitcher class="order-2 sm:ml-auto" />
+                <div class="order-3 flex w-full items-center justify-between gap-3 whitespace-nowrap sm:w-auto sm:justify-end sm:gap-4">
+                    <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="underline">{{ __('Mon espace') }}</Link>
+                    <template v-else>
+                        <Link :href="route('login')" class="hover:underline">{{ __('Connexion') }}</Link>
+                        <Link v-if="canRegister" :href="route('register')" class="rounded-full border border-white px-4 py-2">{{ __('Créer un compte') }}</Link>
+                    </template>
+                </div>
             </nav>
         </header>
 
