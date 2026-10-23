@@ -27,6 +27,7 @@ const props = defineProps<{
         dietary_restrictions: string | null;
         favorite_song: string | null;
         rsvp_message: string | null;
+        erasure_requested: boolean;
     };
     token: string;
     cagnotte: CagnottePayload | null;
@@ -94,7 +95,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
             <p class="mt-8 w-full text-center">
                 <a :href="route('invitations.ticket', token)" class="btn-quiet btn" data-testid="ticket-link">{{ __('Ouvrir mon billet (utilisable hors ligne)') }}</a>
             </p>
-            <div class="mt-12 flex w-full justify-center"><PrivacyPanel :token="token" :retention-days="retention_days" /></div>
+            <div class="mt-12 flex w-full justify-center"><PrivacyPanel :token="token" :retention-days="retention_days" :requested="guest.erasure_requested" /></div>
         </template>
 
         <div v-else-if="active === 'cadeaux' && cagnotte" class="mt-8 flex w-full justify-center">

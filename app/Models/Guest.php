@@ -34,6 +34,7 @@ class Guest extends Model
             'responded_at' => 'datetime',
             'consent_at' => 'datetime',
             'erased_at' => 'datetime',
+            'erasure_requested_at' => 'datetime',
             'rsvp_status' => RsvpStatus::class,
             'companions_count' => 'integer',
             'max_companions' => 'integer',

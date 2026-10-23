@@ -68,13 +68,13 @@ test('sans régime alimentaire, aucun consentement n\'est demandé', function ()
     expect($guest->fresh()->consent_at)->toBeNull()->and($guest->fresh()->dietary_restrictions)->toBeNull();
 });
 
-// --- Suppression par l'invité -------------------------------------------------------------------------------
+// --- Suppression par l'hôte, à la demande de l'invité -------------------------------------------------------------------------------
 
-test('un invité supprime ses données : coordonnées, réponse, livre d\'or, photos et message de don', function () {
+test('l\'hôte supprime les données d\'un invité : coordonnées, réponse, livre d\'or, photos et message de don', function () {
     [$guest, $photo, $entry, $contribution] = guestWithContent($this->event);
     $oldToken = $guest->token;
 
-    $this->delete("/i/{$oldToken}/data")->assertRedirect(route('events.public', $this->event))->assertSessionHas('data_erased', true);
+    $this->actingAs($this->host)->delete("/events/{$this->event->slug}/guests/{$guest->id}/data")->assertRedirect()->assertSessionHas('guest_erased', true);
 
     $guest->refresh();
     expect($guest->name)->toBe(GuestDataEraser::ERASED_NAME)
@@ -93,7 +93,7 @@ test('un invité supprime ses données : coordonnées, réponse, livre d\'or, ph
 });
 
 test('les chiffres de l\'événement restent exacts après la suppression', function () {
-    $this->delete("/i/{$this->guest->token}/data");
+    $this->actingAs($this->host)->delete("/events/{$this->event->slug}/guests/{$this->guest->id}/data");
 
     $this->actingAs($this->host)->get("/events/{$this->event->slug}/dashboard")->assertInertia(fn (Assert $page) => $page
         ->where('rsvp.accepted', 1)
@@ -105,14 +105,14 @@ test('l\'ancien lien d\'invitation ne fonctionne plus', function () {
     $oldToken = $this->guest->token;
     $this->get("/i/{$oldToken}")->assertOk();
 
-    $this->delete("/i/{$oldToken}/data");
+    $this->actingAs($this->host)->delete("/events/{$this->event->slug}/guests/{$this->guest->id}/data");
 
     $this->get("/i/{$oldToken}")->assertNotFound();
-    $this->delete("/i/{$oldToken}/data")->assertNotFound();
+    $this->post("/i/{$oldToken}/data-request")->assertNotFound();
 });
 
 test('l\'invité supprimé ne figure plus dans le plan de table ni dans les exports avec ses coordonnées', function () {
-    $this->delete("/i/{$this->guest->token}/data");
+    $this->actingAs($this->host)->delete("/events/{$this->event->slug}/guests/{$this->guest->id}/data");
 
     $this->actingAs($this->host)->get("/events/{$this->event->slug}/exports/guests.csv")->assertOk()
         ->assertDontSee('awa@example.test')->assertDontSee('Arachides')->assertDontSee('Awa Koné');
@@ -121,7 +121,7 @@ test('l\'invité supprimé ne figure plus dans le plan de table ni dans les expo
 test('la suppression d\'un invité ne touche pas aux autres', function () {
     [$other, $photo, $entry] = guestWithContent($this->event);
 
-    $this->delete("/i/{$this->guest->token}/data");
+    $this->actingAs($this->host)->delete("/events/{$this->event->slug}/guests/{$this->guest->id}/data");
 
     expect(Photo::find($photo->id))->not->toBeNull()->and(GuestbookEntry::find($entry->id))->not->toBeNull();
     expect($other->fresh()->dietary_restrictions)->toBe('Sans gluten');
@@ -133,10 +133,66 @@ test('la page de l\'invitation annonce la durée de conservation', function () {
     $this->get("/i/{$this->guest->token}")->assertInertia(fn (Assert $page) => $page->where('retention_days', 45));
 });
 
-test('après la suppression, la page publique confirme', function () {
-    $this->followingRedirects()->delete("/i/{$this->guest->token}/data")->assertInertia(fn (Assert $page) => $page
-        ->component('Events/ShowPublic')
-        ->where('flash.data_erased', true));
+test('un invité demande la suppression : rien n\'est effacé, l\'hôte est prévenu', function () {
+    $this->post("/i/{$this->guest->token}/data-request")->assertRedirect()->assertSessionHas('erasure_requested', true);
+
+    $guest = $this->guest->fresh();
+    expect($guest->erasure_requested_at)->not->toBeNull()
+        ->and($guest->erased_at)->toBeNull()
+        ->and($guest->email)->toBe('awa@example.test');
+});
+
+test('redemander ne change pas la date de la première demande', function () {
+    $this->post("/i/{$this->guest->token}/data-request");
+    $first = $this->guest->fresh()->erasure_requested_at;
+
+    $this->travel(2)->days();
+    $this->post("/i/{$this->guest->token}/data-request");
+
+    expect($this->guest->fresh()->erasure_requested_at->equalTo($first))->toBeTrue();
+});
+
+test('un invité ne peut plus supprimer lui-même ses données', function () {
+    $this->delete("/i/{$this->guest->token}/data")->assertNotFound();
+
+    expect($this->guest->fresh()->erased_at)->toBeNull();
+});
+
+test('l\'invitation indique si une demande est en cours', function () {
+    $this->get("/i/{$this->guest->token}")->assertInertia(fn (Assert $page) => $page->where('guest.erasure_requested', false));
+
+    $this->post("/i/{$this->guest->token}/data-request");
+
+    $this->get("/i/{$this->guest->token}")->assertInertia(fn (Assert $page) => $page->where('guest.erasure_requested', true));
+});
+
+test('l\'hôte voit les demandes dans la liste des invités et sur le tableau de bord', function () {
+    Guest::factory()->for($this->event)->create();
+    $this->post("/i/{$this->guest->token}/data-request");
+
+    $this->actingAs($this->host)->get("/events/{$this->event->slug}/guests")->assertInertia(fn (Assert $page) => $page
+        ->where('guests.data', fn ($guests) => collect($guests)->where('erasure_requested', true)->count() === 1));
+    $this->actingAs($this->host)->get("/events/{$this->event->slug}/dashboard")->assertInertia(fn (Assert $page) => $page->where('privacy.erasure_requests', 1));
+});
+
+test('la suppression par l\'hôte clôt la demande', function () {
+    $this->post("/i/{$this->guest->token}/data-request");
+
+    $this->actingAs($this->host)->delete("/events/{$this->event->slug}/guests/{$this->guest->id}/data")->assertRedirect();
+
+    $this->actingAs($this->host)->get("/events/{$this->event->slug}/dashboard")->assertInertia(fn (Assert $page) => $page->where('privacy.erasure_requests', 0));
+    expect($this->guest->fresh()->erasure_requested_at)->toBeNull();
+});
+
+test('seul l\'hôte de l\'événement efface les données d\'un invité', function () {
+    $url = "/events/{$this->event->slug}/guests/{$this->guest->id}/data";
+    $other = Guest::factory()->create();
+
+    $this->delete($url)->assertRedirect('/login');
+    $this->actingAs(User::factory()->create())->delete($url)->assertForbidden();
+    $this->actingAs($this->host)->delete("/events/{$this->event->slug}/guests/{$other->id}/data")->assertNotFound();
+
+    expect($this->guest->fresh()->erased_at)->toBeNull()->and($other->fresh()->erased_at)->toBeNull();
 });
 
 // --- Suppression par l'hôte ---------------------------------------------------------------------------------

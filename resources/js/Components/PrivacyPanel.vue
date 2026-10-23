@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import Modal from '@/Components/Modal.vue';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-const props = withDefaults(defineProps<{ token: string; retentionDays?: number }>(), { retentionDays: 90 });
+/**
+ * Les données de l'invité sont supprimées par l'hôte, responsable du traitement : l'invité lui en fait la demande ici.
+ */
+const props = withDefaults(defineProps<{ token: string; retentionDays?: number; requested?: boolean }>(), { retentionDays: 90, requested: false });
 
-const confirming = ref(false);
 const working = ref(false);
 
-const erase = () => {
+const request = () => {
     working.value = true;
-    router.delete(route('guest-data.erase', props.token), { onFinish: () => (working.value = false) });
+    router.post(route('guest-data.request', props.token), {}, { preserveScroll: true, onFinish: () => (working.value = false) });
 };
 </script>
 
@@ -19,21 +20,14 @@ const erase = () => {
         <p class="eyebrow">{{ __('Vos données') }}</p>
         <p class="text-sm text-ink-muted">
             {{ __('Vos réponses ne sont visibles que des organisateurs. Elles sont supprimées automatiquement :days jours après l\'événement.', { days: retentionDays }) }}
-            {{ __('Vous pouvez aussi les supprimer dès maintenant : vos coordonnées, votre réponse, vos messages du livre d\'or et vos photos seront effacés.') }}
+            {{ __('Pour les faire supprimer plus tôt, envoyez une demande aux organisateurs : ils effaceront vos coordonnées, votre réponse et vos messages du livre d\'or.') }}
         </p>
-        <button type="button" class="btn btn-secondary" data-testid="privacy-open" @click="confirming = true">{{ __('Supprimer mes données') }}</button>
 
-        <Modal :show="confirming" max-width="md" @close="confirming = false">
-            <div class="p-6 sm:p-8" data-testid="privacy-confirm">
-                <h2 class="heading">{{ __('Supprimer vos données ?') }}</h2>
-                <p class="mt-2 text-sm text-ink-muted">
-                    {{ __('Cette action est définitive. Votre invitation ne fonctionnera plus et les organisateurs ne verront plus votre nom, votre réponse, vos messages ni vos photos.') }}
-                </p>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="btn btn-secondary" @click="confirming = false">{{ __('Annuler') }}</button>
-                    <button type="button" class="btn" :disabled="working" data-testid="privacy-confirm-button" @click="erase">{{ __('Supprimer définitivement') }}</button>
-                </div>
-            </div>
-        </Modal>
+        <p v-if="requested" class="notice notice-success" role="status" data-testid="privacy-requested">
+            {{ __('Votre demande a été transmise aux organisateurs. Vos données seront supprimées dès qu\'ils l\'auront traitée.') }}
+        </p>
+        <button v-else type="button" class="btn btn-secondary" :disabled="working" data-testid="privacy-request" @click="request">
+            {{ __('Demander la suppression de mes données') }}
+        </button>
     </section>
 </template>

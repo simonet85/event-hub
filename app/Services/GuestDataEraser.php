@@ -34,6 +34,7 @@ class GuestDataEraser
             'rsvp_message' => null,
             'consent_at' => null,
             'erased_at' => now(),
+            'erasure_requested_at' => null,
         ])->save();
     }
 

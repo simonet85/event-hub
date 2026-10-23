@@ -13,7 +13,7 @@ const props = defineProps<{
     rsvp: { total: number; to_invite: number; pending: number; accepted: number; declined: number; headcount: number; response_rate: number };
     dietary: { guest: string; table: string | null; restriction: string; seats: number }[];
     tables: { table: string; guests: number; headcount: number }[];
-    privacy: { retention_days: number; purge_on: string; purged_at: string | null; can_purge: boolean };
+    privacy: { retention_days: number; purge_on: string; purged_at: string | null; erasure_requests: number; can_purge: boolean };
     caterer_link: { url: string; expires_at: string } | null;
     cagnotte: { raised: number; goal: number | null; pending: number; to_review: number } | null;
     moderation: { entries: number };
@@ -109,7 +109,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                     </p>
                     <template v-else>
                         <p class="max-w-2xl text-sm text-ink-muted" data-testid="privacy-schedule">
-                            {{ __('Coordonnées, régimes, messages, livre d\'or et photos des invités sont supprimés automatiquement :days jours après l\'événement (le :date). Les montants des contributions sont conservés. Chaque invité peut aussi supprimer ses données depuis son invitation.', { days: privacy.retention_days, date: expiry(privacy.purge_on) }) }}
+                            {{ __('Coordonnées, régimes, messages et livre d\'or des invités sont supprimés automatiquement :days jours après l\'événement (le :date). Les montants des contributions sont conservés. Un invité peut demander la suppression de ses données depuis son invitation : vous la voyez alors dans la liste des invités.', { days: privacy.retention_days, date: expiry(privacy.purge_on) }) }}
                         </p>
                         <button v-if="privacy.can_purge" type="button" class="btn btn-ghost !px-4 !py-2 text-xs" data-testid="privacy-purge" @click="confirmingPurge = true">{{ __('Supprimer les données maintenant') }}</button>
                         <p v-else class="text-sm text-ink-muted">{{ __('La suppression manuelle est possible une fois l\'événement passé.') }}</p>
@@ -119,7 +119,7 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                         <div class="p-6 sm:p-8">
                             <h2 class="display text-2xl">{{ __('Supprimer les données des invités ?') }}</h2>
                             <p class="mt-2 text-sm text-ink-muted">
-                                {{ __('Les noms, e-mails, téléphones, régimes, messages, livre d\'or et photos seront effacés définitivement, et les invitations cesseront de fonctionner. Pensez à exporter ce dont vous avez besoin (Excel, CSV) avant de continuer.') }}
+                                {{ __('Les noms, e-mails, téléphones, régimes, messages et livre d\'or seront effacés définitivement, et les invitations cesseront de fonctionner. Pensez à exporter ce dont vous avez besoin (Excel, CSV) avant de continuer.') }}
                             </p>
                             <div class="mt-6 flex justify-end gap-3">
                                 <button type="button" class="btn btn-secondary" @click="confirmingPurge = false">{{ __('Annuler') }}</button>
@@ -194,6 +194,11 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                     <p class="mt-2 text-sm text-[var(--muted)]">
                         {{ __(':count en attente', { count: cagnotte.pending }) }}<span v-if="cagnotte.to_review > 0" class="text-danger"> · {{ __(':count à vérifier', { count: cagnotte.to_review }) }}</span>
                     </p>
+                </section>
+
+                <section v-if="privacy.erasure_requests > 0" class="notice notice-warning" data-testid="erasure-requests">
+                    {{ __(':count invité(s) demandent la suppression de leurs données.', { count: privacy.erasure_requests }) }}
+                    <Link :href="route('guests.index', event.slug)" class="inline-flex min-h-tap items-center underline">{{ __('Voir les invités') }}</Link>
                 </section>
 
                 <section v-if="moderation.entries > 0" class="notice notice-warning" data-testid="moderation">

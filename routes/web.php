@@ -53,7 +53,7 @@ Route::middleware(['event.active', 'noindex'])->group(function () {
     Route::get('/i/{guest:token}/galerie/{photo}', [GuestGalleryController::class, 'show'])->middleware('throttle:guest-gallery')->name('guest-gallery.show');
     Route::get('/i/{guest:token}/galerie/{photo}/telecharger', [GuestGalleryController::class, 'download'])->middleware('throttle:guest-gallery')->name('guest-gallery.download');
     Route::get('/i/{guest:token}/galerie.zip', [GuestGalleryController::class, 'archive'])->middleware('throttle:guest-gallery-archive')->name('guest-gallery.archive');
-    Route::delete('/i/{guest:token}/data', [GuestDataController::class, 'erase'])->middleware('throttle:10,1')->name('guest-data.erase');
+    Route::post('/i/{guest:token}/data-request', [GuestDataController::class, 'request'])->middleware('throttle:10,1')->name('guest-data.request');
     Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
 });
 
@@ -74,6 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/events/{event}/schedule/{item}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
     Route::patch('/events/{event}/details', [ScheduleController::class, 'updateDetails'])->name('events.details');
     Route::get('/events/{event}/dashboard', [DashboardController::class, 'show'])->name('dashboard.show');
+    Route::delete('/events/{event}/guests/{guest}/data', [GuestDataController::class, 'erase'])->name('guest-data.erase');
     Route::delete('/events/{event}/guest-data', [GuestDataController::class, 'purge'])->name('guest-data.purge');
     Route::post('/events/{event}/caterer-link', [CatererLinkController::class, 'store'])->name('caterer-link.store');
     Route::delete('/events/{event}/caterer-link', [CatererLinkController::class, 'destroy'])->name('caterer-link.destroy');

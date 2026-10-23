@@ -11,15 +11,29 @@ use Illuminate\Support\Facades\Gate;
 class GuestDataController extends Controller
 {
     /**
-     * Un invité supprime ses propres données depuis son invitation. Son lien cesse ensuite de fonctionner.
+     * Un invité demande la suppression de ses données : l'hôte, responsable du traitement, la voit et l'effectue.
+     * Redemander ne change pas la date de la première demande.
      */
-    public function erase(Guest $guest, GuestDataEraser $eraser): RedirectResponse
+    public function request(Guest $guest): RedirectResponse
     {
-        $event = $guest->event;
+        if ($guest->erasure_requested_at === null) {
+            $guest->forceFill(['erasure_requested_at' => now()])->save();
+        }
+
+        return back()->with('erasure_requested', true);
+    }
+
+    /**
+     * L'hôte supprime les données d'un invité (à sa demande ou de sa propre initiative). Son lien cesse de fonctionner.
+     */
+    public function erase(Event $event, Guest $guest, GuestDataEraser $eraser): RedirectResponse
+    {
+        Gate::authorize('update', $event);
+        abort_unless($guest->event_id === $event->id, 404);
 
         $eraser->erase($guest);
 
-        return redirect()->route('events.public', $event)->with('data_erased', true);
+        return back()->with('guest_erased', true);
     }
 
     /**

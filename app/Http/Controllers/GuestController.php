@@ -38,6 +38,8 @@ class GuestController extends Controller
                 'dietary_restrictions' => $guest->dietary_restrictions,
                 'favorite_song' => $guest->favorite_song,
                 'rsvp_message' => $guest->rsvp_message,
+                'erasure_requested' => $guest->erasure_requested_at !== null,
+                'erased' => $guest->erased_at !== null,
                 'invitation_url' => $guest->invitationUrl(),
                 'whatsapp_url' => $guest->setRelation('event', $event)->whatsappUrl(),
             ]),

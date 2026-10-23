@@ -4,7 +4,7 @@ import EventHeader from '@/Components/ui/EventHeader.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 type Guest = {
     id: number;
@@ -19,6 +19,8 @@ type Guest = {
     dietary_restrictions: string | null;
     favorite_song: string | null;
     rsvp_message: string | null;
+    erasure_requested: boolean;
+    erased: boolean;
     invitation_url: string;
     whatsapp_url: string | null;
 };
@@ -45,6 +47,12 @@ const saveTable = (g: Guest, value: string) => {
 };
 const remove = (g: Guest) => router.delete(route('guests.destroy', [props.event.slug, g.id]));
 const pending = computed(() => props.summary.to_invite);
+
+const confirmingErase = ref<number | null>(null);
+const erase = (g: Guest) => {
+    confirmingErase.value = null;
+    router.delete(route('guest-data.erase', [props.event.slug, g.id]), { preserveScroll: true });
+};
 </script>
 
 <template>
@@ -132,6 +140,7 @@ const pending = computed(() => props.summary.to_invite);
                                     (+{{ g.companions_count }})
                                 </template>
                             </p>
+                            <p v-if="g.erasure_requested && !g.erased" class="mt-1 text-sm font-semibold text-warning" data-testid="erasure-requested">{{ __('Suppression des données demandée') }}</p>
                             <p v-if="g.dietary_restrictions" class="text-xs text-[var(--muted)]">{{ __('Régime : :value', { value: g.dietary_restrictions }) }}</p>
                             <p v-if="g.favorite_song" class="text-xs text-[var(--muted)]">{{ __('Chanson : :value', { value: g.favorite_song }) }}</p>
                             <p v-if="g.rsvp_message" class="text-xs italic text-[var(--muted)]">« {{ g.rsvp_message }} »</p>
@@ -143,6 +152,13 @@ const pending = computed(() => props.summary.to_invite);
                             <a v-if="g.whatsapp_url" :href="g.whatsapp_url" target="_blank" class="inline-flex min-h-tap items-center text-success">
                                 {{ __('WhatsApp') }}
                             </a>
+                            <template v-if="!g.erased">
+                                <button v-if="confirmingErase !== g.id" class="inline-flex min-h-tap items-center text-warning" data-testid="erase-open" @click="confirmingErase = g.id">{{ __('Effacer ses données') }}</button>
+                                <span v-else class="inline-flex items-center gap-3">
+                                    <button class="inline-flex min-h-tap items-center font-semibold text-danger" data-testid="erase-confirm" @click="erase(g)">{{ __('Confirmer : effacer définitivement') }}</button>
+                                    <button class="inline-flex min-h-tap items-center" @click="confirmingErase = null">{{ __('Annuler') }}</button>
+                                </span>
+                            </template>
                             <button class="inline-flex min-h-tap items-center text-danger" @click="remove(g)">{{ __('Supprimer') }}</button>
                         </div>
                     </li>
