@@ -11,6 +11,8 @@ const props = defineProps<{
     cssClass?: string;
     /** Thème Fête : mode sombre, sauf si l'hôte a choisi son propre fond. */
     dark?: boolean;
+    /** Pleine largeur (page galerie) au lieu de la colonne centrée de 48 rem. */
+    wide?: boolean;
 }>();
 
 const differs = (key: 'primary_color' | 'secondary_color' | 'font_family') =>
@@ -52,7 +54,8 @@ const style = computed(() => {
         :style="style"
     >
         <a href="#contenu" class="skip-link">{{ __('Aller au contenu') }}</a>
-        <main id="contenu" tabindex="-1" class="relative mx-auto flex min-h-screen outline-none max-w-3xl flex-col items-center px-4 pb-28 text-center">
+        <main id="contenu" tabindex="-1" class="relative mx-auto flex min-h-screen flex-col items-center pb-28 text-center outline-none"
+            :class="wide ? 'max-w-none px-1.5 sm:px-3' : 'max-w-3xl px-4'">
             <slot />
         </main>
     </div>

@@ -91,6 +91,14 @@ describe('GuestNav', () => {
 describe('EventPublicLayout', () => {
     const mountLayout = (props: Record<string, unknown>) => mount(EventPublicLayout, { props: { theme: preset, preset, ...props }, slots: { default: 'contenu' } });
 
+    it('garde une colonne centrée, sauf en pleine largeur (page galerie)', () => {
+        expect(mountLayout({}).get('main').classes()).toContain('max-w-3xl');
+
+        const wide = mountLayout({ wide: true }).get('main');
+        expect(wide.classes()).toContain('max-w-none');
+        expect(wide.classes()).not.toContain('max-w-3xl');
+    });
+
     it('applique la classe ev-* du type et le thème clair par défaut', () => {
         const w = mountLayout({ cssClass: 'ev-bapteme' });
         expect(w.classes()).toContain('ev-bapteme');

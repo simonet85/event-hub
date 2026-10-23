@@ -74,7 +74,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
 <template>
     <Head :title="`${__('Invitation')} - ${event.title}`" />
 
-    <EventPublicLayout :theme="event.theme_config" :preset="event.theme_preset" :css-class="event.css_class" :dark="event.dark_theme">
+    <EventPublicLayout :theme="event.theme_config" :preset="event.theme_preset" :css-class="event.css_class" :dark="event.dark_theme" :wide="active === 'galerie'">
         <EnvelopeIntro :token="token" :guest-name="guest.name" />
 
         <template v-if="active === 'invitation'">
@@ -87,8 +87,9 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
             <Reveal class="mt-12 w-full"><EventDetails :event="event" /></Reveal>
         </template>
 
-        <div v-else-if="active === 'rsvp'" class="mt-8 flex w-full justify-center">
+        <div v-else-if="active === 'rsvp'" class="mt-8 flex w-full flex-col items-center gap-6">
             <RsvpForm :token="token" :guest="guest" :retention-days="retention_days" />
+            <Contributions :token="token" :guestbook="guestbook" :mine="mine" />
         </div>
 
         <template v-else-if="active === 'billet'">
@@ -102,10 +103,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
             <Donations :token="token" :cagnotte="cagnotte" />
         </div>
 
-        <div v-else class="mt-8 flex w-full flex-col items-center gap-6">
-            <Gallery :token="token" :photos="gallery" />
-            <Contributions :token="token" :guestbook="guestbook" :mine="mine" />
-        </div>
+        <Gallery v-else :token="token" :photos="gallery" />
 
         <GuestNav :tabs="tabs" :active="active" @select="select" />
     </EventPublicLayout>

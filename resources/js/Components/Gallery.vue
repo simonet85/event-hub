@@ -40,16 +40,16 @@ function open(index: number, id: number) {
 </script>
 
 <template>
-    <section id="galerie" class="card w-full max-w-md scroll-mt-4 space-y-4 p-6 text-left" data-testid="gallery">
+    <section id="galerie" class="w-full scroll-mt-4 space-y-5 pt-6 text-left" data-testid="gallery">
         <div class="text-center">
             <p class="eyebrow">{{ __('Galerie photo') }}</p>
-            <h2 class="display-lg mt-1">{{ __('Les') }} <em>{{ __('photos') }}</em></h2>
+            <h1 class="display-lg mt-1">{{ __('Les') }} <em>{{ __('photos') }}</em></h1>
         </div>
 
         <EmptyState v-if="photos.length === 0" compact icon="photos" :title="__('Aucune photo pour le moment')" :text="__('Les photos de la fête seront publiées ici par les hôtes.')" />
 
         <template v-else>
-            <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex w-full flex-wrap items-center justify-between gap-2 px-1">
                 <p class="caption text-ink-muted" data-testid="gallery-count">{{ __(':count photo(s)', { count: photos.length }) }}</p>
                 <div class="flex flex-wrap gap-2">
                     <button type="button" class="btn btn-secondary !px-4 !py-2 text-xs" :aria-pressed="selecting" data-testid="gallery-select" @click="toggleSelecting">
@@ -59,23 +59,7 @@ function open(index: number, id: number) {
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-1.5">
-                <button
-                    v-for="(p, i) in photos"
-                    :key="p.id"
-                    type="button"
-                    class="relative block"
-                    :aria-label="selecting ? __('Sélectionner la photo :n', { n: i + 1 }) : __('Agrandir la photo :n', { n: i + 1 })"
-                    :aria-pressed="selecting ? selected.includes(p.id) : undefined"
-                    data-testid="photo-open"
-                    @click="open(i, p.id)"
-                >
-                    <img :src="p.thumb" :alt="__('Photo :n', { n: i + 1 })" loading="lazy" class="aspect-square w-full rounded-md object-cover" :class="selected.includes(p.id) ? 'opacity-60 ring-2 ring-accent' : ''" />
-                    <span v-if="selecting" class="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full border-2 border-white bg-black/40 text-xs text-white" aria-hidden="true">{{ selected.includes(p.id) ? '✓' : '' }}</span>
-                </button>
-            </div>
-
-            <div v-if="selecting" class="space-y-1 text-center">
+            <div v-if="selecting" class="sticky top-2 z-20 mx-auto w-full max-w-md space-y-1 rounded-lg bg-surface-100/95 p-2 text-center shadow-card">
                 <a
                     v-if="selected.length"
                     :href="selectionUrl"
@@ -87,6 +71,22 @@ function open(index: number, id: number) {
                 </a>
                 <p v-else class="caption text-ink-muted">{{ __('Touchez les photos à télécharger.') }}</p>
                 <p v-if="selected.length >= MAX_SELECTION" class="caption text-ink-muted">{{ __('Sélection limitée à :max photos.', { max: MAX_SELECTION }) }}</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]">
+                <button
+                    v-for="(p, i) in photos"
+                    :key="p.id"
+                    type="button"
+                    class="relative block"
+                    :aria-label="selecting ? __('Sélectionner la photo :n', { n: i + 1 }) : __('Agrandir la photo :n', { n: i + 1 })"
+                    :aria-pressed="selecting ? selected.includes(p.id) : undefined"
+                    data-testid="photo-open"
+                    @click="open(i, p.id)"
+                >
+                    <img :src="p.thumb" :alt="__('Photo :n', { n: i + 1 })" loading="lazy" class="aspect-square w-full rounded-md object-cover transition hover:opacity-90" :class="selected.includes(p.id) ? 'opacity-60 ring-2 ring-accent' : ''" />
+                    <span v-if="selecting" class="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full border-2 border-white bg-black/40 text-xs text-white" aria-hidden="true">{{ selected.includes(p.id) ? '✓' : '' }}</span>
+                </button>
             </div>
 
             <PhotoViewer v-model:index="viewerIndex" :photos="viewerPhotos" />
