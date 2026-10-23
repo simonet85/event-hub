@@ -100,13 +100,12 @@ class EventReport
     }
 
     /**
-     * @return array{entries: int, photos: int}
+     * @return array{entries: int}
      */
     public function moderationQueue(): array
     {
         return [
             'entries' => $this->event->guestbookEntries()->where('status', ModerationStatus::Pending)->count(),
-            'photos' => $this->event->photos()->where('status', ModerationStatus::Pending)->count(),
         ];
     }
 

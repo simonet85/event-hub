@@ -327,7 +327,7 @@
     "objectif :amount (:percent %)": "goal :amount (:percent%)",
     ":count en attente": ":count pending",
     ":count à vérifier": ":count to be checked",
-    ":entries message(s) et :photos photo(s) attendent votre validation.": ":entries message(s) and :photos photo(s) are awaiting your approval.",
+    ":entries message(s) attendent votre validation.": ":entries message(s) awaiting your approval.",
     "Modérer": "Moderate",
     "← Tableau de bord": "← Dashboard",
     "Modifier l'événement": "Edit the event",

@@ -4,7 +4,6 @@ use App\Models\Contribution;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\GuestbookEntry;
-use App\Models\Photo;
 use App\Models\User;
 use App\Services\EventReport;
 use OpenSpout\Reader\XLSX\Reader as XlsxReader;
@@ -87,11 +86,10 @@ test('le tableau de bord résume la cagnotte et la modération', function () {
     Contribution::factory()->for($g)->confirmed()->create(['amount' => 25000]);
     Contribution::factory()->for($g)->create(['amount' => 9999, 'status' => 'pending']);
     GuestbookEntry::factory()->for($g)->create();
-    Photo::factory()->for($g)->count(2)->create();
 
     $this->actingAs($this->host)->get("/events/{$this->event->slug}/dashboard")->assertInertia(fn ($page) => $page
         ->where('cagnotte.raised', 25000)->where('cagnotte.goal', 100000)->where('cagnotte.pending', 1)
-        ->where('moderation.entries', 1)->where('moderation.photos', 2));
+        ->where('moderation.entries', 1)->missing('moderation.photos'));
 });
 
 test('sans cagnotte activée, le tableau de bord ne l\'expose pas', function () {

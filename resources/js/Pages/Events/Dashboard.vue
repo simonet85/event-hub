@@ -16,7 +16,7 @@ const props = defineProps<{
     privacy: { retention_days: number; purge_on: string; purged_at: string | null; can_purge: boolean };
     caterer_link: { url: string; expires_at: string } | null;
     cagnotte: { raised: number; goal: number | null; pending: number; to_review: number } | null;
-    moderation: { entries: number; photos: number };
+    moderation: { entries: number };
 }>();
 
 const confirmingPurge = ref(false);
@@ -196,8 +196,8 @@ const percent = (a: number, b: number) => (b > 0 ? Math.min(100, Math.round((a /
                     </p>
                 </section>
 
-                <section v-if="moderation.entries + moderation.photos > 0" class="notice notice-warning" data-testid="moderation">
-                    {{ __(':entries message(s) et :photos photo(s) attendent votre validation.', { entries: moderation.entries, photos: moderation.photos }) }}
+                <section v-if="moderation.entries > 0" class="notice notice-warning" data-testid="moderation">
+                    {{ __(':entries message(s) attendent votre validation.', { entries: moderation.entries }) }}
                     <Link :href="route('moderation.index', event.slug)" class="inline-flex min-h-tap items-center underline">{{ __('Modérer') }}</Link>
                 </section>
             </div>

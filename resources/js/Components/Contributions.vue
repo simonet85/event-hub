@@ -1,34 +1,18 @@
 <script setup lang="ts">
-import EmptyState from '@/Components/ui/EmptyState.vue';
-import PhotoViewer from '@/Components/ui/PhotoViewer.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
     token: string;
     guestbook: { id: number; author: string; message: string }[];
-    photos: { id: number; author: string; caption: string | null; url: string }[];
-    mine: { pending_entries: number; pending_photos: number };
+    mine: { pending_entries: number };
 }>();
 
-const viewerIndex = ref<number | null>(null);
 const entryForm = useForm({ message: '' });
-const photoForm = useForm<{ photo: File | null; caption: string }>({ photo: null, caption: '' });
-
-// Change la clé du champ fichier natif après un envoi : le navigateur n'efface pas son nom autrement.
-const fileInputKey = ref(0);
 
 const saved = computed(() => (usePage().props.flash as { contribution_saved?: string } | undefined)?.contribution_saved);
 
 const sendEntry = () => entryForm.post(route('guestbook.store', props.token), { preserveScroll: true, onSuccess: () => entryForm.reset() });
-const sendPhoto = () =>
-    photoForm.post(route('photos.store', props.token), {
-        preserveScroll: true,
-        onSuccess: () => {
-            photoForm.reset();
-            fileInputKey.value++;
-        },
-    });
 </script>
 
 <template>
@@ -62,43 +46,6 @@ const sendPhoto = () =>
             </form>
             <p v-if="saved === 'entry' || mine.pending_entries > 0" class="notice notice-warning text-center" data-testid="entry-pending">
                 {{ __('Votre message sera visible après validation par les hôtes.') }}
-            </p>
-        </section>
-
-        <section id="photos" class="card scroll-mt-4 space-y-4 p-6" data-testid="gallery">
-            <div class="text-center"><p class="eyebrow">{{ __('Galerie photo') }}</p><h2 class="display-lg mt-1">{{ __('Vos') }} <em>{{ __('photos') }}</em></h2></div>
-
-            <div v-if="photos.length" class="grid grid-cols-2 gap-2">
-                <figure v-for="(p, i) in photos" :key="p.id">
-                    <button type="button" class="block w-full" :aria-label="`Agrandir la photo de ${p.author}`" data-testid="photo-open" @click="viewerIndex = i">
-                        <img :src="p.url" :alt="p.caption ?? `Photo de ${p.author}`" loading="lazy" class="aspect-square w-full rounded-lg object-cover" />
-                    </button>
-                    <figcaption class="caption mt-1 text-ink-muted">{{ p.caption ? `${p.caption} — ` : '' }}{{ p.author }}</figcaption>
-                </figure>
-            </div>
-            <EmptyState v-else compact icon="photos" :title="__('Aucune photo pour le moment')" :text="__('Soyez le premier à partager un souvenir.')" />
-            <PhotoViewer v-model:index="viewerIndex" :photos="photos" />
-
-            <form class="space-y-2" @submit.prevent="sendPhoto">
-                <input
-                    :key="fileInputKey"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    @change="photoForm.photo = ($event.target as HTMLInputElement).files?.[0] ?? null"
-                />
-                <input v-model="photoForm.caption" type="text" :placeholder="__('Légende (optionnel)')" class="input" />
-                <p v-if="photoForm.errors.photo" class="text-sm text-danger">{{ photoForm.errors.photo }}</p>
-                <p v-if="photoForm.errors.caption" class="text-sm text-danger" data-testid="caption-error">{{ photoForm.errors.caption }}</p>
-                <button
-                    type="submit"
-                    :disabled="photoForm.processing || !photoForm.photo"
-                    class="w-full btn"
-                >
-                    {{ __('Partager ma photo') }}
-                </button>
-            </form>
-            <p v-if="saved === 'photo' || mine.pending_photos > 0" class="notice notice-warning text-center" data-testid="photo-pending">
-                {{ __('Votre photo sera visible après validation par les hôtes.') }}
             </p>
         </section>
     </div>

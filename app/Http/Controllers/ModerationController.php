@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\ModerationStatus;
 use App\Models\Event;
 use App\Models\GuestbookEntry;
-use App\Models\Photo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -27,13 +26,6 @@ class ModerationController extends Controller
                 'message' => $e->message,
                 'status' => $e->status->value,
             ]),
-            'photos' => $event->photos()->with('guest:id,name')->latest()->get()->map(fn (Photo $p) => [
-                'id' => $p->id,
-                'author' => $p->guest->name,
-                'caption' => $p->caption,
-                'status' => $p->status->value,
-                'url' => $p->url(),
-            ]),
         ]);
     }
 
@@ -53,26 +45,6 @@ class ModerationController extends Controller
         abort_unless($entry->event_id === $event->id, 404);
 
         $entry->delete();
-
-        return back();
-    }
-
-    public function updatePhoto(Request $request, Event $event, Photo $photo): RedirectResponse
-    {
-        Gate::authorize('update', $event);
-        abort_unless($photo->event_id === $event->id, 404);
-
-        $photo->update(['status' => $this->status($request)]);
-
-        return back();
-    }
-
-    public function destroyPhoto(Event $event, Photo $photo): RedirectResponse
-    {
-        Gate::authorize('update', $event);
-        abort_unless($photo->event_id === $event->id, 404);
-
-        $photo->delete();
 
         return back();
     }

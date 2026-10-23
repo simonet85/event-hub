@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\ModerationStatus;
 use App\Http\Requests\GuestbookEntryRequest;
-use App\Http\Requests\PhotoUploadRequest;
 use App\Models\Guest;
 use Illuminate\Http\RedirectResponse;
 
@@ -12,12 +11,8 @@ class ContributionController extends Controller
 {
     public const MAX_ENTRIES_PER_GUEST = 5;
 
-    public const MAX_PHOTOS_PER_GUEST = 10;
-
-    /** Contributions en attente de modération par événement : au-delà, l'hôte est protégé d'un déluge. */
+    /** Messages en attente de modération par événement : au-delà, l'hôte est protégé d'un déluge. */
     public const MAX_PENDING_ENTRIES_PER_EVENT = 200;
-
-    public const MAX_PENDING_PHOTOS_PER_EVENT = 100;
 
     /**
      * Un invité (identifié par son jeton) signe le livre d'or ; l'hôte modère avant publication.
@@ -45,24 +40,5 @@ class ContributionController extends Controller
         ]);
 
         return back()->with('contribution_saved', 'entry');
-    }
-
-    public function storePhoto(PhotoUploadRequest $request, Guest $guest): RedirectResponse
-    {
-        if ($guest->photos()->count() >= self::MAX_PHOTOS_PER_GUEST) {
-            return back()->withErrors(['photo' => __('Vous avez atteint le nombre maximum de photos.')]);
-        }
-
-        if ($guest->event->photos()->where('status', ModerationStatus::Pending)->count() >= self::MAX_PENDING_PHOTOS_PER_EVENT) {
-            return back()->withErrors(['photo' => __('Les photos de cet événement sont en attente de validation par les hôtes. Réessayez plus tard.')]);
-        }
-
-        $guest->photos()->create([
-            'event_id' => $guest->event_id,
-            'path' => $request->file('photo')->store("photos/{$guest->event_id}", 'local'),
-            'caption' => $request->validated('caption'),
-        ]);
-
-        return back()->with('contribution_saved', 'photo');
     }
 }

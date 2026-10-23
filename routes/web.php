@@ -48,7 +48,6 @@ Route::middleware(['event.active', 'noindex'])->group(function () {
     Route::get('/i/{guest:token}/billet/manifest.webmanifest', [InvitationController::class, 'manifest'])->name('invitations.ticket.manifest');
     Route::post('/i/{guest:token}/rsvp', [RsvpController::class, 'store'])->middleware('throttle:20,1')->name('rsvp.store');
     Route::post('/i/{guest:token}/guestbook', [ContributionController::class, 'storeEntry'])->middleware('throttle:guest-contributions')->name('guestbook.store');
-    Route::post('/i/{guest:token}/photos', [ContributionController::class, 'storePhoto'])->middleware('throttle:guest-contributions')->name('photos.store');
     Route::delete('/i/{guest:token}/data', [GuestDataController::class, 'erase'])->middleware('throttle:10,1')->name('guest-data.erase');
     Route::post('/i/{guest:token}/donations', [DonationController::class, 'store'])->middleware('throttle:10,1')->name('donations.store');
 });
@@ -85,8 +84,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/events/{event}/moderation', [ModerationController::class, 'index'])->name('moderation.index');
     Route::patch('/events/{event}/guestbook/{entry}', [ModerationController::class, 'updateEntry'])->name('moderation.entries.update');
     Route::delete('/events/{event}/guestbook/{entry}', [ModerationController::class, 'destroyEntry'])->name('moderation.entries.destroy');
-    Route::patch('/events/{event}/photos/{photo}', [ModerationController::class, 'updatePhoto'])->name('moderation.photos.update');
-    Route::delete('/events/{event}/photos/{photo}', [ModerationController::class, 'destroyPhoto'])->name('moderation.photos.destroy');
     Route::get('/events/{event}/guests', [GuestController::class, 'index'])->name('guests.index');
     Route::post('/events/{event}/guests', [GuestController::class, 'store'])->name('guests.store');
     Route::post('/events/{event}/guests/import', [GuestController::class, 'import'])->name('guests.import');

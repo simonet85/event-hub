@@ -7,7 +7,6 @@ use App\Jobs\SendInvitation;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\GuestbookEntry;
-use App\Models\Photo;
 use App\Services\ShareImage;
 use App\Support\ViteAssets;
 use Illuminate\Http\JsonResponse;
@@ -42,12 +41,9 @@ class InvitationController extends Controller
             'retention_days' => (int) config('privacy.retention_days'),
             'guestbook' => $event->guestbookEntries()->where('status', ModerationStatus::Approved)->with('guest:id,name')->latest()->get()
                 ->map(fn (GuestbookEntry $e) => ['id' => $e->id, 'author' => $e->guest->name, 'message' => $e->message]),
-            'photos' => $event->photos()->where('status', ModerationStatus::Approved)->with('guest:id,name')->latest()->get()
-                ->map(fn (Photo $p) => ['id' => $p->id, 'author' => $p->guest->name, 'caption' => $p->caption, 'url' => $p->url()]),
             'cagnotte' => $event->cagnottePayload($guest),
             'mine' => [
                 'pending_entries' => $guest->guestbookEntries()->where('status', ModerationStatus::Pending)->count(),
-                'pending_photos' => $guest->photos()->where('status', ModerationStatus::Pending)->count(),
             ],
             // Aperçu de lien (WhatsApp…) : informations de l'événement seulement, jamais le nom de l'invité.
         ])->withViewData(['meta' => $event->shareMeta()]);

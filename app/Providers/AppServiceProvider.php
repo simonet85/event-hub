@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        // Livre d'or et photos : limites par invité (jeton) plutôt que par adresse IP seule, car les invités d'une même
+        // Livre d'or : limites par invité (jeton) plutôt que par adresse IP seule, car les invités d'une même
         // salle partagent souvent la même connexion ; l'IP garde un plafond large contre les envois en rafale.
         RateLimiter::for('guest-contributions', function (Request $request): array {
             $guest = $request->route('guest');

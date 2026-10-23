@@ -30,8 +30,7 @@ const props = defineProps<{
     token: string;
     cagnotte: CagnottePayload | null;
     guestbook: { id: number; author: string; message: string }[];
-    photos: { id: number; author: string; caption: string | null; url: string }[];
-    mine: { pending_entries: number; pending_photos: number };
+    mine: { pending_entries: number };
     retention_days: number;
     event: PublicEvent;
 }>();
@@ -101,7 +100,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPopState));
         </div>
 
         <div v-else class="mt-8 flex w-full justify-center">
-            <Contributions :token="token" :guestbook="guestbook" :photos="photos" :mine="mine" />
+            <Contributions :token="token" :guestbook="guestbook" :mine="mine" />
         </div>
 
         <GuestNav :tabs="tabs" :active="active" @select="select" />

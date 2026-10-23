@@ -11,15 +11,12 @@ type Status = 'pending' | 'approved' | 'rejected';
 const props = defineProps<{
     event: { title: string; slug: string };
     entries: { id: number; author: string; message: string; status: Status }[];
-    photos: { id: number; author: string; caption: string | null; status: Status; url: string }[];
 }>();
 
 const labels = computed<Record<Status, string>>(() => ({ pending: __('En attente'), approved: __('Publié'), rejected: __('Refusé') }));
 
 const setEntry = (id: number, status: Status) => router.patch(route('moderation.entries.update', [props.event.slug, id]), { status }, { preserveScroll: true });
 const removeEntry = (id: number) => router.delete(route('moderation.entries.destroy', [props.event.slug, id]), { preserveScroll: true });
-const setPhoto = (id: number, status: Status) => router.patch(route('moderation.photos.update', [props.event.slug, id]), { status }, { preserveScroll: true });
-const removePhoto = (id: number) => router.delete(route('moderation.photos.destroy', [props.event.slug, id]), { preserveScroll: true });
 </script>
 
 <template>
@@ -48,24 +45,6 @@ const removePhoto = (id: number) => router.delete(route('moderation.photos.destr
                             </div>
                         </li>
                     </ul>
-                </section>
-
-                <section>
-                    <h3 class="mb-3 display text-2xl">{{ __('Photos') }}</h3>
-                    <EmptyState v-if="photos.length === 0" class="card" icon="photos" :title="__('Aucune photo')" :text="__('Les photos envoyées par vos invités arriveront ici, à valider avant publication.')" />
-                    <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <figure v-for="p in photos" :key="p.id" class="overflow-hidden card">
-                            <img :src="p.url" :alt="p.caption ?? `Photo de ${p.author}`" loading="lazy" class="aspect-square w-full object-cover" />
-                            <figcaption class="space-y-2 p-3 text-sm">
-                                <p class="text-[var(--muted)]">{{ p.author }} · {{ labels[p.status] }}<span v-if="p.caption"> · {{ p.caption }}</span></p>
-                                <div class="flex gap-3">
-                                    <button v-if="p.status !== 'approved'" class="chip cursor-pointer !text-success hover:!bg-surface-300" @click="setPhoto(p.id, 'approved')">{{ __('Publier') }}</button>
-                                    <button v-if="p.status !== 'rejected'" class="chip cursor-pointer !text-warning hover:!bg-surface-300" @click="setPhoto(p.id, 'rejected')">{{ __('Refuser') }}</button>
-                                    <button class="chip cursor-pointer !text-danger hover:!bg-surface-300" @click="removePhoto(p.id)">{{ __('Supprimer') }}</button>
-                                </div>
-                            </figcaption>
-                        </figure>
-                    </div>
                 </section>
             </div>
         </div>

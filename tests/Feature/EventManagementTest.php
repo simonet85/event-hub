@@ -208,7 +208,7 @@ test('un événement archivé disparaît côté invités (page publique, invitat
     $this->get("/i/{$guest->token}")->assertOk();
 });
 
-test('les photos approuvées d\'un événement archivé ne sont plus servies au public', function () {
+test('une photo n\'est servie qu\'à l\'hôte de l\'événement', function () {
     Storage::fake('local');
     Storage::disk('local')->put('photos/a.jpg', 'x');
     $guest = Guest::factory()->for($this->event)->create();
@@ -217,10 +217,7 @@ test('les photos approuvées d\'un événement archivé ne sont plus servies au 
         'status' => ModerationStatus::Approved,
     ]);
 
-    $this->get("/photos/{$photo->id}")->assertOk();
-
-    $this->event->forceFill(['archived_at' => now()])->save();
-
     $this->get("/photos/{$photo->id}")->assertNotFound();
+    $this->actingAs(User::factory()->create())->get("/photos/{$photo->id}")->assertNotFound();
     $this->actingAs($this->host)->get("/photos/{$photo->id}")->assertOk();
 });
