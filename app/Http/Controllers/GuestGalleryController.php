@@ -73,10 +73,15 @@ class GuestGalleryController extends Controller
 
         $zip->close();
 
-        return response()->download($tmp, "{$slug}-photos.zip", [
+        $response = response()->download($tmp, "{$slug}-photos.zip", [
             'Content-Type' => 'application/zip',
             'Cache-Control' => 'private, no-store',
         ])->deleteFileAfterSend(true);
+
+        // Un téléchargement de fichier est « public » par défaut : l'archive ne doit être gardée par aucun cache partagé.
+        $response->setPrivate();
+
+        return $response;
     }
 
     private function authorizePhoto(Guest $guest, Photo $photo): void

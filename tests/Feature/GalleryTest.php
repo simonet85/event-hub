@@ -185,6 +185,7 @@ test('un invité télécharge toute la galerie en .zip', function () {
     galleryPhoto(Event::factory()->create());
 
     $response = $this->get("/i/{$this->guest->token}/galerie.zip")->assertOk()->assertHeader('Content-Type', 'application/zip');
+    expect($response->headers->get('Cache-Control'))->toContain('private')->toContain('no-store')->not->toContain('public');
 
     expect(zipEntries($response))->toBe(["{$this->event->slug}-001.jpg", "{$this->event->slug}-002.jpg", "{$this->event->slug}-003.jpg"]);
 });

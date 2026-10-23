@@ -15,7 +15,7 @@ defineEmits<{ select: [tab: GuestTab] }>();
         <ul class="mx-auto flex max-w-3xl">
             <li v-for="t in tabs" :key="t.key" class="min-w-0 flex-1">
                 <a
-                    :href="tabUrl(t.key, 'http://x/')"
+                    :href="tabUrl(t.key)"
                     :aria-current="t.key === active ? 'page' : undefined"
                     class="flex min-h-tap items-center justify-center px-1 text-center text-xs font-semibold hover:bg-surface-200"
                     :class="t.key === active ? 'text-accent underline decoration-2 underline-offset-8' : 'text-ink'"
